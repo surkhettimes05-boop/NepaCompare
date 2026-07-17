@@ -1,0 +1,176 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id         String   @id @default(uuid())
+  phone      String   @unique
+  name       String?
+  email      String?  @unique
+  createdAt  DateTime @default(now())
+  
+  leads      Lead[]
+  reviews    Review[]
+}
+
+model Staff {
+  id         String   @id @default(uuid())
+  name       String
+  phone      String   @unique
+  password   String?
+  role       Role     @default(AGENT)
+  active     Boolean  @default(true)
+  
+  assignedLeads Lead[]
+  statusUpdates LeadStatusHistory[]
+}
+
+enum Role {
+  AGENT
+  ADMIN
+}
+
+model Partner {
+  id           String   @id @default(uuid())
+  name         String
+  type         PartnerType
+  contactName  String?
+  contactPhone String?
+  verticals    Json?    // Array of verticals they cover
+  regions      Json?    // Array of regions they cover
+  agreedCpl    Float?
+  active       Boolean  @default(true)
+  
+  leads        Lead[]
+  rateTables   RateTable[]
+  routingRules RoutingRule[]
+  invoices     Invoice[]
+  reviews      Review[]
+}
+
+enum PartnerType {
+  INSURER
+  AGENT
+  BROKER
+}
+
+model Lead {
+  id              String   @id @default(uuid())
+  userId          String?
+  vertical        String
+  source          String   // web or app
+  formData        Json
+  consentTs       DateTime @default(now())
+  status          LeadStatus @default(NEW)
+  assignedStaffId String?
+  partnerId       String?
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+  
+  user            User?    @relation(fields: [userId], references: [id])
+  staff           Staff?   @relation(fields: [assignedStaffId], references: [id])
+  partner         Partner? @relation(fields: [partnerId], references: [id])
+  
+  statusHistory   LeadStatusHistory[]
+}
+
+enum LeadStatus {
+  NEW
+  QUALIFIED
+  DISQUALIFIED
+  SENT_TO_PARTNER
+  CONVERTED
+  LOST
+  NO_RESPONSE
+  INVOICED
+  PAID
+}
+
+model LeadStatusHistory {
+  id         String   @id @default(uuid())
+  leadId     String
+  oldStatus  LeadStatus
+  newStatus  LeadStatus
+  changedById String?
+  changedAt  DateTime @default(now())
+  
+  lead       Lead     @relation(fields: [leadId], references: [id])
+  changedBy  Staff?   @relation(fields: [changedById], references: [id])
+}
+
+model RateTable {
+  id         String   @id @default(uuid())
+  vertical   String
+  partnerId  String
+  planName   String
+  criteria   Json     // e.g. age band, sum assured band
+  premiumMin Float
+  premiumMax Float
+  updatedAt  DateTime @updatedAt
+  
+  partner    Partner  @relation(fields: [partnerId], references: [id])
+}
+
+model RoutingRule {
+  id         String   @id @default(uuid())
+  vertical   String
+  region     String
+  partnerId  String
+  priority   Int      @default(1)
+  
+  partner    Partner  @relation(fields: [partnerId], references: [id])
+}
+
+model Invoice {
+  id          String   @id @default(uuid())
+  partnerId   String
+  periodStart DateTime
+  periodEnd   DateTime
+  leadCount   Int
+  amount      Float
+  status      InvoiceStatus @default(DRAFT)
+  
+  partner     Partner  @relation(fields: [partnerId], references: [id])
+}
+
+enum InvoiceStatus {
+  DRAFT
+  SENT
+  PAID
+}
+
+model ContentPage {
+  id         String   @id @default(uuid())
+  slug       String   @unique
+  title      String
+  body       String   @db.Text
+  vertical   String?
+  published  Boolean  @default(false)
+  updatedAt  DateTime @updatedAt
+}
+
+model Review {
+  id         String   @id @default(uuid())
+  partnerId  String
+  userId     String
+  rating     Int
+  body       String   @db.Text
+  status     ReviewStatus @default(PENDING)
+  
+  partner    Partner  @relation(fields: [partnerId], references: [id])
+  user       User     @relation(fields: [userId], references: [id])
+}
+
+enum ReviewStatus {
+  PENDING
+  APPROVED
+  REJECTED
+}

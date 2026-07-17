@@ -1,0 +1,63 @@
+.compare-container {
+  padding: var(--space-xl) 0;
+}
+
+.comparison-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: var(--space-lg);
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.compare-card {
+  padding: var(--space-lg);
+  display: flex;
+  flex-direction: column;
+}
+
+.plan-name {
+  font-weight: 600;
+  margin-bottom: var(--space-md);
+  font-size: 1.1rem;
+}
+
+.premium-block {
+  background: rgba(0, 0, 0, 0.3);
+  padding: var(--space-sm);
+  border-radius: var(--radius-sm);
+  text-align: center;
+  margin-bottom: var(--space-md);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.premium-label {
+  display: block;
+  font-size: 0.85rem;
+  color: var(--text-secondary);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.premium-amount {
+  display: block;
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--success);
+}
+
+.coverage-list {
+  list-style: none;
+  flex-grow: 1;
+}
+
+.coverage-list li {
+  padding: var(--space-xs) 0;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  color: var(--text-secondary);
+  font-size: 0.95rem;
+}
+
+.coverage-list li:last-child {
+  border-bottom: none;
+}
