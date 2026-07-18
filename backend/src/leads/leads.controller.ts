@@ -13,22 +13,25 @@ export class LeadsController {
     return this.leadsService.create(createLeadDto);
   }
 
-  // @UseGuards(JwtAuthGuard) // Disabled for local UI demo
+  @UseGuards(JwtAuthGuard)
   @Get()
   findAll() {
     return this.leadsService.findAll();
   }
 
+  @UseGuards(JwtAuthGuard)
   @Get(':id')
   findOne(@Param('id') id: string) {
     return this.leadsService.findOne(id);
   }
 
+  @UseGuards(JwtAuthGuard)
   @Patch(':id')
   update(@Param('id') id: string, @Body() updateLeadDto: UpdateLeadDto) {
     return this.leadsService.update(id, updateLeadDto);
   }
 
+  @UseGuards(JwtAuthGuard)
   @Delete(':id')
   remove(@Param('id') id: string) {
     return this.leadsService.remove(id);

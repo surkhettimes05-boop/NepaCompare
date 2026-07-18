@@ -1,9 +1,11 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards } from '@nestjs/common';
 import { PartnersService } from './partners.service';
+import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 import { CreatePartnerDto } from './dto/create-partner.dto';
 import { UpdatePartnerDto } from './dto/update-partner.dto';
 
 @Controller('partners')
+@UseGuards(JwtAuthGuard)
 export class PartnersController {
   constructor(private readonly partnersService: PartnersService) {}
 
@@ -19,16 +21,16 @@ export class PartnersController {
 
   @Get(':id')
   findOne(@Param('id') id: string) {
-    return this.partnersService.findOne(+id);
+    return this.partnersService.findOne(id);
   }
 
   @Patch(':id')
   update(@Param('id') id: string, @Body() updatePartnerDto: UpdatePartnerDto) {
-    return this.partnersService.update(+id, updatePartnerDto);
+    return this.partnersService.update(id, updatePartnerDto);
   }
 
   @Delete(':id')
   remove(@Param('id') id: string) {
-    return this.partnersService.remove(+id);
+    return this.partnersService.remove(id);
   }
 }

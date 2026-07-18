@@ -22,14 +22,7 @@ export default function Login() {
         
         data = await res.json();
         if (!res.ok) throw new Error(data.message || 'Login failed');
-      } catch (err) {
-        console.warn('Backend unavailable, mocking login for demo purposes');
-        // Fallback for demo when DB is not running
-        data = {
-          access_token: 'mock-jwt-token-123',
-          user: { id: 'admin-1', name: 'Super Admin', role: 'ADMIN' }
-        };
-      }
+
       
       // Store token and user data
       localStorage.setItem('token', data.access_token);

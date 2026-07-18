@@ -22,16 +22,16 @@ export default function LeadsInbox() {
             'Authorization': `Bearer ${token}`
           }
         });
+        if (response.status === 401) {
+          localStorage.removeItem('token');
+          window.location.href = '/login';
+          return;
+        }
         if (!response.ok) throw new Error('Failed to fetch');
         const data = await response.json();
         setLeads(data);
       } catch (err) {
         console.error('Failed to fetch leads', err);
-        // Fallback to mock data if backend isn't running yet
-        setLeads([
-          { id: '1', vertical: 'motor', source: 'web', createdAt: new Date().toISOString(), formData: { name: 'Rajesh Shrestha', phone: '9841234567' } },
-          { id: '2', vertical: 'health', source: 'web', createdAt: new Date().toISOString(), formData: { name: 'Sunita Gurung', phone: '9851234567', age: '35' } }
-        ]);
       } finally {
         setLoading(false);
       }
