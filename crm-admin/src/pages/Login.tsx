@@ -14,7 +14,8 @@ export default function Login() {
     try {
       let data;
       try {
-        const res = await fetch('http://localhost:8080/auth/login', {
+        const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:8080';
+        const res = await fetch(`${apiUrl}/auth/login`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ phone, password })
@@ -22,7 +23,9 @@ export default function Login() {
         
         data = await res.json();
         if (!res.ok) throw new Error(data.message || 'Login failed');
-
+      } catch (innerErr) {
+        throw innerErr;
+      }
       
       // Store token and user data
       localStorage.setItem('token', data.access_token);

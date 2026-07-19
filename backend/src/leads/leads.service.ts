@@ -25,15 +25,17 @@ export class LeadsService {
   }
 
   findOne(id: string) {
-    return this.mockLeads.find(l => l.id === id);
+    return this.prisma.lead.findUnique({ where: { id }, include: { partner: true, staff: true, user: true } });
   }
 
   update(id: string, updateLeadDto: UpdateLeadDto) {
-    return `This action updates a #${id} lead`;
+    return this.prisma.lead.update({
+      where: { id },
+      data: updateLeadDto as any
+    });
   }
 
   remove(id: string) {
-    this.mockLeads = this.mockLeads.filter(l => l.id !== id);
-    return `This action removes a #${id} lead`;
+    return this.prisma.lead.delete({ where: { id } });
   }
 }
