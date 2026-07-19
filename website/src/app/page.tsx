@@ -243,30 +243,44 @@ export default function Home() {
         </div>
       </section>
 
-      {/* 10. Customer Testimonials */}
+      {/* 10. Real Claim Stories */}
       <section className="testimonials-section">
         <div className="container">
-          <h2 className="heading-2" style={{ textAlign: 'center', marginBottom: '3rem' }}>Don't just take our word for it</h2>
+          <h2 className="heading-2" style={{ textAlign: 'center', marginBottom: '1rem' }}>Real Claim Stories</h2>
+          <p className="text-muted" style={{ textAlign: 'center', marginBottom: '3rem', maxWidth: '600px', margin: '0 auto 3rem auto' }}>
+            We measure our success not by policies sold, but by claims settled. Here are real stories of our Claim Commandos in action.
+          </p>
           <div className="testimonials-grid">
-            <div className="testimonial-card">
-              <p className="quote">"Saved Rs. 2,000 on my bike renewal without having to talk to a single agent. The whole process took 5 minutes."</p>
+            <div className="testimonial-card" style={{ borderTop: '4px solid var(--primary-accent)' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '1rem' }}>
+                <span style={{ background: 'var(--success)', color: 'white', padding: '2px 8px', borderRadius: '12px', fontSize: '0.75rem', fontWeight: 'bold' }}>SETTLED IN 48 HOURS</span>
+              </div>
+              <p className="quote">"My husband had a sudden heart attack at 2 AM. The hospital demanded a massive deposit. I called NepaCompare's emergency line, and their agent stayed on the phone with the hospital until cashless approval was granted."</p>
               <div className="author">
-                <div className="author-name">Rabin K.</div>
-                <div className="author-detail">Motor Insurance Customer</div>
+                <div className="author-name">Sunita K. (Kathmandu)</div>
+                <div className="author-detail">Health Insurance Claim: Rs. 4.5 Lakhs</div>
               </div>
             </div>
-            <div className="testimonial-card">
-              <p className="quote">"Finally, a clear breakdown of health insurance policies in Nepal. I understood exactly what my family was covered for."</p>
+            
+            <div className="testimonial-card" style={{ borderTop: '4px solid var(--primary-accent)' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '1rem' }}>
+                <span style={{ background: 'var(--success)', color: 'white', padding: '2px 8px', borderRadius: '12px', fontSize: '0.75rem', fontWeight: 'bold' }}>SETTLED IN 3 DAYS</span>
+              </div>
+              <p className="quote">"My car was severely damaged in a landslide on the Prithvi Highway. I uploaded the photos to my Digital Locker. The NepaCompare team coordinated with the insurer and the garage. I didn't have to visit a single office."</p>
               <div className="author">
-                <div className="author-name">Sita M.</div>
-                <div className="author-detail">Health Insurance Customer</div>
+                <div className="author-name">Dipendra S. (Pokhara)</div>
+                <div className="author-detail">Motor Insurance Claim: Rs. 1.2 Lakhs</div>
               </div>
             </div>
-            <div className="testimonial-card">
-              <p className="quote">"The claims support was incredible. They helped me file all the paperwork when my car was damaged."</p>
+
+            <div className="testimonial-card" style={{ borderTop: '4px solid var(--primary-accent)' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '1rem' }}>
+                <span style={{ background: 'var(--success)', color: 'white', padding: '2px 8px', borderRadius: '12px', fontSize: '0.75rem', fontWeight: 'bold' }}>SETTLED HASSLE-FREE</span>
+              </div>
+              <p className="quote">"When my father passed away, the last thing I wanted to deal with was insurance paperwork. The dedicated claim agent from NepaCompare handled everything with the insurer with extreme empathy."</p>
               <div className="author">
-                <div className="author-name">Dipendra S.</div>
-                <div className="author-detail">Motor Insurance Customer</div>
+                <div className="author-name">Anil P. (Lalitpur)</div>
+                <div className="author-detail">Life Insurance Claim: Rs. 50 Lakhs</div>
               </div>
             </div>
           </div>

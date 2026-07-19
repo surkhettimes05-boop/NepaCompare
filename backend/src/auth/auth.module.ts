@@ -10,7 +10,13 @@ import { PrismaService } from '../prisma.service';
   imports: [
     PassportModule,
     JwtModule.register({
-      secret: process.env.JWT_SECRET || 'super-secret-jwt-key',
+      secret: (() => {
+        const secret = process.env.JWT_SECRET;
+        if (!secret) {
+          throw new Error('FATAL: JWT_SECRET environment variable is missing.');
+        }
+        return secret;
+      })(),
       signOptions: { expiresIn: '12h' },
     }),
   ],

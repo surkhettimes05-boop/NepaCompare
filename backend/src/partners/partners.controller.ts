@@ -4,8 +4,13 @@ import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 import { CreatePartnerDto } from './dto/create-partner.dto';
 import { UpdatePartnerDto } from './dto/update-partner.dto';
 
+import { RolesGuard } from '../auth/roles.guard';
+import { Roles } from '../auth/roles.decorator';
+import { Role } from '@prisma/client';
+
 @Controller('partners')
-@UseGuards(JwtAuthGuard)
+@UseGuards(JwtAuthGuard, RolesGuard)
+@Roles(Role.AGENT, Role.ADMIN)
 export class PartnersController {
   constructor(private readonly partnersService: PartnersService) {}
 

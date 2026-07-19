@@ -8,12 +8,13 @@ export class LeadsService {
 
   constructor(private prisma: PrismaService) {}
 
-  async create(createLeadDto: CreateLeadDto) {
+  async create(createLeadDto: any) {
     return this.prisma.lead.create({
       data: {
         vertical: createLeadDto.vertical,
         source: createLeadDto.source,
         formData: createLeadDto.formData,
+        userId: createLeadDto.userId,
       },
     });
   }
@@ -25,7 +26,18 @@ export class LeadsService {
   }
 
   findOne(id: string) {
-    return this.prisma.lead.findUnique({ where: { id }, include: { partner: true, staff: true, user: true } });
+    return this.prisma.lead.findUnique({ 
+      where: { id }, 
+      include: { 
+        partner: true, 
+        staff: true, 
+        user: true,
+        statusHistory: {
+          include: { changedBy: true },
+          orderBy: { changedAt: 'desc' }
+        }
+      } 
+    });
   }
 
   update(id: string, updateLeadDto: UpdateLeadDto) {
@@ -37,5 +49,34 @@ export class LeadsService {
 
   remove(id: string) {
     return this.prisma.lead.delete({ where: { id } });
+  }
+
+  async routeLead(id: string, partnerId: string, staffId: string) {
+    const lead = await this.prisma.lead.findUnique({ where: { id } });
+    if (!lead) throw new Error('Lead not found');
+
+    const oldStatus = lead.status;
+    const newStatus = 'SENT_TO_PARTNER';
+
+    return this.prisma.$transaction(async (tx) => {
+      const updatedLead = await tx.lead.update({
+        where: { id },
+        data: {
+          partnerId,
+          status: newStatus,
+        }
+      });
+
+      await tx.leadStatusHistory.create({
+        data: {
+          leadId: id,
+          oldStatus,
+          newStatus,
+          changedById: staffId
+        }
+      });
+
+      return updatedLead;
+    });
   }
 }

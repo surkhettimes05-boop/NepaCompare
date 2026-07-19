@@ -29,6 +29,7 @@ async function main() {
     data: {
       name: 'Shikhar Insurance',
       type: PartnerType.INSURER,
+      integrationType: 'MOCK_STANDARD',
       verticals: ['motor', 'health'],
     },
   });
@@ -37,6 +38,7 @@ async function main() {
     data: {
       name: 'Nepal Life',
       type: PartnerType.INSURER,
+      integrationType: 'MOCK_LEGACY_REST',
       verticals: ['life'],
     },
   });
@@ -45,6 +47,7 @@ async function main() {
     data: {
       name: 'Sagarmatha Health',
       type: PartnerType.INSURER,
+      integrationType: 'MOCK_LEGACY_REST',
       verticals: ['health'],
     },
   });

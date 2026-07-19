@@ -2,7 +2,9 @@ import { Routes, Route, Navigate } from 'react-router-dom';
 import Sidebar from './components/Sidebar';
 import Dashboard from './pages/Dashboard';
 import LeadsInbox from './pages/LeadsInbox';
+import LeadDetail from './pages/LeadDetail';
 import Partners from './pages/Partners';
+import Renewals from './pages/Renewals';
 import Login from './pages/Login';
 
 // Simple Auth Wrapper
@@ -32,7 +34,9 @@ function App() {
                 <Routes>
                   <Route path="/" element={<Dashboard />} />
                   <Route path="/leads" element={<LeadsInbox />} />
+                  <Route path="/leads/:id" element={<LeadDetail />} />
                   <Route path="/partners" element={<Partners />} />
+                  <Route path="/renewals" element={<Renewals />} />
                   <Route path="*" element={<h2>404 - Not Found</h2>} />
                 </Routes>
               </main>

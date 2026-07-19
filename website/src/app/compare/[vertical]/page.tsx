@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import DropoffTracker from '@/components/DropoffTracker';
 import './compare.css';
 
 interface Props {
@@ -41,7 +42,12 @@ export default async function ComparePage({ params, searchParams }: any) {
         ) : (
           <div className="comparison-grid">
             {rateTable.map((rate: any) => (
-              <div key={rate.id} className="compare-card glass-panel">
+              <div key={rate.id} className="compare-card glass-panel" style={{ position: 'relative' }}>
+                {rate.isBestMatch && (
+                  <div style={{ position: 'absolute', top: '-12px', right: '12px', background: 'var(--success)', color: 'white', padding: '4px 12px', borderRadius: '20px', fontSize: '0.75rem', fontWeight: 600, boxShadow: '0 2px 4px rgba(0,0,0,0.1)' }}>
+                    ★ BEST MATCH
+                  </div>
+                )}
                 <h2 className="heading-3">{rate.insurer}</h2>
                 <p className="plan-name text-gradient">{rate.plan}</p>
                 
@@ -50,13 +56,21 @@ export default async function ComparePage({ params, searchParams }: any) {
                   <span className="premium-amount">{rate.premium}</span>
                 </div>
                 
-                <ul className="coverage-list">
+                <ul className="coverage-list" style={{ marginBottom: '0.5rem' }}>
                   <li>Coverage: <strong>{rate.coverage}</strong></li>
-                  <li>Cashless Network: <strong>Yes</strong></li>
-                  <li>Claim Settlement: <strong>92%</strong></li>
+                  <li>Claim Settlement (CSR): <strong style={{ color: 'var(--success)' }}>{rate.csr}</strong></li>
                 </ul>
+                
+                {rate.exclusions && (
+                  <div style={{ padding: '0.5rem', background: 'rgba(239, 68, 68, 0.05)', borderRadius: '6px', fontSize: '0.8rem', color: 'var(--text-color)', marginBottom: '1rem', borderLeft: '3px solid var(--accent-red)' }}>
+                    <strong style={{ display: 'block', color: 'var(--accent-red)', marginBottom: '0.25rem' }}>What's NOT covered:</strong>
+                    <ul style={{ paddingLeft: '1rem', margin: 0 }}>
+                      {rate.exclusions.map((ex: string, i: number) => <li key={i}>{ex}</li>)}
+                    </ul>
+                  </div>
+                )}
 
-                <Link href={`/get-quote?vertical=${vertical}&plan=${rate.id}`} className="btn btn-primary" style={{ width: '100%', marginTop: '1.5rem' }}>
+                <Link href={`/get-quote?vertical=${vertical}&plan=${rate.id}`} className="btn btn-primary" style={{ width: '100%' }}>
                   Get This Quote
                 </Link>
               </div>
@@ -64,6 +78,7 @@ export default async function ComparePage({ params, searchParams }: any) {
           </div>
         )}
       </div>
+      <DropoffTracker vertical={vertical} />
     </div>
   );
 }

@@ -15,10 +15,14 @@ model User {
   phone      String   @unique
   name       String?
   email      String?  @unique
+  password   String?
   createdAt  DateTime @default(now())
   
   leads      Lead[]
   reviews    Review[]
+  policies   Policy[]
+  creditProfile CreditProfile?
+  financialApps FinancialApplication[]
 }
 
 model Staff {
@@ -34,32 +38,40 @@ model Staff {
 }
 
 enum Role {
+  CUSTOMER
   AGENT
   ADMIN
 }
 
 model Partner {
-  id           String   @id @default(uuid())
-  name         String
-  type         PartnerType
-  contactName  String?
-  contactPhone String?
-  verticals    Json?    // Array of verticals they cover
-  regions      Json?    // Array of regions they cover
-  agreedCpl    Float?
-  active       Boolean  @default(true)
+  id              String          @id @default(uuid())
+  name            String
+  type            PartnerType
+  integrationType IntegrationType @default(MOCK_STANDARD)
+  contactName     String?
+  contactPhone    String?
+  verticals       Json?           // Array of verticals they cover
+  regions         Json?           // Array of regions they cover
+  agreedCpl       Float?
+  active          Boolean         @default(true)
   
-  leads        Lead[]
-  rateTables   RateTable[]
-  routingRules RoutingRule[]
-  invoices     Invoice[]
-  reviews      Review[]
+  leads           Lead[]
+  rateTables      RateTable[]
+  routingRules    RoutingRule[]
+  invoices        Invoice[]
+  reviews         Review[]
+  financialProducts FinancialProduct[]
 }
 
 enum PartnerType {
   INSURER
   AGENT
   BROKER
+}
+
+enum IntegrationType {
+  MOCK_STANDARD
+  MOCK_LEGACY_REST
 }
 
 model Lead {
@@ -170,6 +182,84 @@ model Review {
 }
 
 enum ReviewStatus {
+  PENDING
+  APPROVED
+  REJECTED
+}
+
+model Policy {
+  id        String       @id @default(uuid())
+  userId    String
+  insurer   String
+  planName  String
+  vertical  String
+  premium   Float
+  startDate DateTime
+  endDate   DateTime
+  status    PolicyStatus @default(ACTIVE)
+  createdAt DateTime     @default(now())
+  updatedAt DateTime     @updatedAt
+
+  user      User         @relation(fields: [userId], references: [id])
+}
+
+enum PolicyStatus {
+  ACTIVE
+  EXPIRING_SOON
+  EXPIRED
+  RENEWED
+}
+
+// ============================================
+// PAISACOMPARE (Cross-sell: Credit & Loans)
+// ============================================
+
+model CreditProfile {
+  id          String   @id @default(uuid())
+  userId      String   @unique
+  score       Int
+  provider    String   // e.g., 'Equifax', 'CIBIL'
+  lastUpdated DateTime @default(now())
+  createdAt   DateTime @default(now())
+  
+  user        User     @relation(fields: [userId], references: [id])
+}
+
+model FinancialProduct {
+  id             String   @id @default(uuid())
+  partnerId      String
+  name           String
+  type           FinancialProductType
+  minCreditScore Int
+  interestRate   Float?
+  features       Json?    // e.g., ["No annual fee", "5% cashback"]
+  active         Boolean  @default(true)
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+  
+  partner        Partner  @relation(fields: [partnerId], references: [id])
+  applications   FinancialApplication[]
+}
+
+enum FinancialProductType {
+  CREDIT_CARD
+  PERSONAL_LOAN
+  HOME_LOAN
+}
+
+model FinancialApplication {
+  id           String   @id @default(uuid())
+  userId       String
+  productId    String
+  status       ApplicationStatus @default(PENDING)
+  appliedAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+  
+  user         User     @relation(fields: [userId], references: [id])
+  product      FinancialProduct @relation(fields: [productId], references: [id])
+}
+
+enum ApplicationStatus {
   PENDING
   APPROVED
   REJECTED

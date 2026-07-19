@@ -14,12 +14,14 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
   }
 
   async validate(payload: any) {
-    const user = await this.prisma.staff.findUnique({
-      where: { id: payload.sub },
-    });
-    if (!user || !user.active) {
-      throw new UnauthorizedException();
+    if (payload.role === 'CUSTOMER') {
+      const user = await this.prisma.user.findUnique({ where: { id: payload.sub } });
+      if (!user) throw new UnauthorizedException();
+      return { userId: payload.sub, phone: payload.phone, role: 'CUSTOMER' };
+    } else {
+      const staff = await this.prisma.staff.findUnique({ where: { id: payload.sub } });
+      if (!staff || !staff.active) throw new UnauthorizedException();
+      return { userId: payload.sub, phone: payload.phone, role: staff.role };
     }
-    return { userId: payload.sub, phone: payload.phone, role: user.role };
   }
 }

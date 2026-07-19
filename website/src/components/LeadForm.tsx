@@ -42,9 +42,21 @@ export default function LeadForm() {
       // Pointing to the NestJS API
       const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8080';
       
+      const token = localStorage.getItem('customer_token');
+      const userStr = localStorage.getItem('customer_user');
+      let userId = undefined;
+      
+      const headers: HeadersInit = {
+        'Content-Type': 'application/json'
+      };
+      if (token && userStr) {
+        headers['Authorization'] = `Bearer ${token}`;
+        userId = JSON.parse(userStr).id;
+      }
+
       const response = await fetch(`${apiUrl}/leads`, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers,
         body: JSON.stringify({
           vertical,
           source: 'web',
@@ -53,6 +65,7 @@ export default function LeadForm() {
             phone: formData.phone,
             age: formData.age,
           },
+          userId
         }),
       });
 
