@@ -221,6 +221,7 @@ export default function LeadDetail() {
             {JSON.stringify(lead.formData, null, 2)}
           </pre>
         </div>
+        </div>
 
         {/* Processing Card */}
         <div className="card" style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
