@@ -16,6 +16,14 @@ const articles = [
     tag: 'Life Insurance',
     readTime: '5 min read',
   },
+  {
+    slug: 'health-insurance-tax-benefit',
+    title: 'Stop Ignoring Your Health Insurance: The Rs 20,000 Tax Secret',
+    description:
+      'A single medical emergency can wipe out your savings. Learn how Health Insurance protects your wealth and cuts your income tax bill by up to Rs 20,000.',
+    tag: 'Health Insurance',
+    readTime: '4 min read',
+  },
 ];
 
 export default function BlogIndexPage() {
