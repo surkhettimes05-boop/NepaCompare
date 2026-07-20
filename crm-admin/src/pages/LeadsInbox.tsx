@@ -6,7 +6,8 @@ interface Lead {
   vertical: string;
   source: string;
   createdAt: string;
-  formData: { name: string; phone: string; age?: string };
+  status?: string;
+  formData: { name: string; phone: string; age?: string; isUrgent?: boolean };
 }
 
 export default function LeadsInbox() {

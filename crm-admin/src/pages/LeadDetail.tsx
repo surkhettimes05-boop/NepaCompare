@@ -11,7 +11,10 @@ interface Lead {
   user?: {
     name: string;
     phone: string;
-  }
+  };
+  partnerId?: string;
+  partner?: any;
+  statusHistory?: any[];
 }
 
 const STATUS_OPTIONS = [
@@ -129,7 +132,7 @@ export default function LeadDetail() {
       });
       
       if (!response.ok) throw new Error('Failed to route lead');
-      const updatedLead = await response.json();
+      await response.json();
       
       // Re-fetch the full lead to get the updated statusHistory
       const fullLeadRes = await fetch(`${apiUrl}/leads/${id}`, {
