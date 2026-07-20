@@ -16,7 +16,8 @@ async function bootstrap() {
   const allowedOrigins = [
     'https://nepacompare.com',
     'https://www.nepacompare.com',
-    'https://crm.nepacompare.com'
+    'https://crm.nepacompare.com',
+    'https://nepa-compare.vercel.app'
   ];
 
   if (!isProduction) {
