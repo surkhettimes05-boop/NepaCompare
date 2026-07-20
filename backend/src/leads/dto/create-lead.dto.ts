@@ -17,4 +17,8 @@ export class CreateLeadDto {
   @IsOptional()
   @IsEnum(LeadStatus)
   status?: LeadStatus;
+
+  @IsOptional()
+  @IsString()
+  userId?: string;
 }
