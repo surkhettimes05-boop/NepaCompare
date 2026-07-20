@@ -18,7 +18,7 @@ export default function Header() {
           <Link href="/motor">Motor</Link>
           <Link href="/health">Health</Link>
           <Link href="/life">Life</Link>
-          <Link href="/learn">Guides</Link>
+          <Link href="/blog">Guides</Link>
         </nav>
         <div className="header-actions">
           <Link href="/login" className="btn btn-primary">Sign In</Link>
