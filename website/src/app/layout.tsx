@@ -9,7 +9,7 @@ export const metadata: Metadata = {
   title: 'Compare Insurance in Nepal | Motor, Health & Life',
   description: 'Find the best insurance policies in Nepal. Compare motor, health, life, and travel insurance premiums instantly and save money.',
   verification: {
-    google: 'google5f68fa0990391dda',
+    google: 'lO9MCJwjXpsRdukdOtj2j1qRqrJZSmyoYe_cnIduYqU',
   },
 };
 
