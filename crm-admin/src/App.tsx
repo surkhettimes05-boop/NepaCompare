@@ -4,6 +4,7 @@ import Dashboard from './pages/Dashboard';
 import LeadsInbox from './pages/LeadsInbox';
 import LeadDetail from './pages/LeadDetail';
 import Partners from './pages/Partners';
+import RateTables from './pages/RateTables';
 import Renewals from './pages/Renewals';
 import Login from './pages/Login';
 
@@ -36,6 +37,7 @@ function App() {
                   <Route path="/leads" element={<LeadsInbox />} />
                   <Route path="/leads/:id" element={<LeadDetail />} />
                   <Route path="/partners" element={<Partners />} />
+                  <Route path="/rate-tables" element={<RateTables />} />
                   <Route path="/renewals" element={<Renewals />} />
                   <Route path="*" element={<h2>404 - Not Found</h2>} />
                 </Routes>

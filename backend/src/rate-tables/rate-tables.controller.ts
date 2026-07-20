@@ -25,16 +25,21 @@ export class RateTablesController {
 
   @Get(':id')
   findOne(@Param('id') id: string) {
-    return this.rateTablesService.findOne(+id);
+    return this.rateTablesService.findOne(id);
   }
 
   @Patch(':id')
   update(@Param('id') id: string, @Body() updateRateTableDto: UpdateRateTableDto) {
-    return this.rateTablesService.update(+id, updateRateTableDto);
+    return this.rateTablesService.update(id, updateRateTableDto);
   }
 
   @Delete(':id')
   remove(@Param('id') id: string) {
-    return this.rateTablesService.remove(+id);
+    return this.rateTablesService.remove(id);
+  }
+
+  @Post('bulk-import')
+  bulkImport(@Body() rows: any[]) {
+    return this.rateTablesService.bulkImport(rows);
   }
 }

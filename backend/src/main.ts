@@ -12,8 +12,19 @@ async function bootstrap() {
     }),
   );
 
+  const isProduction = process.env.NODE_ENV === 'production';
+  const allowedOrigins = [
+    'https://nepacompare.com',
+    'https://www.nepacompare.com',
+    'https://crm.nepacompare.com'
+  ];
+
+  if (!isProduction) {
+    allowedOrigins.push('http://localhost:3000', 'http://localhost:3001', 'http://localhost:5173');
+  }
+
   app.enableCors({
-    origin: true,
+    origin: allowedOrigins,
     methods: 'GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS',
     credentials: true,
   });
