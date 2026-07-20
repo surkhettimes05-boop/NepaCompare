@@ -4,7 +4,7 @@ import './page.css';
 export default function Home() {
   return (
     <div className="home-container">
-      {/* 4. Hero Section */}
+      {/* Hero Section */}
       <section className="hero-section animate-fade-up">
         <div className="container">
           
@@ -17,7 +17,7 @@ export default function Home() {
                   No fine print surprises.
                 </h1>
                 <p className="hero-subtitle text-muted">
-                  Find the best policies for Motor, Health, and Life from top insurers. Save time, save money, and buy with confidence.
+                  Compare indicative pricing for Motor, Health, and Life insurance from insurers in Nepal. Free to use. No signup required to browse.
                 </p>
               </div>
 
@@ -31,7 +31,7 @@ export default function Home() {
                 </Link>
               </div>
 
-              {/* Trust Indicators */}
+              {/* Trust Indicators — only factual process claims */}
               <div className="trust-indicators text-muted">
                 <span className="trust-item"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg> No spam calls</span>
                 <span className="trust-dot">•</span>
@@ -41,40 +41,39 @@ export default function Home() {
               </div>
             </div>
 
-            {/* Live Comparison Visual */}
+            {/* Illustrative Comparison Visual */}
             <div className="hero-visual">
               <div className="policy-widget-container">
                 
-                {/* Back Card (Context) */}
+                {/* Back Card */}
                 <div className="widget-card widget-back animate-slide-left">
                   <div className="widget-header">
                     <div className="insurer-info">
-                      <div className="insurer-logo-mock logo-neco">N</div>
+                      <div className="insurer-logo-mock logo-neco">A</div>
                       <div>
-                        <div className="insurer-name">Neco Insurance</div>
+                        <div className="insurer-name">Insurer A</div>
                         <div className="policy-type text-muted">Comprehensive Motor</div>
                       </div>
                     </div>
                     <div className="policy-price text-muted">NPR 11,500<span className="term">/yr</span></div>
                   </div>
-                  {/* Empty body to ensure front card doesn't cover text */}
                   <div className="widget-spacer"></div>
                 </div>
 
-                {/* Front Card (Winner) */}
+                {/* Front Card */}
                 <div className="widget-card widget-front animate-slide-up">
                   <div className="widget-meta">
                     <div className="live-badge">
-                      <span className="live-dot"></span> Updated live
+                      <span className="live-dot"></span> Example
                     </div>
-                    <div className="best-value-badge">★ BEST VALUE</div>
+                    <div className="best-value-badge">★ LOWER PRICE</div>
                   </div>
                   
                   <div className="widget-header">
                     <div className="insurer-info">
-                      <div className="insurer-logo-mock logo-shikhar">S</div>
+                      <div className="insurer-logo-mock logo-shikhar">B</div>
                       <div>
-                        <div className="insurer-name highlight-blue">Shikhar Insurance</div>
+                        <div className="insurer-name highlight-blue">Insurer B</div>
                         <div className="policy-type text-muted">Comprehensive Motor</div>
                       </div>
                     </div>
@@ -90,16 +89,16 @@ export default function Home() {
                     </div>
                     <div className="detail-row">
                       <span className="text-muted">Cashless Garages</span>
-                      <span className="detail-val">42+ Network</span>
+                      <span className="detail-val">Network varies by insurer</span>
                     </div>
                   </div>
 
                   <div className="widget-footer">
                     <div className="savings-tag">
                       <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path></svg>
-                      You save NPR 2,300
+                      Illustrative — actual quotes may vary
                     </div>
-                    <button className="btn btn-primary btn-small">Select</button>
+                    <button className="btn btn-primary btn-small">Compare Now</button>
                   </div>
                 </div>
 
@@ -114,31 +113,31 @@ export default function Home() {
         </div>
       </section>
 
-      {/* 5. Trust Stats Row */}
+      {/* Early Access Banner — replaces fabricated stats */}
       <section className="stats-section">
         <div className="container">
           <div className="stats-grid">
             <div className="stat-item">
-              <div className="stat-value">14+</div>
-              <div className="stat-label">Insurers Partnered</div>
+              <div className="stat-value">Free</div>
+              <div className="stat-label">Always free to compare</div>
             </div>
             <div className="stat-item">
-              <div className="stat-value">10,000+</div>
-              <div className="stat-label">Customers Trust Us</div>
+              <div className="stat-value">3</div>
+              <div className="stat-label">Insurance verticals covered</div>
             </div>
             <div className="stat-item">
-              <div className="stat-value">24/7</div>
-              <div className="stat-label">Claims Support Included</div>
+              <div className="stat-value">Early</div>
+              <div className="stat-label">Access — platform in beta</div>
             </div>
             <div className="stat-item">
-              <div className="stat-value">100%</div>
-              <div className="stat-label">Best Price Guaranteed</div>
+              <div className="stat-value">0</div>
+              <div className="stat-label">Agent commissions charged</div>
             </div>
           </div>
         </div>
       </section>
 
-      {/* 6. Vertical Selector Grid */}
+      {/* Vertical Selector Grid */}
       <section className="category-section">
         <div className="container vertical-selector">
           <h2 className="heading-3" style={{ textAlign: 'center', marginBottom: '2rem' }}>What do you want to insure?</h2>
@@ -192,7 +191,7 @@ export default function Home() {
         </div>
       </section>
 
-      {/* 8. Why NepaCompare */}
+      {/* Why NepaCompare — removed NIA Regulated card */}
       <section className="advantage-section">
         <div className="container">
           <h2 className="heading-2" style={{ textAlign: 'center', marginBottom: '3rem' }}>The NepaCompare Advantage</h2>
@@ -200,92 +199,29 @@ export default function Home() {
             <div className="advantage-card">
               <div className="adv-icon">🛡️</div>
               <h3 className="heading-3">Unbiased Comparison</h3>
-              <p className="text-muted">We don't play favorites. See all policies side-by-side transparently.</p>
+              <p className="text-muted">We don't play favorites. See indicative policy pricing side-by-side so you can make an informed decision.</p>
             </div>
             <div className="advantage-card">
               <div className="adv-icon">💰</div>
-              <h3 className="heading-3">Best Price Guaranteed</h3>
-              <p className="text-muted">Zero hidden fees or agent commissions. What you see is what you pay.</p>
+              <h3 className="heading-3">No Agent Commissions</h3>
+              <p className="text-muted">We charge you nothing to compare. Final premiums are set by the insurer — no markup from us.</p>
             </div>
             <div className="advantage-card">
-              <div className="adv-icon">🤝</div>
-              <h3 className="heading-3">Dedicated Claims Support</h3>
-              <p className="text-muted">Our experts guide you through the claims process when you need it most.</p>
+              <div className="adv-icon">📋</div>
+              <h3 className="heading-3">Transparent Process</h3>
+              <p className="text-muted">We surface the information you need to compare policies yourself — without pressure from a sales agent.</p>
             </div>
             <div className="advantage-card">
-              <div className="adv-icon">🏛️</div>
-              <h3 className="heading-3">NIA Regulated</h3>
-              <p className="text-muted">Fully compliant with the Nepal Insurance Authority regulations.</p>
+              <div className="adv-icon">🚀</div>
+              <h3 className="heading-3">Early Access</h3>
+              <p className="text-muted">NepaCompare is in early access. We're actively building our insurer network. Pricing shown is indicative.</p>
             </div>
           </div>
         </div>
       </section>
 
-      {/* 9. Insurer Partner Marquee */}
-      <section className="partners-section">
-        <div className="container">
-          <p className="text-muted" style={{ textAlign: 'center', marginBottom: '2rem', textTransform: 'uppercase', letterSpacing: '0.05em', fontSize: '0.85rem' }}>Leading insurers we work with</p>
-          <div className="marquee">
-            <div className="marquee-content">
-              {/* Placeholders for actual logos */}
-              <div className="partner-logo">Shikhar Insurance</div>
-              <div className="partner-logo">Neco Insurance</div>
-              <div className="partner-logo">NLG Insurance</div>
-              <div className="partner-logo">Sagarmatha</div>
-              <div className="partner-logo">Sanima Reliance</div>
-              <div className="partner-logo">Himalayan Life</div>
-              {/* Duplicate for infinite scroll illusion */}
-              <div className="partner-logo">Shikhar Insurance</div>
-              <div className="partner-logo">Neco Insurance</div>
-              <div className="partner-logo">NLG Insurance</div>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* 10. Real Claim Stories */}
-      <section className="testimonials-section">
-        <div className="container">
-          <h2 className="heading-2" style={{ textAlign: 'center', marginBottom: '1rem' }}>Real Claim Stories</h2>
-          <p className="text-muted" style={{ textAlign: 'center', marginBottom: '3rem', maxWidth: '600px', margin: '0 auto 3rem auto' }}>
-            We measure our success not by policies sold, but by claims settled. Here are real stories of our Claim Commandos in action.
-          </p>
-          <div className="testimonials-grid">
-            <div className="testimonial-card" style={{ borderTop: '4px solid var(--primary-accent)' }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '1rem' }}>
-                <span style={{ background: 'var(--success)', color: 'white', padding: '2px 8px', borderRadius: '12px', fontSize: '0.75rem', fontWeight: 'bold' }}>SETTLED IN 48 HOURS</span>
-              </div>
-              <p className="quote">"My husband had a sudden heart attack at 2 AM. The hospital demanded a massive deposit. I called NepaCompare's emergency line, and their agent stayed on the phone with the hospital until cashless approval was granted."</p>
-              <div className="author">
-                <div className="author-name">Sunita K. (Kathmandu)</div>
-                <div className="author-detail">Health Insurance Claim: Rs. 4.5 Lakhs</div>
-              </div>
-            </div>
-            
-            <div className="testimonial-card" style={{ borderTop: '4px solid var(--primary-accent)' }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '1rem' }}>
-                <span style={{ background: 'var(--success)', color: 'white', padding: '2px 8px', borderRadius: '12px', fontSize: '0.75rem', fontWeight: 'bold' }}>SETTLED IN 3 DAYS</span>
-              </div>
-              <p className="quote">"My car was severely damaged in a landslide on the Prithvi Highway. I uploaded the photos to my Digital Locker. The NepaCompare team coordinated with the insurer and the garage. I didn't have to visit a single office."</p>
-              <div className="author">
-                <div className="author-name">Dipendra S. (Pokhara)</div>
-                <div className="author-detail">Motor Insurance Claim: Rs. 1.2 Lakhs</div>
-              </div>
-            </div>
-
-            <div className="testimonial-card" style={{ borderTop: '4px solid var(--primary-accent)' }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '1rem' }}>
-                <span style={{ background: 'var(--success)', color: 'white', padding: '2px 8px', borderRadius: '12px', fontSize: '0.75rem', fontWeight: 'bold' }}>SETTLED HASSLE-FREE</span>
-              </div>
-              <p className="quote">"When my father passed away, the last thing I wanted to deal with was insurance paperwork. The dedicated claim agent from NepaCompare handled everything with the insurer with extreme empathy."</p>
-              <div className="author">
-                <div className="author-name">Anil P. (Lalitpur)</div>
-                <div className="author-detail">Life Insurance Claim: Rs. 50 Lakhs</div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
+      {/* Partners section removed — no confirmed partnerships yet */}
+      {/* Testimonials section removed — no real, consented customer stories yet */}
 
     </div>
   );

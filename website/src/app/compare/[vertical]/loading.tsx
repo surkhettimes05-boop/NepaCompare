@@ -7,7 +7,7 @@ export default function Loading() {
       <div className="container">
         <div style={{ textAlign: 'center', marginBottom: '3rem' }}>
           <h1 className="heading-1">Compare Insurance</h1>
-          <p className="text-muted">Fetching live quotes securely from our partners...</p>
+          <p className="text-muted">Loading indicative pricing from available insurers...</p>
         </div>
 
         <div className="comparison-grid">

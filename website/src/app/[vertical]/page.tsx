@@ -23,7 +23,7 @@ export default async function CategoryPage({ params }: Props) {
         };
       case 'health':
         return {
-          intro: "Health insurance in Nepal is rapidly growing, especially with rising healthcare costs in private hospitals. Navigating the policies approved by the Nepal Insurance Authority (NIA) can save your family from catastrophic financial burdens during medical emergencies.",
+          intro: "Health insurance in Nepal is rapidly growing, especially with rising healthcare costs in private hospitals. Comparing policies from multiple insurers can help you find coverage that fits your needs and budget before a medical emergency occurs.",
           point1: "Cashless Treatment",
           desc1: "Look for insurers that offer cashless treatment at major hospitals in Kathmandu, Pokhara, and Chitwan.",
           point2: "Pre-existing Conditions",
@@ -48,7 +48,7 @@ export default async function CategoryPage({ params }: Props) {
         <div className="category-header">
           <h1 className="heading-1">{title} Insurance in Nepal</h1>
           <p className="text-muted" style={{ fontSize: '1.2rem', marginTop: '1rem' }}>
-            Compare top {title.toLowerCase()} insurance providers approved by the Nepal Insurance Authority.
+            Compare indicative {title.toLowerCase()} insurance pricing from insurers in Nepal.
           </p>
           <div style={{ marginTop: '2rem' }}>
             <Link href={`/compare/${vertical}`} className="btn btn-primary" style={{ padding: '1rem 2rem', fontSize: '1.1rem' }}>

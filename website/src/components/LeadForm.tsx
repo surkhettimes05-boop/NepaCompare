@@ -87,7 +87,7 @@ export default function LeadForm() {
         <div style={{ fontSize: '4rem', marginBottom: '1rem' }}>🎉</div>
         <h3 className="heading-3">Quote Requested!</h3>
         <p className="text-muted" style={{ marginTop: '1rem' }}>
-          Thank you, {formData.name}. A licensed partner advisor will call you at {formData.phone} within 24 hours.
+          Thank you, {formData.name}. We've received your request and will be in touch at {formData.phone} to discuss your options.
         </p>
       </div>
     );
@@ -135,7 +135,7 @@ export default function LeadForm() {
             <div className="input-group" style={{ flexDirection: 'row', alignItems: 'center', gap: '0.5rem' }}>
               <input type="checkbox" name="consent" id="consent" checked={formData.consent} onChange={handleChange} required style={{ width: '1.2rem', height: '1.2rem' }} />
               <label htmlFor="consent" className="input-label" style={{ fontSize: '0.8rem' }}>
-                I consent to NepaCompare and its partners contacting me regarding this quote. (Mandatory per NIA rules)
+                I consent to NepaCompare and relevant insurers contacting me regarding this quote request.
               </label>
             </div>
             <div style={{ display: 'flex', gap: '1rem', marginTop: '1rem' }}>

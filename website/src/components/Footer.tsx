@@ -9,7 +9,7 @@ export default function Footer() {
           <div>
             <h4 className="heading-3" style={{ marginBottom: '1rem', color: 'var(--text-primary)' }}>Nepa<span style={{ color: 'var(--primary-accent)'}}>Compare</span></h4>
             <p className="text-muted" style={{ fontSize: '0.85rem' }}>
-              Nepal's most trusted insurance comparison platform. Save time, save money, and buy with confidence.
+              An insurance comparison tool for Nepal. Compare indicative pricing across Motor, Health, and Life insurance — free, with no agent pressure.
             </p>
           </div>
 
@@ -45,7 +45,7 @@ export default function Footer() {
 
         <div style={{ borderTop: '1px solid var(--border)', paddingTop: 'var(--space-lg)', display: 'flex', flexDirection: 'column', gap: '1rem', alignItems: 'center', textAlign: 'center' }}>
           <p className="text-muted" style={{ fontSize: '0.75rem' }}>
-            NepaCompare is a technology platform acting as an insurance comparison engine. Final premiums are determined by the respective insurers and are subject to the guidelines of the Nepal Insurance Authority (NIA).
+            NepaCompare is an independent comparison platform — not an insurer or broker. Pricing shown is indicative only. Final premiums are determined solely by the respective insurers. NepaCompare is not an agent or intermediary licensed by the Nepal Insurance Authority.
           </p>
           <p className="text-muted" style={{ fontSize: '0.75rem' }}>
             © {new Date().getFullYear()} NepaCompare Private Limited. All rights reserved.
