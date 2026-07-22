@@ -29,6 +29,9 @@ export const metadata: Metadata = {
   verification: {
     google: 'lO9MCJwjXpsRdukdOtj2j1qRqrJZSmyoYe_cnIduYqU',
   },
+  alternates: {
+    canonical: '/',
+  },
 };
 
 export default function RootLayout({
@@ -36,8 +39,23 @@ export default function RootLayout({
 }: {
   children: React.ReactNode;
 }) {
+  const jsonLd = {
+    '@context': 'https://schema.org',
+    '@type': 'Organization',
+    name: 'NepaCompare',
+    url: 'https://nepa-compare.vercel.app',
+    logo: 'https://nepa-compare.vercel.app/favicon.ico',
+    sameAs: [
+      'https://www.facebook.com/nepacompare',
+      'https://www.linkedin.com/company/nepacompare'
+    ]
+  };
+
   return (
     <html lang="en">
+      <head>
+        <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
+      </head>
       <body>
         <DisclaimerBanner />
         <Header />

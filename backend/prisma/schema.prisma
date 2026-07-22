@@ -47,6 +47,7 @@ enum Role {
 
 model Partner {
   id              String          @id @default(uuid())
+  slug            String          @unique @default(uuid()) // Added for SEO
   name            String
   type            PartnerType
   integrationType IntegrationType @default(MOCK_STANDARD)
@@ -56,6 +57,11 @@ model Partner {
   regions         Json?           // Array of regions they cover
   agreedCpl       Float?
   active          Boolean         @default(true)
+  
+  // Real Data fields
+  founded         Int?
+  branches        Int?
+  claimRatio      Float?
   
   leads           Lead[]
   rateTables      RateTable[]
@@ -316,4 +322,38 @@ enum TicketStatus {
   IN_PROGRESS
   RESOLVED
   CLOSED
+}
+
+// ============================================
+// SEO & GEOGRAPHY & VEHICLES
+// ============================================
+
+model City {
+  id          String   @id @default(uuid())
+  slug        String   @unique
+  name        String
+  population  Int
+  agentsCount Int
+  popularType String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model VehicleModel {
+  id          String   @id @default(uuid())
+  slug        String   @unique
+  brand       String
+  brandSlug   String
+  name        String
+  cc          Int
+  basePremium Float?
+  type        VehicleType @default(TWO_WHEELER)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+enum VehicleType {
+  TWO_WHEELER
+  FOUR_WHEELER
+  COMMERCIAL
 }

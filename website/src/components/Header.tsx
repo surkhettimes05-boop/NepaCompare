@@ -25,8 +25,10 @@ export default function Header() {
     <header className="site-header glass-panel">
       <div className="utility-bar">
         <div className="container utility-container">
-          <Link href="/renew" className="utility-link">Renew a Policy</Link>
-          <Link href="/contact" className="utility-link">Talk to an Expert</Link>
+          <Link href="/compare" style={{ textDecoration: 'none', color: 'var(--text-color)', fontWeight: 500 }}>Compare</Link>
+          <Link href="/blog" style={{ textDecoration: 'none', color: 'var(--text-color)', fontWeight: 500 }}>Blog</Link>
+          <Link href="/glossary" style={{ textDecoration: 'none', color: 'var(--text-color)', fontWeight: 500 }}>Glossary</Link>
+          <Link href="/dashboard" style={{ textDecoration: 'none', color: 'var(--text-color)', fontWeight: 500 }}>My Locker</Link>
         </div>
       </div>
       <div className="container header-container">
@@ -37,7 +39,8 @@ export default function Header() {
           <Link href="/motor">Motor</Link>
           <Link href="/health">Health</Link>
           <Link href="/life">Life</Link>
-          <Link href="/blog">Guides</Link>
+          <Link href="/blog">Blog</Link>
+          <Link href="/glossary">Glossary</Link>
         </nav>
         <div className="header-actions">
           {isLoggedIn ? (
