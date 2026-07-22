@@ -79,4 +79,44 @@ export class LeadsService {
       return updatedLead;
     });
   }
+
+  async buyLead(id: string, userId: string) {
+    const lead = await this.prisma.lead.findUnique({ where: { id } });
+    if (!lead || lead.userId !== userId) {
+      throw new Error('Lead not found or unauthorized');
+    }
+
+    return this.prisma.$transaction(async (tx) => {
+      // 1. Mark lead as converted
+      const updatedLead = await tx.lead.update({
+        where: { id },
+        data: { status: 'CONVERTED' }
+      });
+
+      await tx.leadStatusHistory.create({
+        data: {
+          leadId: id,
+          oldStatus: lead.status,
+          newStatus: 'CONVERTED'
+        }
+      });
+
+      // 2. Generate the policy
+      const formData: any = lead.formData;
+      const policy = await tx.policy.create({
+        data: {
+          userId,
+          insurer: 'Partner Insurer', // Mock since we don't store selected insurer in lead yet
+          planName: `${lead.vertical} Policy`,
+          vertical: lead.vertical,
+          premium: 15000, // Mock premium for now
+          startDate: new Date(),
+          endDate: new Date(new Date().setFullYear(new Date().getFullYear() + 1)),
+          status: 'ACTIVE'
+        }
+      });
+
+      return policy;
+    });
+  }
 }

@@ -23,6 +23,8 @@ model User {
   policies   Policy[]
   creditProfile CreditProfile?
   financialApps FinancialApplication[]
+  appointments  Appointment[]
+  supportTickets SupportTicket[]
 }
 
 model Staff {
@@ -263,4 +265,55 @@ enum ApplicationStatus {
   PENDING
   APPROVED
   REJECTED
+}
+
+// ============================================
+// WELLNESS HUB
+// ============================================
+
+model Appointment {
+  id           String   @id @default(uuid())
+  userId       String
+  type         AppointmentType
+  providerName String
+  date         DateTime
+  status       AppointmentStatus @default(SCHEDULED)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  user         User     @relation(fields: [userId], references: [id])
+}
+
+enum AppointmentType {
+  OPD_CONSULTATION
+  HEALTH_CHECKUP
+}
+
+enum AppointmentStatus {
+  SCHEDULED
+  COMPLETED
+  CANCELLED
+}
+
+// ============================================
+// SUPPORT & TICKETING
+// ============================================
+
+model SupportTicket {
+  id          String   @id @default(uuid())
+  userId      String
+  subject     String
+  description String   @db.Text
+  status      TicketStatus @default(OPEN)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  user        User     @relation(fields: [userId], references: [id])
+}
+
+enum TicketStatus {
+  OPEN
+  IN_PROGRESS
+  RESOLVED
+  CLOSED
 }

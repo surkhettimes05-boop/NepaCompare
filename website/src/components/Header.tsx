@@ -1,7 +1,26 @@
+'use client';
+
 import Link from 'next/link';
+import { useState, useEffect } from 'react';
 import './Header.css';
 
 export default function Header() {
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+
+  useEffect(() => {
+    const token = localStorage.getItem('customer_token');
+    if (token) {
+      setIsLoggedIn(true);
+    }
+  }, []);
+
+  const handleLogout = () => {
+    localStorage.removeItem('customer_token');
+    localStorage.removeItem('customer_user');
+    setIsLoggedIn(false);
+    window.location.href = '/';
+  };
+
   return (
     <header className="site-header glass-panel">
       <div className="utility-bar">
@@ -21,7 +40,14 @@ export default function Header() {
           <Link href="/blog">Guides</Link>
         </nav>
         <div className="header-actions">
-          <Link href="/login" className="btn btn-primary">Sign In</Link>
+          {isLoggedIn ? (
+            <div style={{ display: 'flex', gap: '1rem', alignItems: 'center' }}>
+              <Link href="/dashboard" className="btn" style={{ padding: '0.5rem 1rem', background: 'transparent', border: '1px solid var(--border-color)', color: 'var(--text-primary)' }}>Dashboard</Link>
+              <button onClick={handleLogout} className="btn" style={{ padding: '0.5rem 1rem', background: 'transparent', color: 'var(--accent-red)', cursor: 'pointer' }}>Logout</button>
+            </div>
+          ) : (
+            <Link href="/login" className="btn btn-primary">Sign In</Link>
+          )}
         </div>
       </div>
     </header>

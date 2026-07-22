@@ -44,6 +44,15 @@ export class QuotesService {
         cc: criteria.cc ? parseInt(criteria.cc, 10) : undefined,
         dependents: criteria.dependents ? parseInt(criteria.dependents, 10) : undefined,
         preExistingConditions: criteria.preExistingConditions === 'true',
+        sumAssured: criteria.sumAssured ? parseInt(criteria.sumAssured, 10) : undefined,
+        smoker: criteria.smoker === 'true',
+        income: criteria.income,
+        year: criteria.year ? parseInt(criteria.year, 10) : undefined,
+        ncb: criteria.ncb ? parseInt(criteria.ncb, 10) : undefined,
+        usage: criteria.usage,
+        make: criteria.make,
+        model: criteria.model,
+        vehicleType: criteria.type,
       },
     };
 

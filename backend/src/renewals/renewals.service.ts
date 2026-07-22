@@ -40,4 +40,22 @@ export class RenewalsService {
       orderBy: { endDate: 'asc' },
     });
   }
+
+  async renewPolicy(policyId: string, userId: string) {
+    const policy = await this.prisma.policy.findUnique({ where: { id: policyId } });
+    if (!policy || policy.userId !== userId) {
+      throw new Error('Policy not found or unauthorized');
+    }
+
+    const newEndDate = new Date(policy.endDate);
+    newEndDate.setFullYear(newEndDate.getFullYear() + 1);
+
+    return this.prisma.policy.update({
+      where: { id: policyId },
+      data: {
+        endDate: newEndDate,
+        status: 'ACTIVE'
+      }
+    });
+  }
 }

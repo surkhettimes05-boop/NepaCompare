@@ -6,6 +6,7 @@ import Link from 'next/link';
 
 export default function RegisterPage() {
   const [name, setName] = useState('');
+  const [email, setEmail] = useState('');
   const [phone, setPhone] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
@@ -22,7 +23,7 @@ export default function RegisterPage() {
       const res = await fetch(`${apiUrl}/auth/customer-register`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ name, phone, password })
+        body: JSON.stringify({ name, email, phone, password })
       });
       
       const data = await res.json();
@@ -50,6 +51,10 @@ export default function RegisterPage() {
           <div className="input-group">
             <label className="input-label">Full Name</label>
             <input type="text" className="input-field" value={name} onChange={e => setName(e.target.value)} required />
+          </div>
+          <div className="input-group">
+            <label className="input-label">Email Address</label>
+            <input type="email" className="input-field" value={email} onChange={e => setEmail(e.target.value)} required />
           </div>
           <div className="input-group">
             <label className="input-label">Phone Number</label>

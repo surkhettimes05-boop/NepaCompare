@@ -1,0 +1,131 @@
+.wizard-wrapper {
+  padding: var(--space-lg);
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+.wizard-progress {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: var(--space-xl);
+  position: relative;
+}
+
+.wizard-progress::before {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: rgba(255, 255, 255, 0.1);
+  z-index: 1;
+  transform: translateY(-50%);
+}
+
+.wizard-progress-bar {
+  position: absolute;
+  top: 50%;
+  left: 0;
+  height: 2px;
+  background: var(--primary-accent);
+  z-index: 2;
+  transform: translateY(-50%);
+  transition: width 0.4s ease;
+}
+
+.wizard-step-indicator {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: var(--bg-surface-elevated);
+  border: 2px solid rgba(255, 255, 255, 0.1);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 600;
+  font-size: 0.9rem;
+  z-index: 3;
+  transition: all 0.3s ease;
+  color: var(--text-muted);
+}
+
+.wizard-step-indicator.active {
+  background: var(--primary-accent);
+  border-color: var(--primary-accent);
+  color: #fff;
+  box-shadow: 0 0 10px rgba(46, 116, 233, 0.5);
+}
+
+.wizard-step-indicator.completed {
+  background: var(--bg-surface-elevated);
+  border-color: var(--success);
+  color: var(--success);
+}
+
+.wizard-step-content {
+  display: flex;
+  flex-direction: column;
+  min-height: 250px; /* Prevent jitter */
+}
+
+/* Option Cards for Radio buttons */
+.option-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.option-card {
+  background: var(--bg-surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  padding: 1.5rem 1rem;
+  text-align: center;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.option-card:hover {
+  border-color: var(--text-muted);
+}
+
+.option-card.selected {
+  border-color: var(--primary-accent);
+  background: rgba(46, 116, 233, 0.05);
+  box-shadow: 0 4px 12px rgba(46, 116, 233, 0.1);
+}
+
+.option-icon {
+  font-size: 2rem;
+}
+
+.option-title {
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.wizard-actions {
+  display: flex;
+  gap: 1rem;
+  margin-top: auto;
+  padding-top: 2rem;
+}
+
+.wizard-actions button {
+  flex: 1;
+}
+
+select.input-field {
+  appearance: none;
+  background-image: url("data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22292.4%22%20height%3D%22292.4%22%3E%3Cpath%20fill%3D%22%237C8CA8%22%20d%3D%22M287%2069.4a17.6%2017.6%200%200%200-13-5.4H18.4c-5%200-9.3%201.8-12.9%205.4A17.6%2017.6%200%200%200%200%2082.2c0%205%201.8%209.3%205.4%2012.9l128%20127.9c3.6%203.6%207.8%205.4%2012.8%205.4s9.2-1.8%2012.8-5.4L287%2095c3.5-3.5%205.4-7.8%205.4-12.8%200-5-1.9-9.2-5.5-12.8z%22%2F%3E%3C%2Fsvg%3E");
+  background-repeat: no-repeat;
+  background-position: right 1rem top 50%;
+  background-size: 0.65rem auto;
+}

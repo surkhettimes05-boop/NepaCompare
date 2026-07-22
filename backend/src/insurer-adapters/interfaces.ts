@@ -9,10 +9,17 @@ export interface QuoteRequest {
     // For motor (e.g., CC, vehicle type)
     cc?: number;
     vehicleType?: string;
+    year?: number;
+    ncb?: number;
+    usage?: string;
+    make?: string;
+    model?: string;
     // For health/life (e.g., sum assured, dependents)
     sumAssured?: number;
     dependents?: number;
     preExistingConditions?: boolean;
+    smoker?: boolean;
+    income?: string;
     // For travel
     destination?: string;
     tripDurationDays?: number;

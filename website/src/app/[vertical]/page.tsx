@@ -51,7 +51,7 @@ export default async function CategoryPage({ params }: Props) {
             Compare indicative {title.toLowerCase()} insurance pricing from insurers in Nepal.
           </p>
           <div style={{ marginTop: '2rem' }}>
-            <Link href={`/compare/${vertical}`} className="btn btn-primary" style={{ padding: '1rem 2rem', fontSize: '1.1rem' }}>
+            <Link href={vertical.toLowerCase() === 'motor' ? '/wizard/motor' : `/compare/${vertical}`} className="btn btn-primary" style={{ padding: '1rem 2rem', fontSize: '1.1rem' }}>
               Compare {title} Quotes Now
             </Link>
           </div>
@@ -75,6 +75,35 @@ export default async function CategoryPage({ params }: Props) {
           </div>
         </div>
       </div>
+      
+      {/* JSON-LD Schema for SEO */}
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify({
+            "@context": "https://schema.org",
+            "@type": "FAQPage",
+            "mainEntity": [
+              {
+                "@type": "Question",
+                "name": content.point1,
+                "acceptedAnswer": {
+                  "@type": "Answer",
+                  "text": content.desc1
+                }
+              },
+              {
+                "@type": "Question",
+                "name": content.point2,
+                "acceptedAnswer": {
+                  "@type": "Answer",
+                  "text": content.desc2
+                }
+              }
+            ]
+          })
+        }}
+      />
     </div>
   );
 }

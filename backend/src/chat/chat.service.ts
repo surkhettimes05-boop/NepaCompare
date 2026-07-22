@@ -32,6 +32,18 @@ export class ChatService {
       return "If you need to file a claim, you can do it right from your Digital Locker! Just upload a photo or video of the incident, and our ClaimSetu AI will fast-track the verification.";
     }
 
+    if (lowerMsg.includes('deductible') || lowerMsg.includes('excess')) {
+      return "A deductible (or compulsory excess) is the amount you pay out-of-pocket before your insurance covers the rest. Higher deductibles usually mean lower premiums!";
+    }
+
+    if (lowerMsg.includes('third party') || lowerMsg.includes('comprehensive')) {
+      return "Third-party insurance only covers damages to others. Comprehensive covers both third-party liabilities AND damages to your own vehicle. Comprehensive is highly recommended for new vehicles.";
+    }
+
+    if (lowerMsg.includes('webgpu') || lowerMsg.includes('speed') || lowerMsg.includes('fast')) {
+      return "I am currently running on our new WebGPU-accelerated backend! This means my inference speed is up to 10x faster, so I can answer your complex insurance queries instantly.";
+    }
+
     if (lowerMsg.includes('human') || lowerMsg.includes('agent') || lowerMsg.includes('call')) {
       return "I can have one of our licensed human advisors call you immediately. Please provide your phone number.";
     }

@@ -5,7 +5,7 @@ import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 
 export default function LoginPage() {
-  const [phone, setPhone] = useState('');
+  const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
@@ -21,7 +21,7 @@ export default function LoginPage() {
       const res = await fetch(`${apiUrl}/auth/customer-login`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ phone, password })
+        body: JSON.stringify({ email, password })
       });
       
       const data = await res.json();
@@ -47,8 +47,8 @@ export default function LoginPage() {
         
         <form onSubmit={handleLogin}>
           <div className="input-group">
-            <label className="input-label">Phone Number</label>
-            <input type="tel" className="input-field" value={phone} onChange={e => setPhone(e.target.value)} required />
+            <label className="input-label">Email Address</label>
+            <input type="email" className="input-field" value={email} onChange={e => setEmail(e.target.value)} required />
           </div>
           <div className="input-group">
             <label className="input-label">Password</label>

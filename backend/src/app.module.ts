@@ -12,6 +12,8 @@ import { UsersModule } from './users/users.module';
 import { ChatModule } from './chat/chat.module';
 import { RenewalsModule } from './renewals/renewals.module';
 import { RatingEngineModule } from './rating-engine/rating-engine.module';
+import { WellnessModule } from './wellness/wellness.module';
+import { SupportModule } from './support/support.module';
 
 @Module({
   imports: [
@@ -27,7 +29,7 @@ import { RatingEngineModule } from './rating-engine/rating-engine.module';
     UsersModule, 
     ChatModule, 
     RenewalsModule, 
-    RatingEngineModule
+    RatingEngineModule, WellnessModule, SupportModule
   ],
   controllers: [AppController],
   providers: [

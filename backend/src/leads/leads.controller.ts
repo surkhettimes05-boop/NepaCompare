@@ -56,4 +56,11 @@ export class LeadsController {
   remove(@Param('id') id: string) {
     return this.leadsService.remove(id);
   }
+
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles(Role.CUSTOMER)
+  @Post(':id/buy')
+  buyLead(@Param('id') id: string, @Req() req: any) {
+    return this.leadsService.buyLead(id, req.user.userId);
+  }
 }

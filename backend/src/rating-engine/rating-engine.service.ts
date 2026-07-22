@@ -57,6 +57,66 @@ export class RatingEngineService {
         return currentPremium;
       }
     },
+    {
+      id: 'motor-vehicle-age-depreciation',
+      description: 'Reduce premium by 5% for every year of vehicle age, capped at 50%',
+      verticals: ['motor'],
+      apply: (raw, req, currentPremium) => {
+        if (req.coverageParameters.year) {
+          const currentYear = new Date().getFullYear();
+          const age = Math.max(0, currentYear - req.coverageParameters.year);
+          const discountPercent = Math.min(50, age * 5); // 5% per year, max 50%
+          return currentPremium * (1 - (discountPercent / 100));
+        }
+        return currentPremium;
+      }
+    },
+    {
+      id: 'motor-ncb-discount',
+      description: 'Apply No Claim Bonus (NCB) discount to the premium',
+      verticals: ['motor'],
+      apply: (raw, req, currentPremium) => {
+        if (req.coverageParameters.ncb) {
+          const ncb = req.coverageParameters.ncb; // e.g. 20, 25, 35
+          return currentPremium * (1 - (ncb / 100));
+        }
+        return currentPremium;
+      }
+    },
+    {
+      id: 'motor-commercial-usage',
+      description: 'Add 40% penalty for commercial usage vehicles',
+      verticals: ['motor'],
+      apply: (raw, req, currentPremium) => {
+        if (req.coverageParameters.usage === 'commercial') {
+          return currentPremium * 1.40;
+        }
+        return currentPremium;
+      }
+    },
+    {
+      id: 'life-smoker-penalty',
+      description: 'Add 30% penalty for smokers',
+      verticals: ['life'],
+      apply: (raw, req, currentPremium) => {
+        if (req.coverageParameters.smoker) {
+          return currentPremium * 1.30;
+        }
+        return currentPremium;
+      }
+    },
+    {
+      id: 'life-sum-assured-scaling',
+      description: 'Scale premium by sum assured (base is assumed to be for 10L)',
+      verticals: ['life', 'health'],
+      apply: (raw, req, currentPremium) => {
+        if (req.coverageParameters.sumAssured) {
+          const ratio = req.coverageParameters.sumAssured / 1000000;
+          return currentPremium * ratio;
+        }
+        return currentPremium;
+      }
+    },
   ];
 
   process(raw: AdapterRawResponse, request: QuoteRequest): QuoteResponse {
@@ -76,6 +136,8 @@ export class RatingEngineService {
         : request.vertical === 'life'
         ? ['Suicide within 1st year', 'Hazardous activities']
         : ['Racing/Speed tests', 'Driving under influence'];
+
+    computedPremium = Math.round(computedPremium);
 
     return {
       insurerName: raw.insurerName,

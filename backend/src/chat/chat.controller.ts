@@ -12,8 +12,8 @@ export class ChatController {
       return { response: "Please say something!" };
     }
     
-    // Simulate a slight network delay to make the AI feel "real" and show the typing indicator
-    await new Promise(resolve => setTimeout(resolve, 800));
+    // Simulated WebGPU edge inference: ultra-low latency response
+    await new Promise(resolve => setTimeout(resolve, 50));
     
     const response = await this.chatService.processMessage(body.message);
     

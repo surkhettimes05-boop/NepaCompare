@@ -1,4 +1,4 @@
-import { Controller, Get, UseGuards, Request } from '@nestjs/common';
+import { Controller, Get, Post, Param, UseGuards, Request } from '@nestjs/common';
 import { RenewalsService } from './renewals.service';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 import { RolesGuard } from '../auth/roles.guard';
@@ -21,5 +21,12 @@ export class RenewalsController {
   @Roles(Role.AGENT, Role.ADMIN)
   async getAllExpiringPolicies() {
     return this.renewalsService.getAllExpiringPolicies();
+  }
+
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles(Role.CUSTOMER)
+  @Post(':id/renew')
+  async renewPolicy(@Param('id') id: string, @Request() req: any) {
+    return this.renewalsService.renewPolicy(id, req.user.userId);
   }
 }
