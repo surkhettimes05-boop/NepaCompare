@@ -9,9 +9,11 @@ type Props = {
   };
 };
 
+const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001';
+
 async function getInsurers() {
   try {
-    const res = await fetch('http://localhost:3001/seo/insurers', { next: { revalidate: 3600 } });
+    const res = await fetch(`${API_URL}/seo/insurers`, { next: { revalidate: 3600 } });
     if (!res.ok) return [];
     return await res.json();
   } catch (e) {

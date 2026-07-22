@@ -1,10 +1,12 @@
 import { MetadataRoute } from 'next'
 import { getSortedPostsData } from '@/lib/posts'
 
+const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001';
+
 // Helper to fetch live SEO data
 async function fetchSeoData(endpoint: string) {
   try {
-    const res = await fetch(`http://localhost:3001/seo/${endpoint}`, { next: { revalidate: 3600 } });
+    const res = await fetch(`${API_URL}/seo/${endpoint}`, { next: { revalidate: 3600 } });
     if (!res.ok) return [];
     return await res.json();
   } catch (e) {
