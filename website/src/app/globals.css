@@ -224,3 +224,21 @@ body {
   outline: none;
   border-color: var(--primary-accent);
 }
+
+/* Blog Cards */
+.blog-card {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  transition: transform 0.2s ease-in-out;
+  cursor: pointer;
+  background: var(--bg-surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: 1.5rem;
+}
+
+.blog-card:hover {
+  transform: translateY(-5px);
+  border-color: var(--primary-accent);
+}

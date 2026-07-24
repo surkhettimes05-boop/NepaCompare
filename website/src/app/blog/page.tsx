@@ -22,8 +22,8 @@ export default function BlogIndex() {
 
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))', gap: '2rem', maxWidth: '1000px', margin: '0 auto' }}>
         {allPostsData.map(({ slug, date, title, description, author }) => (
-          <Link href={`/blog/${slug}`} key={slug} style={{ textDecoration: 'none', color: 'inherit' }}>
-            <div className="card" style={{ height: '100%', display: 'flex', flexDirection: 'column', transition: 'transform 0.2s', cursor: 'pointer' }}>
+          <Link href={`/blog/${slug}`} key={slug} style={{ textDecoration: 'none', color: 'inherit', display: 'block', height: '100%' }}>
+            <div className="blog-card">
               <div style={{ color: 'var(--primary-color)', fontSize: '0.85rem', fontWeight: 600, marginBottom: '0.5rem' }}>
                 {date} • BY {author.toUpperCase()}
               </div>
