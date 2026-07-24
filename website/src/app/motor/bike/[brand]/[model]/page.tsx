@@ -24,8 +24,8 @@ export async function generateStaticParams() {
   const vehicles = await getVehicles();
   return vehicles.map((v: any) => {
     return {
-      brand: v.brandSlug,
-      model: v.slug.split('-').slice(1).join('-') // e.g. from 'bajaj-pulsar-150' to 'pulsar-150'
+      brand: v.brandSlug || v.slug.split('-')[0] || 'unknown',
+      model: v.slug.split('-').slice(1).join('-') || 'unknown'
     };
   });
 }
@@ -50,8 +50,10 @@ export default async function ProgrammaticBikePage({ params }: Props) {
 
   // If we don't have this exact model in DB, we still render a dynamic page but with generic data
   // to capture the long-tail keyword anyway.
-  const displayBrand = vehicle ? vehicle.brand : params.brand.charAt(0).toUpperCase() + params.brand.slice(1);
-  const displayModel = vehicle ? vehicle.name : params.model.split('-').map(s => s.charAt(0).toUpperCase() + s.slice(1)).join(' ');
+  const safeBrand = params.brand || 'bike';
+  const safeModel = params.model || 'model';
+  const displayBrand = vehicle ? vehicle.brand : safeBrand.charAt(0).toUpperCase() + safeBrand.slice(1);
+  const displayModel = vehicle ? vehicle.name : safeModel.split('-').map(s => s.charAt(0).toUpperCase() + s.slice(1)).join(' ');
   const displayCC = vehicle ? vehicle.cc : '150'; // Default guess if not in DB
   const displayPremium = vehicle ? vehicle.basePremium : 4500;
 
