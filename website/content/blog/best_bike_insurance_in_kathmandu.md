@@ -1,8 +1,9 @@
 ---
-title: Best Bike Insurance in Kathmandu: A Comprehensive Guide
-date: 2024-09-16
-description: This article provides an in-depth analysis of the best bike insurance options in Kathmandu, including key statistics, common questions, and unique perspectives.
-slug: best-bike-insurance-in-kathmandu
+title: "Best Bike Insurance in Kathmandu: A Comprehensive Guide"
+date: "2024-09-16"
+author: "NepaCompare Expert"
+description: "This article provides an in-depth analysis of the best bike insurance options in Kathmandu, including key statistics, common questions, and unique perspectives."
+slug: "best-bike-insurance-in-kathmandu"
 ---
 
 ## Introduction
