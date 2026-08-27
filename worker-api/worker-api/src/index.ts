@@ -370,6 +370,149 @@ async function customerLogin(
   }
 }
 
+async function createLead(
+  request: Request,
+  env: Env,
+) {
+  try {
+    const body = (await request.json()) as {
+      vertical?: string;
+      source?: string;
+      formData?: {
+        name?: string;
+        phone?: string;
+        age?: string | number;
+        [key: string]: unknown;
+      };
+      userId?: string;
+    };
+
+    const vertical = String(
+      body.vertical || "",
+    )
+      .trim()
+      .toLowerCase();
+
+    const source = String(
+      body.source || "web",
+    ).trim();
+
+    const formData = body.formData || {};
+
+    const userId =
+      body.userId &&
+      String(body.userId).trim()
+        ? String(body.userId).trim()
+        : null;
+
+    if (
+      !vertical ||
+      vertical === "unknown"
+    ) {
+      return json(
+        request,
+        {
+          message:
+            "Insurance vertical is required",
+        },
+        400,
+      );
+    }
+
+    if (!formData.name) {
+      return json(
+        request,
+        { message: "Name is required" },
+        400,
+      );
+    }
+
+    if (!formData.phone) {
+      return json(
+        request,
+        { message: "Phone is required" },
+        400,
+      );
+    }
+
+    const leadId = crypto.randomUUID();
+
+    const lead = await withDb(
+      env,
+      async (db) => {
+        const result = await db.query(
+          `INSERT INTO "Lead"
+            (
+              id,
+              "userId",
+              vertical,
+              source,
+              "formData",
+              "consentTs",
+              status,
+              "createdAt",
+              "updatedAt"
+            )
+           VALUES (
+              $1,
+              $2,
+              $3,
+              $4,
+              $5::jsonb,
+              NOW(),
+              'NEW',
+              NOW(),
+              NOW()
+           )
+           RETURNING
+             id,
+             "userId",
+             vertical,
+             source,
+             "formData",
+             status,
+             "consentTs",
+             "createdAt"`,
+          [
+            leadId,
+            userId,
+            vertical,
+            source,
+            JSON.stringify(formData),
+          ],
+        );
+
+        return result.rows[0];
+      },
+    );
+
+    return json(
+      request,
+      {
+        success: true,
+        message:
+          "Quote request submitted successfully",
+        lead,
+      },
+      201,
+    );
+  } catch (error) {
+    console.error(
+      "Lead creation failed:",
+      error,
+    );
+
+    return json(
+      request,
+      {
+        message:
+          "Failed to submit quote request",
+      },
+      500,
+    );
+  }
+}
+
 async function getQuotes(
   request: Request,
   env: Env,
@@ -631,6 +774,16 @@ export default {
       path === "/quotes"
     ) {
       return getQuotes(
+        request,
+        env,
+      );
+    }
+
+    if (
+      request.method === "POST" &&
+      path === "/leads"
+    ) {
+      return createLead(
         request,
         env,
       );
