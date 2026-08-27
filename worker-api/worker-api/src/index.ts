@@ -1,5 +1,6 @@
 import { Client } from "pg";
 import bcrypt from "bcryptjs";
+import { createHmac } from "node:crypto";
 
 interface Env {
   HYPERDRIVE: {
@@ -32,7 +33,7 @@ function corsHeaders(request: Request) {
     "Access-Control-Allow-Methods":
       "GET, POST, OPTIONS",
     "Access-Control-Allow-Credentials": "true",
-    "Vary": "Origin",
+    Vary: "Origin",
   };
 }
 
@@ -67,68 +68,57 @@ async function withDb<T>(
   }
 }
 
-function base64Url(bytes: Uint8Array): string {
-  let binary = "";
-
-  for (const byte of bytes) {
-    binary += String.fromCharCode(byte);
-  }
-
-  return btoa(binary)
+function base64UrlString(value: string): string {
+  return Buffer.from(value)
+    .toString("base64")
     .replace(/\+/g, "-")
     .replace(/\//g, "_")
     .replace(/=+$/g, "");
 }
 
-async function createJwt(
+function base64UrlBytes(value: Uint8Array): string {
+  return Buffer.from(value)
+    .toString("base64")
+    .replace(/\+/g, "-")
+    .replace(/\//g, "_")
+    .replace(/=+$/g, "");
+}
+
+function createJwt(
   payload: Record<string, unknown>,
   secret: string,
-): Promise<string> {
+): string {
   if (!secret) {
     throw new Error("JWT_SECRET is not configured");
   }
 
-  const header = base64Url(
-    encoder.encode(
-      JSON.stringify({
-        alg: "HS256",
-        typ: "JWT",
-      }),
-    ),
+  const header = base64UrlString(
+    JSON.stringify({
+      alg: "HS256",
+      typ: "JWT",
+    }),
   );
 
   const now = Math.floor(Date.now() / 1000);
 
-  const body = base64Url(
-    encoder.encode(
-      JSON.stringify({
-        ...payload,
-        iat: now,
-        exp: now + 60 * 60 * 12,
-      }),
-    ),
+  const body = base64UrlString(
+    JSON.stringify({
+      ...payload,
+      iat: now,
+      exp: now + 60 * 60 * 12,
+    }),
   );
 
-  const key = await crypto.subtle.importKey(
-    "raw",
-    encoder.encode(secret),
-    {
-      name: "HMAC",
-      hash: "SHA-256",
-    },
-    false,
-    ["sign"],
-  );
+  const unsignedToken = `${header}.${body}`;
 
-  const signature = new Uint8Array(
-    await crypto.subtle.sign(
-      "HMAC",
-      key,
-      encoder.encode(`${header}.${body}`),
-    ),
-  );
+  const signature = createHmac(
+    "sha256",
+    secret,
+  )
+    .update(unsignedToken)
+    .digest();
 
-  return `${header}.${body}.${base64Url(signature)}`;
+  return `${unsignedToken}.${base64UrlBytes(signature)}`;
 }
 
 async function customerRegister(
@@ -143,16 +133,23 @@ async function customerRegister(
   };
 
   const name = String(body.name || "").trim();
+
   const email = String(body.email || "")
     .trim()
     .toLowerCase();
+
   const phone = String(body.phone || "")
     .trim()
     .replace(/\s+/g, "");
+
   const password = String(body.password || "");
 
   if (!name) {
-    return json(request, { message: "Name is required" }, 400);
+    return json(
+      request,
+      { message: "Name is required" },
+      400,
+    );
   }
 
   if (!email || !email.includes("@")) {
@@ -183,17 +180,20 @@ async function customerRegister(
   }
 
   try {
-    const existing = await withDb(env, async (db) => {
-      const result = await db.query(
-        `SELECT id
-         FROM "User"
-         WHERE email = $1 OR phone = $2
-         LIMIT 1`,
-        [email, phone],
-      );
+    const existing = await withDb(
+      env,
+      async (db) => {
+        const result = await db.query(
+          `SELECT id
+           FROM "User"
+           WHERE email = $1 OR phone = $2
+           LIMIT 1`,
+          [email, phone],
+        );
 
-      return result.rows[0];
-    });
+        return result.rows[0];
+      },
+    );
 
     if (existing) {
       return json(
@@ -207,30 +207,41 @@ async function customerRegister(
     }
 
     const id = crypto.randomUUID();
+
     const hashedPassword = await bcrypt.hash(
       password,
       10,
     );
 
-    const user = await withDb(env, async (db) => {
-      const result = await db.query(
-        `INSERT INTO "User"
-          (id, phone, name, email, password, "createdAt")
-         VALUES ($1, $2, $3, $4, $5, NOW())
-         RETURNING id, name, email`,
-        [
-          id,
-          phone,
-          name,
-          email,
-          hashedPassword,
-        ],
-      );
+    const user = await withDb(
+      env,
+      async (db) => {
+        const result = await db.query(
+          `INSERT INTO "User"
+            (
+              id,
+              phone,
+              name,
+              email,
+              password,
+              "createdAt"
+            )
+           VALUES ($1, $2, $3, $4, $5, NOW())
+           RETURNING id, name, email`,
+          [
+            id,
+            phone,
+            name,
+            email,
+            hashedPassword,
+          ],
+        );
 
-      return result.rows[0];
-    });
+        return result.rows[0];
+      },
+    );
 
-    const accessToken = await createJwt(
+    const accessToken = createJwt(
       {
         sub: user.id,
         email: user.email,
@@ -253,7 +264,10 @@ async function customerRegister(
       201,
     );
   } catch (error) {
-    console.error("Registration failed:", error);
+    console.error(
+      "Registration failed:",
+      error,
+    );
 
     return json(
       request,
@@ -282,24 +296,28 @@ async function customerLogin(
     return json(
       request,
       {
-        message: "Email and password are required",
+        message:
+          "Email and password are required",
       },
       400,
     );
   }
 
   try {
-    const user = await withDb(env, async (db) => {
-      const result = await db.query(
-        `SELECT id, name, email, password
-         FROM "User"
-         WHERE email = $1
-         LIMIT 1`,
-        [email],
-      );
+    const user = await withDb(
+      env,
+      async (db) => {
+        const result = await db.query(
+          `SELECT id, name, email, password
+           FROM "User"
+           WHERE email = $1
+           LIMIT 1`,
+          [email],
+        );
 
-      return result.rows[0];
-    });
+        return result.rows[0];
+      },
+    );
 
     if (!user || !user.password) {
       return json(
@@ -309,10 +327,11 @@ async function customerLogin(
       );
     }
 
-    const validPassword = await bcrypt.compare(
-      password,
-      user.password,
-    );
+    const validPassword =
+      await bcrypt.compare(
+        password,
+        user.password,
+      );
 
     if (!validPassword) {
       return json(
@@ -322,7 +341,7 @@ async function customerLogin(
       );
     }
 
-    const accessToken = await createJwt(
+    const accessToken = createJwt(
       {
         sub: user.id,
         email: user.email,
@@ -366,28 +385,31 @@ async function getQuotes(
   }
 
   try {
-    const rows = await withDb(env, async (db) => {
-      const result = await db.query(
-        `SELECT
-           r.id,
-           r."planName",
-           r.criteria,
-           r."premiumMin",
-           r."premiumMax",
-           p.id AS "partnerId",
-           p.name AS insurer,
-           p."claimRatio"
-         FROM "RateTable" r
-         INNER JOIN "Partner" p
-           ON p.id = r."partnerId"
-         WHERE r.vertical = $1
-           AND p.active = TRUE
-           AND p.type::text = 'INSURER'`,
-        [vertical],
-      );
+    const rows = await withDb(
+      env,
+      async (db) => {
+        const result = await db.query(
+          `SELECT
+             r.id,
+             r."planName",
+             r.criteria,
+             r."premiumMin",
+             r."premiumMax",
+             p.id AS "partnerId",
+             p.name AS insurer,
+             p."claimRatio"
+           FROM "RateTable" r
+           INNER JOIN "Partner" p
+             ON p.id = r."partnerId"
+           WHERE r.vertical = $1
+             AND p.active = TRUE
+             AND p.type::text = 'INSURER'`,
+          [vertical],
+        );
 
-      return result.rows;
-    });
+        return result.rows;
+      },
+    );
 
     const cc = Number(
       url.searchParams.get("cc") || 0,
@@ -397,69 +419,83 @@ async function getQuotes(
       url.searchParams.get("age") || 0,
     );
 
-    const applicable = rows.filter((row) => {
-      const criteria = row.criteria || {};
+    const applicable = rows.filter(
+      (row) => {
+        const criteria =
+          row.criteria || {};
 
-      if (
-        criteria.type === "cc" &&
-        cc &&
-        (cc < Number(criteria.min) ||
-          cc > Number(criteria.max))
-      ) {
-        return false;
-      }
+        if (
+          criteria.type === "cc" &&
+          cc &&
+          (cc < Number(criteria.min) ||
+            cc > Number(criteria.max))
+        ) {
+          return false;
+        }
 
-      if (
-        criteria.type === "age" &&
-        age &&
-        (age < Number(criteria.min) ||
-          age > Number(criteria.max))
-      ) {
-        return false;
-      }
+        if (
+          criteria.type === "age" &&
+          age &&
+          (age < Number(criteria.min) ||
+            age > Number(criteria.max))
+        ) {
+          return false;
+        }
 
-      return true;
-    });
+        return true;
+      },
+    );
 
-    const quotes = applicable.map((row) => {
-      const min = Number(row.premiumMin);
-      const max = Number(row.premiumMax);
+    const quotes = applicable.map(
+      (row) => {
+        const min = Number(
+          row.premiumMin,
+        );
 
-      const premiumValue = Math.round(
-        min === max ? min : (min + max) / 2,
-      );
+        const max = Number(
+          row.premiumMax,
+        );
 
-      return {
-        id: base64Url(
-          encoder.encode(
+        const premiumValue =
+          Math.round(
+            min === max
+              ? min
+              : (min + max) / 2,
+          );
+
+        return {
+          id: base64UrlString(
             `${row.insurer}-${row.planName}`,
           ),
-        ),
-        insurer: row.insurer,
-        plan: row.planName,
-        premium: `NPR ${premiumValue.toLocaleString(
-          "en-US",
-        )}/yr`,
-        premiumValue,
-        coverage:
-          vertical === "motor"
-            ? "Motor insurance coverage"
-            : vertical === "health"
-              ? "Health insurance coverage"
-              : vertical === "life"
-                ? "Life insurance coverage"
-                : "Insurance coverage",
-        csr: row.claimRatio
-          ? `${Number(row.claimRatio).toFixed(1)}%`
-          : "N/A",
-        exclusions: [],
-        isBestMatch: false,
-      };
-    });
+          insurer: row.insurer,
+          plan: row.planName,
+          premium: `NPR ${premiumValue.toLocaleString(
+            "en-US",
+          )}/yr`,
+          premiumValue,
+          coverage:
+            vertical === "motor"
+              ? "Motor insurance coverage"
+              : vertical === "health"
+                ? "Health insurance coverage"
+                : vertical === "life"
+                  ? "Life insurance coverage"
+                  : "Insurance coverage",
+          csr: row.claimRatio
+            ? `${Number(
+                row.claimRatio,
+              ).toFixed(1)}%`
+            : "N/A",
+          exclusions: [],
+          isBestMatch: false,
+        };
+      },
+    );
 
     quotes.sort(
       (a, b) =>
-        a.premiumValue - b.premiumValue,
+        a.premiumValue -
+        b.premiumValue,
     );
 
     if (quotes.length > 0) {
@@ -472,7 +508,10 @@ async function getQuotes(
 
     return json(
       request,
-      { message: "Unable to load quotes" },
+      {
+        message:
+          "Unable to load quotes",
+      },
       500,
     );
   }
@@ -483,21 +522,31 @@ async function health(
   env: Env,
 ) {
   try {
-    await withDb(env, async (db) => {
-      await db.query("SELECT 1");
-    });
+    await withDb(
+      env,
+      async (db) => {
+        await db.query("SELECT 1");
+      },
+    );
 
     return json(request, {
       success: true,
       database: "connected",
-      service: "NepaCompare Cloudflare API",
+      service:
+        "NepaCompare Cloudflare API",
     });
   } catch (error) {
+    console.error(
+      "Health check failed:",
+      error,
+    );
+
     return json(
       request,
       {
         success: false,
-        database: "connection_failed",
+        database:
+          "connection_failed",
       },
       503,
     );
@@ -517,8 +566,34 @@ export default {
     }
 
     const url = new URL(request.url);
+
     const path =
-      url.pathname.replace(/\/+$/, "") || "/";
+      url.pathname.replace(/\/+$/, "") ||
+      "/";
+
+    // Temporary safe diagnostic.
+    // Does NOT reveal the JWT secret.
+    if (
+      request.method === "GET" &&
+      path === "/debug/env"
+    ) {
+      return json(request, {
+        jwtSecretConfigured:
+          Boolean(env.JWT_SECRET),
+
+        jwtSecretLength:
+          env.JWT_SECRET?.length || 0,
+
+        hyperdriveConfigured:
+          Boolean(env.HYPERDRIVE),
+
+        hyperdriveConnectionConfigured:
+          Boolean(
+            env.HYPERDRIVE
+              ?.connectionString,
+          ),
+      });
+    }
 
     if (
       request.method === "GET" &&
@@ -531,28 +606,41 @@ export default {
 
     if (
       request.method === "POST" &&
-      path === "/auth/customer-register"
+      path ===
+        "/auth/customer-register"
     ) {
-      return customerRegister(request, env);
+      return customerRegister(
+        request,
+        env,
+      );
     }
 
     if (
       request.method === "POST" &&
-      path === "/auth/customer-login"
+      path ===
+        "/auth/customer-login"
     ) {
-      return customerLogin(request, env);
+      return customerLogin(
+        request,
+        env,
+      );
     }
 
     if (
       request.method === "GET" &&
       path === "/quotes"
     ) {
-      return getQuotes(request, env);
+      return getQuotes(
+        request,
+        env,
+      );
     }
 
     return json(
       request,
-      { message: "Route not found" },
+      {
+        message: "Route not found",
+      },
       404,
     );
   },
