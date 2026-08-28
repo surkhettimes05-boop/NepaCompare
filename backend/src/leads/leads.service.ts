@@ -8,13 +8,13 @@ export class LeadsService {
 
   constructor(private prisma: PrismaService) {}
 
-  async create(createLeadDto: any) {
+  async create(createLeadDto: CreateLeadDto, userId?: string) {
     return this.prisma.lead.create({
       data: {
         vertical: createLeadDto.vertical,
         source: createLeadDto.source,
         formData: createLeadDto.formData,
-        userId: createLeadDto.userId,
+        userId,
       },
     });
   }
