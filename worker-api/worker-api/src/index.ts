@@ -230,6 +230,99 @@ async function getLeads(request: Request, env: Env) {
   }
 }
 
+async function getLead(request: Request, env: Env, id: string) {
+  const auth = await requireAdmin(request, env);
+  if (auth instanceof Response) return auth;
+  try {
+    const lead = await withDb(env, async (db) => {
+      const result = await db.query(`SELECT l.id, l.vertical, l.source, l."formData", l.status, l."createdAt", l."updatedAt", l."partnerId", l."assignedStaffId", u.name AS "userName", u.phone AS "userPhone", p.name AS "partnerName", s.name AS "staffName" FROM "Lead" l LEFT JOIN "User" u ON u.id = l."userId" LEFT JOIN "Partner" p ON p.id = l."partnerId" LEFT JOIN "Staff" s ON s.id = l."assignedStaffId" WHERE l.id = $1 LIMIT 1`, [id]);
+      return result.rows[0];
+    });
+    if (!lead) return json(request, { message: "Lead not found" }, 404);
+    return json(request, { ...lead, user: lead.userName ? { name: lead.userName, phone: lead.userPhone } : undefined, partner: lead.partnerName ? { name: lead.partnerName } : undefined, assignedStaff: lead.staffName ? { name: lead.staffName } : undefined });
+  } catch (error) {
+    console.error("Lead detail lookup failed:", error);
+    return json(request, { message: "Unable to load lead" }, 503);
+  }
+}
+
+async function updateLead(request: Request, env: Env, id: string) {
+  const auth = await requireAdmin(request, env);
+  if (auth instanceof Response) return auth;
+  const body = (await request.json()) as { status?: string };
+  const statuses = ["NEW", "QUALIFIED", "DISQUALIFIED", "SENT_TO_PARTNER", "CONVERTED", "LOST", "NO_RESPONSE", "INVOICED", "PAID"];
+  if (!body.status || !statuses.includes(body.status)) return json(request, { message: "Invalid status" }, 400);
+  try {
+    const lead = await withDb(env, async (db) => {
+      const result = await db.query(`UPDATE "Lead" SET status = $1, "updatedAt" = NOW() WHERE id = $2 RETURNING id, status, "updatedAt"`, [body.status, id]);
+      return result.rows[0];
+    });
+    return lead ? json(request, lead) : json(request, { message: "Lead not found" }, 404);
+  } catch (error) {
+    console.error("Lead update failed:", error);
+    return json(request, { message: "Unable to update lead" }, 503);
+  }
+}
+
+async function routeLead(request: Request, env: Env, id: string) {
+  const auth = await requireAdmin(request, env);
+  if (auth instanceof Response) return auth;
+  const body = (await request.json()) as { partnerId?: string };
+  if (!body.partnerId) return json(request, { message: "Partner is required" }, 400);
+  try {
+    const lead = await withDb(env, async (db) => {
+      const result = await db.query(`UPDATE "Lead" SET "partnerId" = $1, status = 'SENT_TO_PARTNER', "updatedAt" = NOW() WHERE id = $2 RETURNING id, status, "partnerId"`, [body.partnerId, id]);
+      return result.rows[0];
+    });
+    return lead ? json(request, lead) : json(request, { message: "Lead not found" }, 404);
+  } catch (error) {
+    console.error("Lead routing failed:", error);
+    return json(request, { message: "Unable to route lead" }, 503);
+  }
+}
+
+async function getPartners(request: Request, env: Env) {
+  const auth = await requireAdmin(request, env);
+  if (auth instanceof Response) return auth;
+  try { return json(request, await withDb(env, async (db) => (await db.query(`SELECT id, name, type, "integrationType", "agreedCpl", active, verticals, regions FROM "Partner" WHERE active = TRUE ORDER BY name`)).rows)); }
+  catch (error) { console.error("Partner lookup failed:", error); return json(request, { message: "Unable to load partners" }, 503); }
+}
+
+async function savePartner(request: Request, env: Env, id?: string) {
+  const auth = await requireAdmin(request, env);
+  if (auth instanceof Response) return auth;
+  const body = (await request.json()) as { name?: string; type?: string; agreedCpl?: number; active?: boolean; integrationType?: string; verticals?: unknown[]; regions?: unknown[] };
+  const name = String(body.name || "").trim();
+  if (!name || !["INSURER", "AGENT", "BROKER"].includes(String(body.type))) return json(request, { message: "Name and valid type are required" }, 400);
+  try {
+    const partner = await withDb(env, async (db) => {
+      if (id) return (await db.query(`UPDATE "Partner" SET name = $1, type = $2, "agreedCpl" = $3, active = COALESCE($4, active), "integrationType" = COALESCE($5, "integrationType"), verticals = COALESCE($6, verticals), regions = COALESCE($7, regions) WHERE id = $8 RETURNING id, name, type, "integrationType", "agreedCpl", active`, [name, body.type, body.agreedCpl ?? null, body.active ?? null, body.integrationType ?? null, body.verticals ? JSON.stringify(body.verticals) : null, body.regions ? JSON.stringify(body.regions) : null, id])).rows[0];
+      return (await db.query(`INSERT INTO "Partner" (id, name, type, "integrationType", "agreedCpl", active, verticals, regions) VALUES ($1, $2, $3, COALESCE($4, 'MOCK_STANDARD'), $5, COALESCE($6, TRUE), $7, $8) RETURNING id, name, type, "integrationType", "agreedCpl", active`, [crypto.randomUUID(), name, body.type, body.integrationType ?? null, body.agreedCpl ?? null, body.active ?? true, body.verticals ? JSON.stringify(body.verticals) : null, body.regions ? JSON.stringify(body.regions) : null])).rows[0];
+    });
+    return partner ? json(request, partner, id ? 200 : 201) : json(request, { message: "Partner not found" }, 404);
+  } catch (error) { console.error("Partner save failed:", error); return json(request, { message: "Unable to save partner" }, 503); }
+}
+
+async function getRateTables(request: Request, env: Env) {
+  const auth = await requireAdmin(request, env); if (auth instanceof Response) return auth;
+  try { return json(request, await withDb(env, async (db) => (await db.query(`SELECT r.id, r.vertical, r."partnerId", r."planName", r.criteria, r."premiumMin", r."premiumMax", p.name AS "partnerName" FROM "RateTable" r JOIN "Partner" p ON p.id = r."partnerId" ORDER BY r.vertical, r."planName"`)).rows)); }
+  catch (error) { console.error("Rate table lookup failed:", error); return json(request, { message: "Unable to load rate tables" }, 503); }
+}
+
+async function saveRateTable(request: Request, env: Env, id?: string) {
+  const auth = await requireAdmin(request, env); if (auth instanceof Response) return auth;
+  const body = await request.json() as { vertical?: string; partnerId?: string; planName?: string; criteria?: unknown; premiumMin?: number; premiumMax?: number };
+  if (!body.vertical || !body.partnerId || !body.planName || typeof body.criteria !== "object" || typeof body.premiumMin !== "number" || typeof body.premiumMax !== "number") return json(request, { message: "Invalid rate table" }, 400);
+  try { const row = await withDb(env, async (db) => id ? (await db.query(`UPDATE "RateTable" SET vertical=$1, "partnerId"=$2, "planName"=$3, criteria=$4, "premiumMin"=$5, "premiumMax"=$6 WHERE id=$7 RETURNING *`, [body.vertical, body.partnerId, body.planName, JSON.stringify(body.criteria), body.premiumMin, body.premiumMax, id])).rows[0] : (await db.query(`INSERT INTO "RateTable" (id, vertical, "partnerId", "planName", criteria, "premiumMin", "premiumMax", "updatedAt") VALUES ($1,$2,$3,$4,$5,$6,$7,NOW()) RETURNING *`, [crypto.randomUUID(), body.vertical, body.partnerId, body.planName, JSON.stringify(body.criteria), body.premiumMin, body.premiumMax])).rows[0]); return row ? json(request, row, id ? 200 : 201) : json(request, { message: "Rate table not found" }, 404); }
+  catch (error) { console.error("Rate table save failed:", error); return json(request, { message: "Unable to save rate table" }, 503); }
+}
+
+async function getRenewals(request: Request, env: Env) {
+  const auth = await requireAdmin(request, env); if (auth instanceof Response) return auth;
+  try { const rows = await withDb(env, async (db) => (await db.query(`SELECT p.id, p.insurer, p."planName", p.vertical, p.premium, p."startDate", p."endDate", u.name AS "userName", u.phone AS "userPhone" FROM "Policy" p LEFT JOIN "User" u ON u.id=p."userId" WHERE p.status='EXPIRING_SOON' OR p."endDate" <= NOW() + INTERVAL '30 days' ORDER BY p."endDate"`)).rows); return json(request, rows.map(row => ({ ...row, user: { name: row.userName, phone: row.userPhone } }))); }
+  catch (error) { console.error("Renewal lookup failed:", error); return json(request, { message: "Unable to load renewals" }, 503); }
+}
+
 async function customerRegister(
   request: Request,
   env: Env,
@@ -909,6 +1002,17 @@ export default {
     if (request.method === "GET" && path === "/leads") {
       return getLeads(request, env);
     }
+
+    if (path.startsWith("/leads/") && path.endsWith("/route") && request.method === "PATCH") return routeLead(request, env, path.split("/")[2]);
+    if (path.startsWith("/leads/") && request.method === "PATCH") return updateLead(request, env, path.split("/")[2]);
+    if (path.startsWith("/leads/") && request.method === "GET") return getLead(request, env, path.split("/")[2]);
+    if (path === "/partners" && request.method === "GET") return getPartners(request, env);
+    if (path === "/partners" && request.method === "POST") return savePartner(request, env);
+    if (path.startsWith("/partners/") && request.method === "PATCH") return savePartner(request, env, path.split("/")[2]);
+    if (path === "/rate-tables" && request.method === "GET") return getRateTables(request, env);
+    if (path === "/rate-tables" && request.method === "POST") return saveRateTable(request, env);
+    if (path.startsWith("/rate-tables/") && request.method === "PATCH") return saveRateTable(request, env, path.split("/")[2]);
+    if (path === "/renewals/expiring-all" && request.method === "GET") return getRenewals(request, env);
 
     return json(
       request,
