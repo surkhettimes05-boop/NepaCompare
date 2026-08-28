@@ -19,11 +19,19 @@ export default function Login() {
         return;
       }
       setLoading(true);
-      const res = await fetch(`${apiUrl}/auth/login`, {
+      const controller = new AbortController();
+      const timeout = window.setTimeout(() => controller.abort(), 15000);
+      let res: Response;
+      try {
+        res = await fetch(`${apiUrl}/auth/login`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ phone, password })
+          body: JSON.stringify({ phone, password }),
+          signal: controller.signal,
         });
+      } finally {
+        window.clearTimeout(timeout);
+      }
         
       const data = await res.json().catch(() => ({}));
       if (!res.ok) throw new Error(res.status === 401 ? 'Incorrect phone number or password.' : data.message || 'Unable to sign in. Please try again.');
@@ -34,7 +42,7 @@ export default function Login() {
       
       navigate('/');
     } catch (err: any) {
-      setError(err instanceof TypeError ? 'Unable to connect to the admin service.' : err.message);
+      setError(err instanceof DOMException && err.name === 'AbortError' ? 'The authentication request timed out.' : err instanceof TypeError ? 'Unable to connect to the admin service.' : 'Authentication failed. Please try again.');
     } finally {
       setLoading(false);
     }

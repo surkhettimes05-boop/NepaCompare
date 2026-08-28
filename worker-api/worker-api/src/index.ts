@@ -38,7 +38,7 @@ function corsHeaders(request: Request) {
     "Access-Control-Allow-Headers":
       "Content-Type, Authorization",
     "Access-Control-Allow-Methods":
-      "GET, POST, OPTIONS",
+      "GET, POST, PATCH, PUT, DELETE, OPTIONS",
     "Access-Control-Allow-Credentials": "true",
     Vary: "Origin",
   };
@@ -195,6 +195,24 @@ async function staffMe(request: Request, env: Env) {
   } catch (error) {
     console.error("Staff session check failed:", error);
     return json(request, { message: "Session unavailable" }, 503);
+  }
+}
+
+async function getLeads(request: Request, env: Env) {
+  const auth = await requireAdmin(request, env);
+  if (auth instanceof Response) return auth;
+  try {
+    const leads = await withDb(env, async (db) => {
+      const result = await db.query(
+        `SELECT id, vertical, source, "formData", status, "createdAt", "updatedAt"
+         FROM "Lead" ORDER BY "createdAt" DESC LIMIT 500`,
+      );
+      return result.rows;
+    });
+    return json(request, leads);
+  } catch (error) {
+    console.error("Lead lookup failed:", error);
+    return json(request, { message: "Unable to load leads" }, 503);
   }
 }
 
@@ -872,6 +890,10 @@ export default {
         request,
         env,
       );
+    }
+
+    if (request.method === "GET" && path === "/leads") {
+      return getLeads(request, env);
     }
 
     return json(
