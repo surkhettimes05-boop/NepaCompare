@@ -9,6 +9,13 @@ interface Env {
   JWT_SECRET: string;
 }
 
+interface StaffClaims {
+  sub: string;
+  phone: string;
+  role: string;
+  exp?: number;
+}
+
 const encoder = new TextEncoder();
 
 function corsHeaders(request: Request) {
@@ -119,6 +126,76 @@ function createJwt(
     .digest();
 
   return `${unsignedToken}.${base64UrlBytes(signature)}`;
+}
+
+function decodeBase64Url(value: string): string {
+  return Buffer.from(value.replace(/-/g, "+").replace(/_/g, "/"), "base64").toString("utf8");
+}
+
+async function verifyJwt(token: string, secret: string): Promise<StaffClaims | null> {
+  const parts = token.split(".");
+  if (parts.length !== 3 || !secret) return null;
+  const expected = createHmac("sha256", secret).update(`${parts[0]}.${parts[1]}`).digest();
+  const actual = Buffer.from(parts[2].replace(/-/g, "+").replace(/_/g, "/"), "base64");
+  if (actual.length !== expected.length || !actual.every((byte, index) => byte === expected[index])) return null;
+  const claims = JSON.parse(decodeBase64Url(parts[1])) as StaffClaims;
+  if (!claims.sub || claims.role !== "ADMIN" || (claims.exp && claims.exp <= Math.floor(Date.now() / 1000))) return null;
+  return claims;
+}
+
+function bearerToken(request: Request): string | null {
+  const value = request.headers.get("Authorization") || "";
+  return value.startsWith("Bearer ") ? value.slice(7).trim() : null;
+}
+
+async function requireAdmin(request: Request, env: Env): Promise<StaffClaims | Response> {
+  const token = bearerToken(request);
+  const claims = token ? await verifyJwt(token, env.JWT_SECRET) : null;
+  if (!claims) return json(request, { message: "Unauthorized" }, 401);
+  return claims;
+}
+
+async function staffLogin(request: Request, env: Env) {
+  const body = (await request.json()) as { phone?: string; password?: string };
+  const phone = String(body.phone || "").trim().replace(/\s+/g, "");
+  const password = String(body.password || "");
+  if (!phone || !password) return json(request, { message: "Phone and password are required" }, 400);
+
+  try {
+    const staff = await withDb(env, async (db) => {
+      const result = await db.query(
+        `SELECT id, name, phone, password, role, active FROM "Staff" WHERE phone = $1 LIMIT 1`,
+        [phone],
+      );
+      return result.rows[0];
+    });
+
+    if (!staff || !staff.active || staff.role !== "ADMIN" || !staff.password || !(await bcrypt.compare(password, staff.password))) {
+      return json(request, { message: "Invalid credentials" }, 401);
+    }
+
+    const accessToken = createJwt({ sub: staff.id, phone: staff.phone, role: staff.role }, env.JWT_SECRET);
+    return json(request, { access_token: accessToken, user: { id: staff.id, name: staff.name, phone: staff.phone, role: staff.role } });
+  } catch (error) {
+    console.error("Staff login failed:", error);
+    return json(request, { message: "Login unavailable" }, 503);
+  }
+}
+
+async function staffMe(request: Request, env: Env) {
+  const auth = await requireAdmin(request, env);
+  if (auth instanceof Response) return auth;
+  try {
+    const staff = await withDb(env, async (db) => {
+      const result = await db.query(`SELECT id, name, phone, role, active FROM "Staff" WHERE id = $1 LIMIT 1`, [auth.sub]);
+      return result.rows[0];
+    });
+    if (!staff || !staff.active || staff.role !== "ADMIN") return json(request, { message: "Unauthorized" }, 401);
+    return json(request, { user: staff });
+  } catch (error) {
+    console.error("Staff session check failed:", error);
+    return json(request, { message: "Session unavailable" }, 503);
+  }
 }
 
 async function customerRegister(
@@ -767,6 +844,14 @@ export default {
         request,
         env,
       );
+    }
+
+    if (request.method === "POST" && path === "/auth/login") {
+      return staffLogin(request, env);
+    }
+
+    if (request.method === "GET" && path === "/auth/me") {
+      return staffMe(request, env);
     }
 
     if (

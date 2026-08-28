@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { apiUrl } from '../lib/api';
 import { useNavigate } from 'react-router-dom';
 
 export default function Renewals() {
@@ -15,7 +16,7 @@ export default function Renewals() {
           return;
         }
 
-        const res = await fetch('http://localhost:8080/renewals/expiring-all', {
+        const res = await fetch(`${apiUrl}/renewals/expiring-all`, {
           headers: {
             'Authorization': `Bearer ${token}`
           }

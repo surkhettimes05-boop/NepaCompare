@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { apiUrl } from '../lib/api';
 
 export default function RateTables() {
   const [rateTables, setRateTables] = useState<any[]>([]);
@@ -19,7 +20,6 @@ export default function RateTables() {
   const fetchRateTables = async () => {
     try {
       const token = localStorage.getItem('token');
-      const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:8080';
       const [rtRes, pRes] = await Promise.all([
         fetch(`${apiUrl}/rate-tables`, { headers: { 'Authorization': `Bearer ${token}` } }),
         fetch(`${apiUrl}/partners`, { headers: { 'Authorization': `Bearer ${token}` } })
@@ -41,7 +41,6 @@ export default function RateTables() {
     if (!confirm('Are you sure you want to delete this rate table?')) return;
     try {
       const token = localStorage.getItem('token');
-      const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:8080';
       await fetch(`${apiUrl}/rate-tables/${id}`, {
         method: 'DELETE',
         headers: { 'Authorization': `Bearer ${token}` }
@@ -56,7 +55,6 @@ export default function RateTables() {
     e.preventDefault();
     try {
       const token = localStorage.getItem('token');
-      const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:8080';
       
       const criteriaKeys = [
         'ageMin', 'ageMax', 'sumAssuredMin', 'sumAssuredMax', 'ccMin', 'ccMax', 
@@ -150,7 +148,6 @@ export default function RateTables() {
 
       try {
         const token = localStorage.getItem('token');
-        const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:8080';
         const res = await fetch(`${apiUrl}/rate-tables/bulk-import`, {
           method: 'POST',
           headers: { 

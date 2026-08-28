@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { apiUrl } from '../lib/api';
 
 // For the MVP we will mock the type and data if the backend is not running
 interface Lead {
@@ -18,7 +19,6 @@ export default function LeadsInbox() {
     const fetchLeads = async () => {
       try {
         const token = localStorage.getItem('token');
-        const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:8080';
         const response = await fetch(`${apiUrl}/leads`, {
           headers: {
             'Authorization': `Bearer ${token}`

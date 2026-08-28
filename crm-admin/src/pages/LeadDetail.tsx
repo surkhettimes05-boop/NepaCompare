@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { apiUrl } from '../lib/api';
 import { useParams, useNavigate } from 'react-router-dom';
 
 interface Lead {
@@ -44,7 +45,6 @@ export default function LeadDetail() {
     const fetchLead = async () => {
       try {
         const token = localStorage.getItem('token');
-        const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:8080';
         const response = await fetch(`${apiUrl}/leads/${id}`, {
           headers: {
             'Authorization': `Bearer ${token}`
@@ -94,7 +94,6 @@ export default function LeadDetail() {
     
     try {
       const token = localStorage.getItem('token');
-      const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:8080';
       const response = await fetch(`${apiUrl}/leads/${id}`, {
         method: 'PATCH',
         headers: {
@@ -121,7 +120,6 @@ export default function LeadDetail() {
     setSaving(true);
     try {
       const token = localStorage.getItem('token');
-      const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:8080';
       const response = await fetch(`${apiUrl}/leads/${id}/route`, {
         method: 'PATCH',
         headers: {
