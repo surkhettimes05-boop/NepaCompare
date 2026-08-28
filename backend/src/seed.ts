@@ -4,6 +4,18 @@ import * as bcrypt from 'bcrypt';
 const prisma = new PrismaClient();
 
 async function main() {
+  const isProduction = process.env.NODE_ENV === 'production';
+  const adminPhone = process.env.ADMIN_PHONE?.trim() || (isProduction ? '' : '9800000000');
+  const adminPassword = process.env.ADMIN_PASSWORD || (isProduction ? '' : 'admin_password');
+
+  if (!adminPhone || !adminPassword) {
+    throw new Error('Production seeding requires ADMIN_PHONE and ADMIN_PASSWORD');
+  }
+
+  if (adminPassword.length < 16) {
+    throw new Error('ADMIN_PASSWORD must be at least 16 characters');
+  }
+
   console.log('Clearing existing data (for MVP dev)...');
   await prisma.rateTable.deleteMany();
   await prisma.partner.deleteMany();
@@ -11,12 +23,12 @@ async function main() {
 
   console.log('Seeding Admin Staff...');
   const salt = await bcrypt.genSalt(10);
-  const hashedPassword = await bcrypt.hash('admin_password', salt);
+  const hashedPassword = await bcrypt.hash(adminPassword, salt);
   
   await prisma.staff.create({
     data: {
       name: 'Super Admin',
-      phone: '9800000000',
+      phone: adminPhone,
       password: hashedPassword,
       role: Role.ADMIN,
       active: true,
