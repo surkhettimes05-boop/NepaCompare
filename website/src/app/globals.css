@@ -9,6 +9,7 @@
   --bg-surface: #f7f9fc;
   --bg-surface-elevated: #eef3ff;
   --bg-surface-hover: #e7edff;
+  --surface-blue: #f3f6ff;
   
   /* Colors - Primary */
   --primary: #4f46e5;
@@ -33,11 +34,13 @@
   --text-secondary: #475569;
   --text-tertiary: #64748b;
   --text-muted: #64748b;
+  --text-color: #111827;
   
   /* Colors - Borders */
   --border-subtle: #eef0f4;
   --border-default: #e2e8f0;
   --border-strong: #cbd5e1;
+  --border: #e2e8f0;
   --border-focus: var(--primary);
   
   /* Typography */
@@ -227,7 +230,7 @@ body {
 
 .btn-primary {
   background: var(--primary);
-  color: var(--text-primary);
+  color: #ffffff;
   border-color: var(--primary);
   box-shadow: 0 2px 4px rgba(99, 102, 241, 0.2);
 }
@@ -267,7 +270,7 @@ body {
 
 .btn-danger {
   background: var(--error);
-  color: var(--text-primary);
+  color: #ffffff;
   border-color: var(--error);
 }
 
@@ -278,7 +281,7 @@ body {
 
 .btn-success {
   background: var(--success);
-  color: var(--text-primary);
+  color: #ffffff;
   border-color: var(--success);
 }
 
@@ -426,11 +429,10 @@ select.input-field {
 }
 
 .glass-panel {
-  background: rgba(17, 24, 39, 0.8);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
+  background: #ffffff;
   border: 1px solid var(--border-default);
   border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-md);
 }
 
 /* Badges */
