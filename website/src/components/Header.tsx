@@ -25,6 +25,9 @@ export default function Header() {
   return (
     <header className="site-header">
       <div className="container header-container">
+        <button type="button" className="mobile-menu-button" aria-label={isMenuOpen ? 'Close navigation' : 'Open navigation'} aria-expanded={isMenuOpen} aria-controls="mobile-navigation" onClick={() => setIsMenuOpen(value => !value)}>
+          <span aria-hidden="true">{isMenuOpen ? '×' : '☰'}</span>
+        </button>
         <Link href="/" className="logo">
           Nepa<span style={{ color: 'var(--primary-accent)' }}>Compare</span>
         </Link>
@@ -34,21 +37,18 @@ export default function Header() {
           <Link href="/how-it-works">How it works</Link>
         </nav>
         <div className="header-actions">
-          <button type="button" className="mobile-menu-button" aria-label={isMenuOpen ? 'Close navigation' : 'Open navigation'} aria-expanded={isMenuOpen} aria-controls="mobile-navigation" onClick={() => setIsMenuOpen(value => !value)}>
-            <span aria-hidden="true">{isMenuOpen ? '×' : '☰'}</span>
-          </button>
+          <Link href="/contact" className="expert-button"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 14v-2a8 8 0 0 1 16 0v2" /><path d="M4 14a2 2 0 0 0 2 2h1v-6H6a2 2 0 0 0-2 2v2ZM20 14a2 2 0 0 1-2 2h-1v-6h1a2 2 0 0 1 2 2v2ZM12 20h3" /></svg><span>Talk to Expert</span></Link>
           {isLoggedIn ? (
-            <div style={{ display: 'flex', gap: 'var(--space-3)', alignItems: 'center' }}>
-              <Link href="/dashboard" className="btn btn-secondary btn-sm">Dashboard</Link>
-              <button onClick={handleLogout} className="btn btn-ghost btn-sm">Logout</button>
-            </div>
+            <button type="button" className="profile-button" aria-label="Open account menu" onClick={() => setIsMenuOpen(true)}><span aria-hidden="true">N</span></button>
           ) : (
-            <><Link href="/login" className="btn btn-ghost">Sign in</Link><Link href="/compare" className="btn btn-primary">Compare plans</Link></>
+            <><Link href="/login" className="sign-in-link">Sign in</Link><Link href="/compare" className="btn btn-primary desktop-compare-link">Compare plans</Link></>
           )}
         </div>
       </div>
       <nav id="mobile-navigation" className={`mobile-nav ${isMenuOpen ? 'open' : ''}`} aria-label="Mobile navigation">
-        <Link href="/motor" onClick={() => setIsMenuOpen(false)}>Motor</Link><Link href="/health" onClick={() => setIsMenuOpen(false)}>Health</Link><Link href="/life" onClick={() => setIsMenuOpen(false)}>Life</Link><Link href="/travel" onClick={() => setIsMenuOpen(false)}>Travel</Link><Link href="/blog" onClick={() => setIsMenuOpen(false)}>Blog</Link><Link href="/about" onClick={() => setIsMenuOpen(false)}>About</Link><Link href="/contact" onClick={() => setIsMenuOpen(false)}>Contact</Link>
+        <div className="mobile-nav-group"><span className="mobile-nav-label">Insurance</span><Link href="/motor" onClick={() => setIsMenuOpen(false)}>Motor</Link><Link href="/health" onClick={() => setIsMenuOpen(false)}>Health</Link><Link href="/life" onClick={() => setIsMenuOpen(false)}>Life</Link><Link href="/travel" onClick={() => setIsMenuOpen(false)}>Travel</Link></div>
+        <div className="mobile-nav-group"><span className="mobile-nav-label">Account</span><Link href="/dashboard" onClick={() => setIsMenuOpen(false)}>Dashboard</Link><Link href="/dashboard" onClick={() => setIsMenuOpen(false)}>Saved Comparisons</Link><Link href="/dashboard" onClick={() => setIsMenuOpen(false)}>Account</Link>{isLoggedIn && <button type="button" className="mobile-logout" onClick={handleLogout}>Logout</button>}</div>
+        <div className="mobile-nav-group mobile-nav-secondary"><Link href="/blog" onClick={() => setIsMenuOpen(false)}>Guides &amp; blog</Link><Link href="/how-it-works" onClick={() => setIsMenuOpen(false)}>How it works</Link><Link href="/contact" onClick={() => setIsMenuOpen(false)}>Talk to Expert</Link></div>
       </nav>
     </header>
   );
