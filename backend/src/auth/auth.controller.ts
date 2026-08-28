@@ -53,7 +53,7 @@ export class AuthController {
       throw new UnauthorizedException('Phone number already registered');
     }
 
-    const hashedPassword = await bcrypt.hash(password, 10);
+    const hashedPassword = await bcrypt.hash(password, 12);
     const user = await this.prisma.user.create({
       data: {
         email,
@@ -78,6 +78,7 @@ export class AuthController {
   @Throttle({ default: { limit: 5, ttl: 60000 } })
   @Post('customer-login')
   async customerLogin(@Body() body: CustomerLoginDto) {
+    // ValidationPipe will automatically validate CustomerLoginDto
     const { email, password } = body;
     const user = await this.prisma.user.findUnique({ where: { email } });
 

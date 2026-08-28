@@ -12,8 +12,11 @@ export class LeadsController {
   constructor(private readonly leadsService: LeadsService) {}
 
   @Post()
-  create(@Body() createLeadDto: CreateLeadDto) {
-    return this.leadsService.create(createLeadDto);
+  create(@Body() createLeadDto: CreateLeadDto, @Req() req: any) {
+    // ValidationPipe will automatically validate CreateLeadDto
+    // Public quote requests remain unowned; only a verified customer may attach one to their account.
+    const userId = req.user?.role === Role.CUSTOMER ? req.user.userId : undefined;
+    return this.leadsService.create(createLeadDto, userId);
   }
 
   @UseGuards(JwtAuthGuard, RolesGuard)

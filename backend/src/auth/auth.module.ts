@@ -4,23 +4,17 @@ import { AuthController } from './auth.controller';
 import { JwtModule } from '@nestjs/jwt';
 import { PassportModule } from '@nestjs/passport';
 import { JwtStrategy } from './jwt.strategy';
-import { PrismaService } from '../prisma.service';
+import { getJwtSecret } from './jwt-config';
 
 @Module({
   imports: [
     PassportModule,
     JwtModule.register({
-      secret: (() => {
-        const secret = process.env.JWT_SECRET;
-        if (!secret) {
-          throw new Error('FATAL: JWT_SECRET environment variable is missing.');
-        }
-        return secret;
-      })(),
-      signOptions: { expiresIn: '12h' },
+      secret: getJwtSecret(),
+      signOptions: { expiresIn: '1h' },
     }),
   ],
   controllers: [AuthController],
-  providers: [AuthService, JwtStrategy, PrismaService],
+  providers: [AuthService, JwtStrategy],
 })
 export class AuthModule {}
