@@ -1,7 +1,8 @@
 import type { Metadata } from 'next';
 import ContentPage from '@/components/ContentPage';
+import { pageMetadata } from '@/lib/seo';
 
-export const metadata: Metadata = { title: 'About Us', description: 'Learn what Khaacho does, how it earns revenue, and the limits of its insurance comparison service.', alternates: { canonical: '/about' } };
+export const metadata: Metadata = pageMetadata('about', 'About Khaacho', 'Learn what Khaacho does, how it earns revenue, and the limits of its insurance comparison service.');
 
 export default function AboutPage() {
   return <ContentPage eyebrow="Company" title="Insurance comparison built for clearer decisions" intro="Khaacho helps people in Nepal understand and compare insurance information without pretending that an estimate is a final insurer quote." sections={[

@@ -1,5 +1,8 @@
 import LeadForm from '@/components/LeadForm';
 import { Suspense } from 'react';
+import { pageMetadata } from '@/lib/seo';
+
+export const metadata = pageMetadata('get-quote', 'Request an Insurance Quote', 'Request help with an insurance plan. Final application, underwriting and pricing remain with the insurer.', { robots: { index: false, follow: true } });
 
 export default function GetQuotePage() {
   return (

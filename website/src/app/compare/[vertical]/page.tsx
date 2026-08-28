@@ -4,6 +4,7 @@ import { notFound } from 'next/navigation';
 import DropoffTracker from '@/components/DropoffTracker';
 import QuoteActions from '@/components/QuoteActions';
 import './compare.css';
+import { pageMetadata } from '@/lib/seo';
 
 type Props = { params: Promise<{ vertical: string }>; searchParams: Promise<Record<string, string | string[] | undefined>> };
 type Rate = { id: string; insurer: string; plan: string; premium: string; coverage: string; exclusions: string[]; deductible: string; claimRatio?: number | null; sourceUrl: string; verifiedAt: string; rankingReason: string };
@@ -11,7 +12,7 @@ type Rate = { id: string; insurer: string; plan: string; premium: string; covera
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { vertical } = await params;
   if (vertical !== 'motor') return {};
-  return { title: 'Motor Insurance Comparison Results', description: 'Compare sourced, indicative motor insurance plan information for your vehicle.', robots: { index: false, follow: true } };
+  return pageMetadata('compare/motor', 'Motor Insurance Comparison Results', 'Compare sourced, indicative motor insurance plan information for your vehicle.', { robots: { index: false, follow: true } });
 }
 
 export default async function ComparePage({ params, searchParams }: Props) {

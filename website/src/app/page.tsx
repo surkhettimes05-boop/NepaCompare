@@ -1,5 +1,8 @@
 import Link from 'next/link';
 import './page.css';
+import { pageMetadata } from '@/lib/seo';
+
+export const metadata = pageMetadata('/', 'Compare Insurance in Nepal | Motor, Health & Life', 'Compare indicative motor, health and life insurance information in Nepal and understand coverage before requesting a quote.');
 
 export default function Home() {
   return (

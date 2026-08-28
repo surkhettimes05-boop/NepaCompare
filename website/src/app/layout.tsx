@@ -5,9 +5,10 @@ import Footer from '@/components/Footer';
 import DisclaimerBanner from '@/components/DisclaimerBanner';
 import ChatWidget from '@/components/ChatWidget';
 import WebVitals from '@/components/WebVitals';
+import { absoluteUrl, SITE_URL } from '@/lib/seo';
 
 export const metadata: Metadata = {
-  metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL || 'https://www.khaacho.com'),
+  metadataBase: new URL(SITE_URL),
   title: {
     default: 'Compare Insurance in Nepal | Motor, Health & Life | Khaacho',
     template: '%s | Khaacho'
@@ -17,7 +18,7 @@ export const metadata: Metadata = {
   openGraph: {
     type: 'website',
     locale: 'en_NP',
-    url: '/',
+    url: SITE_URL,
     title: 'Compare Insurance in Nepal | Motor, Health & Life',
     description: 'Compare indicative pricing across Motor, Health, and Life insurance in Nepal — free, with no agent pressure.',
     siteName: 'Khaacho',
@@ -31,7 +32,7 @@ export const metadata: Metadata = {
     google: 'lO9MCJwjXpsRdukdOtj2j1qRqrJZSmyoYe_cnIduYqU',
   },
   alternates: {
-    canonical: '/',
+    canonical: SITE_URL,
   },
 };
 
@@ -44,15 +45,22 @@ export default function RootLayout({
     '@context': 'https://schema.org',
     '@type': 'Organization',
     name: 'Khaacho',
-    url: 'https://www.khaacho.com',
-    logo: 'https://www.khaacho.com/favicon.ico',
+    url: SITE_URL,
+    logo: absoluteUrl('/favicon.ico'),
     description: 'Independent insurance information and comparison platform for Nepal.'
+  };
+  const websiteSchema = {
+    '@context': 'https://schema.org',
+    '@type': 'WebSite',
+    name: 'Khaacho',
+    url: SITE_URL,
+    inLanguage: 'en-NP',
   };
 
   return (
     <html lang="en">
       <head>
-        <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
+        <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify([jsonLd, websiteSchema]) }} />
       </head>
       <body>
         <DisclaimerBanner />

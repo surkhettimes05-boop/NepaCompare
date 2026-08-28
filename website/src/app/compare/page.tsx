@@ -1,7 +1,8 @@
 import type { Metadata } from 'next';
+import { pageMetadata } from '@/lib/seo';
 import Link from 'next/link';
 
-export const metadata: Metadata = { title: 'Compare Insurance', description: 'Choose an insurance product to compare in Nepal.', alternates: { canonical: '/compare' } };
+export const metadata: Metadata = pageMetadata('compare', 'Compare Insurance Plans in Nepal', 'Choose an insurance product to compare in Nepal.');
 
 const products = [
   { name: 'Motor', description: 'Complete comparison journey for bikes and cars.', href: '/wizard/motor', available: true },

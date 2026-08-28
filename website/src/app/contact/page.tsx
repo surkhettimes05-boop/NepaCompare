@@ -1,7 +1,8 @@
 import type { Metadata } from 'next';
 import ContentPage from '@/components/ContentPage';
+import { pageMetadata } from '@/lib/seo';
 
-export const metadata: Metadata = { title: 'Contact and Complaints', description: 'Contact Khaacho for support, privacy questions, corrections, partnerships or complaints.', alternates: { canonical: '/contact' } };
+export const metadata: Metadata = pageMetadata('contact', 'Contact Khaacho', 'Contact Khaacho for support, privacy questions, corrections, partnerships or complaints.');
 
 export default function ContactPage() {
   return <ContentPage eyebrow="Support" title="Contact Khaacho" intro="Use the appropriate channel so your request reaches the right team. Do not send passwords, payment details or medical documents by email." sections={[

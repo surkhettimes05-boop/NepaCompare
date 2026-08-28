@@ -1,7 +1,6 @@
-export const metadata = {
-  title: 'Insurance Glossary A-Z | Khaacho',
-  description: 'Understand complex insurance terms. Our comprehensive A-Z glossary explains deductibles, premiums, IDV, and more for the Nepali market.',
-};
+import { pageMetadata } from '@/lib/seo';
+
+export const metadata = pageMetadata('glossary', 'Insurance Glossary A-Z', 'Understand complex insurance terms. Our A-Z glossary explains deductibles, premiums, IDV and more for the Nepali market.');
 
 const glossaryTerms = [
   {
@@ -39,22 +38,17 @@ const glossaryTerms = [
 ];
 
 export default function Glossary() {
-  const faqSchema = {
+  const glossarySchema = {
     "@context": "https://schema.org",
-    "@type": "FAQPage",
-    "mainEntity": glossaryTerms.map(item => ({
-      "@type": "Question",
-      "name": `What is ${item.term}?`,
-      "acceptedAnswer": {
-        "@type": "Answer",
-        "text": item.definition
-      }
-    }))
+    "@type": "DefinedTermSet",
+    "name": "Khaacho Insurance Glossary",
+    "url": "https://khaacho.com/glossary",
+    "hasDefinedTerm": glossaryTerms.map(item => ({ "@type": "DefinedTerm", "name": item.term, "description": item.definition }))
   };
 
   return (
     <div className="container" style={{ padding: '4rem 1rem', maxWidth: '800px', margin: '0 auto' }}>
-      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(faqSchema) }} />
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(glossarySchema) }} />
       <div style={{ textAlign: 'center', marginBottom: '4rem' }}>
         <h1 style={{ fontSize: '2.5rem', marginBottom: '1rem', color: 'var(--text-color)' }}>
           Insurance <span style={{ color: 'var(--primary-color)' }}>Glossary</span>

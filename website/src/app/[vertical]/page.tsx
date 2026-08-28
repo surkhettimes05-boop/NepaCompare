@@ -2,6 +2,7 @@ import Link from 'next/link';
 import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
 import './category.css';
+import { pageMetadata } from '@/lib/seo';
 
 interface Props {
   params: Promise<{ vertical: string }>;
@@ -24,7 +25,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { vertical } = await params;
   if (!allowedVerticals.includes(vertical as Vertical)) return {};
   const name = vertical.charAt(0).toUpperCase() + vertical.slice(1);
-  return { title: `${name} Insurance in Nepal`, description: productDescriptions[vertical as Vertical], alternates: { canonical: `/${vertical}`, languages: vertical === 'motor' ? { en: '/motor', ne: '/np/motor', 'x-default': '/motor' } : undefined } };
+  return pageMetadata(`/${vertical}`, `${name} Insurance in Nepal | Compare Plans`, productDescriptions[vertical as Vertical], { alternates: { languages: vertical === 'motor' ? { en: '/motor', ne: '/np/motor', 'x-default': '/motor' } : undefined } });
 }
 
 // In Next.js 15, params is a Promise. Since we don't know the exact version, 
@@ -99,31 +100,16 @@ export default async function CategoryPage({ params }: Props) {
         </div>
       </div>
       
-      {/* JSON-LD Schema for SEO */}
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{
           __html: JSON.stringify({
             "@context": "https://schema.org",
-            "@type": "FAQPage",
-            "mainEntity": [
-              {
-                "@type": "Question",
-                "name": content.point1,
-                "acceptedAnswer": {
-                  "@type": "Answer",
-                  "text": content.desc1
-                }
-              },
-              {
-                "@type": "Question",
-                "name": content.point2,
-                "acceptedAnswer": {
-                  "@type": "Answer",
-                  "text": content.desc2
-                }
-              }
-            ]
+            "@type": "WebPage",
+            "name": `${title} Insurance in Nepal`,
+            "url": `https://khaacho.com/${vertical}`,
+            "description": productDescriptions[vertical as Vertical],
+            "isPartOf": { "@type": "WebSite", "name": "Khaacho", "url": "https://khaacho.com" }
           })
         }}
       />

@@ -1,8 +1,9 @@
 import type { Metadata } from 'next';
 import { getSortedPostsData } from '@/lib/posts';
 import Link from 'next/link';
+import { pageMetadata } from '@/lib/seo';
 
-export const metadata: Metadata = { title: 'Motor Insurance Guides for Nepal', description: 'Source-backed motor insurance guides covering comparison, claims, exclusions, renewals and policy wording in Nepal.', alternates: { canonical: '/blog', languages: { en: '/blog', ne: '/np/blog', 'x-default': '/blog' } } };
+export const metadata: Metadata = pageMetadata('blog', 'Motor Insurance Guides for Nepal', 'Source-backed motor insurance guides covering comparison, claims, exclusions, renewals and policy wording in Nepal.', { alternates: { languages: { en: '/blog', ne: '/np/blog', 'x-default': '/blog' } } });
 
 export default function BlogIndex() {
   const posts = getSortedPostsData();

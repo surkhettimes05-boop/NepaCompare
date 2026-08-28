@@ -1,10 +1,8 @@
 import MotorQuoteWizard from '@/components/MotorQuoteWizard';
 import { Suspense } from 'react';
+import { pageMetadata } from '@/lib/seo';
 
-export const metadata = {
-  title: 'Motor Insurance Quote Wizard | Khaacho',
-  description: 'Get instant, personalized motor insurance quotes in Nepal in under 2 minutes.',
-};
+export const metadata = pageMetadata('wizard/motor', 'Motor Insurance Quote Wizard', 'Provide vehicle details to request indicative motor insurance information in Nepal.', { robots: { index: false, follow: true } });
 
 export default function MotorWizardPage() {
   return (

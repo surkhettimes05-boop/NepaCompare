@@ -1,14 +1,13 @@
 import { MetadataRoute } from 'next'
+import { SITE_URL } from '@/lib/seo';
 
 export default function robots(): MetadataRoute.Robots {
-  const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://www.khaacho.com'
-
   return {
     rules: {
       userAgent: '*',
       allow: '/',
-      disallow: ['/dashboard', '/api/', '/_next/', '/login', '/register', '/forgot-password', '/get-quote', '/compare/motor'],
+      disallow: ['/dashboard', '/api/', '/login', '/register', '/forgot-password', '/get-quote', '/compare/motor', '/wizard/'],
     },
-    sitemap: `${baseUrl}/sitemap.xml`,
+    sitemap: `${SITE_URL}/sitemap.xml`,
   }
 }

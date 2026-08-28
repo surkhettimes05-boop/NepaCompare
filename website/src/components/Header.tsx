@@ -29,7 +29,7 @@ export default function Header() {
           Nepa<span style={{ color: 'var(--primary-accent)' }}>Compare</span>
         </Link>
         <nav className="desktop-nav">
-          <div className="nav-menu"><span>Insurance <small>⌄</small></span><div className="nav-dropdown"><Link href="/motor">Motor</Link><Link href="/health">Health</Link><Link href="/life">Life</Link></div></div>
+          <div className="nav-menu"><span>Insurance <small>⌄</small></span><div className="nav-dropdown"><Link href="/motor">Motor</Link><Link href="/health">Health</Link><Link href="/life">Life</Link><Link href="/travel">Travel</Link></div></div>
           <div className="nav-menu"><span>Resources <small>⌄</small></span><div className="nav-dropdown"><Link href="/blog">Guides &amp; blog</Link><Link href="/glossary">Glossary</Link></div></div>
           <Link href="/how-it-works">How it works</Link>
         </nav>

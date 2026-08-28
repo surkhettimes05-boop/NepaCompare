@@ -4,6 +4,7 @@ import { notFound } from 'next/navigation';
 import ReactMarkdown from 'react-markdown';
 import rehypeRaw from 'rehype-raw';
 import Link from 'next/link';
+import { absoluteUrl, pageMetadata } from '@/lib/seo';
 
 type Props = { params: Promise<{ slug: string }> };
 export function generateStaticParams() { return getSortedPostsData().map(post => ({ slug: post.slug })); }
@@ -11,14 +12,16 @@ export const dynamicParams = false;
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { slug } = await params; const post = getPostData(slug); if (!post) return {};
-  return { title: post.title, description: post.description, alternates: { canonical: `/blog/${slug}` }, openGraph: { title: post.title, description: post.description, type: 'article', publishedTime: post.date, modifiedTime: post.reviewedDate, authors: [post.author] }, twitter: { card: 'summary_large_image', title: post.title, description: post.description } };
+  return pageMetadata(`/blog/${slug}`, post.title, post.description, { openGraph: { type: 'article', publishedTime: post.date, modifiedTime: post.reviewedDate, authors: [post.author] } });
 }
 
 export default async function BlogPostPage({ params }: Props) {
   const { slug } = await params; const post = getPostData(slug); if (!post) notFound();
-  const site = process.env.NEXT_PUBLIC_SITE_URL || 'https://www.khaacho.com';
+  const site = 'https://khaacho.com';
   const schema = { '@context': 'https://schema.org', '@type': 'Article', headline: post.title, description: post.description, datePublished: post.date, dateModified: post.reviewedDate, inLanguage: post.language, mainEntityOfPage: `${site}/blog/${slug}`, author: { '@type': 'Organization', name: post.author, url: `${site}/authors/editorial-team` }, reviewedBy: { '@type': 'Organization', name: post.reviewedBy, url: `${site}/reviewers/research-desk` }, publisher: { '@type': 'Organization', name: 'Khaacho', url: site }, citation: post.sources.map(source => source.url) };
-  return <article className="container" style={{ maxWidth: 860, paddingTop: '4rem', paddingBottom: '5rem' }}><script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(schema) }} />
+  const breadcrumbSchema = { '@context': 'https://schema.org', '@type': 'BreadcrumbList', itemListElement: [{ '@type': 'ListItem', position: 1, name: 'Home', item: site }, { '@type': 'ListItem', position: 2, name: 'Blog', item: `${site}/blog` }, { '@type': 'ListItem', position: 3, name: post.title, item: `${site}/blog/${slug}` }] };
+  return <article className="container" style={{ maxWidth: 860, paddingTop: '4rem', paddingBottom: '5rem' }}><script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify([schema, breadcrumbSchema]) }} />
+    <nav aria-label="Breadcrumb" style={{ marginBottom: '1.5rem' }}><Link href="/">Home</Link> <span aria-hidden="true">/</span> <Link href="/blog">Blog</Link> <span aria-hidden="true">/</span> <span aria-current="page">{post.title}</span></nav>
     <header style={{ marginBottom: '2rem' }}><p style={{ color: 'var(--primary-accent)', fontWeight: 700 }}>MOTOR INSURANCE GUIDE</p><h1 className="heading-1">{post.title}</h1><p className="text-muted" style={{ fontSize: '1.1rem', marginTop: '1rem' }}>{post.description}</p>
       <div className="card" style={{ padding: '1rem', marginTop: '1.5rem', fontSize: '.85rem' }}><p>Written by <Link href="/authors/editorial-team">{post.author}</Link> · Reviewed by <Link href="/reviewers/research-desk">{post.reviewedBy}</Link></p><p className="text-muted">Published {post.date} · Reviewed {post.reviewedDate} · {post.reviewStatus}</p></div>
     </header>
