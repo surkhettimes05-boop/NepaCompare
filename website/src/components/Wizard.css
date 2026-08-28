@@ -1,5 +1,5 @@
 .wizard-wrapper {
-  padding: var(--space-lg);
+  padding: var(--space-8);
   max-width: 600px;
   margin: 0 auto;
 }
@@ -8,7 +8,7 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  margin-bottom: var(--space-xl);
+  margin-bottom: var(--space-12);
   position: relative;
 }
 
@@ -19,7 +19,7 @@
   left: 0;
   right: 0;
   height: 2px;
-  background: rgba(255, 255, 255, 0.1);
+  background: var(--border-default);
   z-index: 1;
   transform: translateY(-50%);
 }
@@ -29,10 +29,10 @@
   top: 50%;
   left: 0;
   height: 2px;
-  background: var(--primary-accent);
+  background: var(--primary);
   z-index: 2;
   transform: translateY(-50%);
-  transition: width 0.4s ease;
+  transition: width var(--transition-smooth);
 }
 
 .wizard-step-indicator {
@@ -40,22 +40,22 @@
   height: 32px;
   border-radius: 50%;
   background: var(--bg-surface-elevated);
-  border: 2px solid rgba(255, 255, 255, 0.1);
+  border: 2px solid var(--border-default);
   display: flex;
   align-items: center;
   justify-content: center;
   font-weight: 600;
-  font-size: 0.9rem;
+  font-size: var(--text-sm);
   z-index: 3;
-  transition: all 0.3s ease;
-  color: var(--text-muted);
+  transition: all var(--transition-base);
+  color: var(--text-tertiary);
 }
 
 .wizard-step-indicator.active {
-  background: var(--primary-accent);
-  border-color: var(--primary-accent);
-  color: #fff;
-  box-shadow: 0 0 10px rgba(46, 116, 233, 0.5);
+  background: var(--primary);
+  border-color: var(--primary);
+  color: var(--text-primary);
+  box-shadow: 0 0 10px var(--primary-glow);
 }
 
 .wizard-step-indicator.completed {
@@ -74,32 +74,37 @@
 .option-grid {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 1rem;
-  margin-bottom: 1.5rem;
+  gap: var(--space-4);
+  margin-bottom: var(--space-6);
 }
 
 .option-card {
   background: var(--bg-surface);
-  border: 1px solid var(--border);
-  border-radius: var(--radius-md);
-  padding: 1.5rem 1rem;
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-lg);
+  padding: var(--space-6) var(--space-4);
   text-align: center;
   cursor: pointer;
-  transition: all var(--transition-fast);
+  transition: all var(--transition-base);
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 0.5rem;
+  gap: var(--space-2);
+  color: inherit;
+  font: inherit;
 }
 
+.option-grid { border: 0; padding: 0; min-width: 0; }
+
 .option-card:hover {
-  border-color: var(--text-muted);
+  border-color: var(--border-strong);
+  background: var(--bg-surface-elevated);
 }
 
 .option-card.selected {
-  border-color: var(--primary-accent);
-  background: rgba(46, 116, 233, 0.05);
-  box-shadow: 0 4px 12px rgba(46, 116, 233, 0.1);
+  border-color: var(--primary);
+  background: var(--primary-light);
+  box-shadow: 0 4px 12px rgba(99, 102, 241, 0.15);
 }
 
 .option-icon {
@@ -113,19 +118,25 @@
 
 .wizard-actions {
   display: flex;
-  gap: 1rem;
+  gap: var(--space-4);
   margin-top: auto;
-  padding-top: 2rem;
+  padding-top: var(--space-8);
 }
 
 .wizard-actions button {
   flex: 1;
+  min-height: 48px;
+}
+
+@media (max-width: 520px) {
+  .wizard-wrapper { padding: var(--space-4); }
+  .option-grid { grid-template-columns: 1fr; }
 }
 
 select.input-field {
   appearance: none;
-  background-image: url("data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22292.4%22%20height%3D%22292.4%22%3E%3Cpath%20fill%3D%22%237C8CA8%22%20d%3D%22M287%2069.4a17.6%2017.6%200%200%200-13-5.4H18.4c-5%200-9.3%201.8-12.9%205.4A17.6%2017.6%200%200%200%200%2082.2c0%205%201.8%209.3%205.4%2012.9l128%20127.9c3.6%203.6%207.8%205.4%2012.8%205.4s9.2-1.8%2012.8-5.4L287%2095c3.5-3.5%205.4-7.8%205.4-12.8%200-5-1.9-9.2-5.5-12.8z%22%2F%3E%3C%2Fsvg%3E");
+  background-image: url("data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22292.4%22%20height%3D%22292.4%22%3E%3Cpath%20fill%3D%22%239CA3AF%22%20d%3D%22M287%2069.4a17.6%2017.6%200%200%200-13-5.4H18.4c-5%200-9.3%201.8-12.9%205.4A17.6%2017.6%200%200%200%200%2082.2c0%205%201.8%209.3%205.4%2012.9l128%20127.9c3.6%203.6%207.8%205.4%2012.8%205.4s9.2-1.8%2012.8-5.4L287%2095c3.5-3.5%205.4-7.8%205.4-12.8%200-5-1.9-9.2-5.5-12.8z%22%2F%3E%3C%2Fsvg%3E");
   background-repeat: no-repeat;
-  background-position: right 1rem top 50%;
+  background-position: right var(--space-3) top 50%;
   background-size: 0.65rem auto;
 }

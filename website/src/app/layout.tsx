@@ -4,27 +4,28 @@ import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import DisclaimerBanner from '@/components/DisclaimerBanner';
 import ChatWidget from '@/components/ChatWidget';
+import WebVitals from '@/components/WebVitals';
 
 export const metadata: Metadata = {
-  metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL || 'https://nepa-compare.vercel.app'),
+  metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL || 'https://www.khaacho.com'),
   title: {
-    default: 'Compare Insurance in Nepal | Motor, Health & Life | NepaCompare',
-    template: '%s | NepaCompare'
+    default: 'Compare Insurance in Nepal | Motor, Health & Life | Khaacho',
+    template: '%s | Khaacho'
   },
-  description: 'Find the best insurance policies in Nepal. Compare motor, health, life, and travel insurance premiums instantly and save money with zero agent commissions.',
-  keywords: ['insurance nepal', 'bike insurance nepal', 'health insurance nepal', 'compare insurance', 'NepaCompare'],
+  description: 'Compare sourced, indicative motor insurance information in Nepal and learn how health, life and travel cover works.',
+  keywords: ['insurance nepal', 'bike insurance nepal', 'health insurance nepal', 'compare insurance', 'Khaacho'],
   openGraph: {
     type: 'website',
     locale: 'en_NP',
     url: '/',
     title: 'Compare Insurance in Nepal | Motor, Health & Life',
     description: 'Compare indicative pricing across Motor, Health, and Life insurance in Nepal — free, with no agent pressure.',
-    siteName: 'NepaCompare',
+    siteName: 'Khaacho',
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'Compare Insurance in Nepal | NepaCompare',
-    description: 'Find the best insurance policies in Nepal. Compare motor, health, life premiums instantly.',
+    title: 'Compare Insurance in Nepal | Khaacho',
+    description: 'Compare sourced, indicative motor insurance information in Nepal.',
   },
   verification: {
     google: 'lO9MCJwjXpsRdukdOtj2j1qRqrJZSmyoYe_cnIduYqU',
@@ -42,13 +43,10 @@ export default function RootLayout({
   const jsonLd = {
     '@context': 'https://schema.org',
     '@type': 'Organization',
-    name: 'NepaCompare',
-    url: 'https://nepa-compare.vercel.app',
-    logo: 'https://nepa-compare.vercel.app/favicon.ico',
-    sameAs: [
-      'https://www.facebook.com/nepacompare',
-      'https://www.linkedin.com/company/nepacompare'
-    ]
+    name: 'Khaacho',
+    url: 'https://www.khaacho.com',
+    logo: 'https://www.khaacho.com/favicon.ico',
+    description: 'Independent insurance information and comparison platform for Nepal.'
   };
 
   return (
@@ -62,6 +60,7 @@ export default function RootLayout({
         <main>{children}</main>
         <Footer />
         <ChatWidget />
+        <WebVitals />
       </body>
     </html>
   );

@@ -10,6 +10,8 @@ const withMDX = createMDX({
 });
 
 const nextConfig: NextConfig = {
+  // Produce a minimal Node.js bundle that can run on cPanel's Node.js runtime.
+  output: "standalone",
   // Allow .md and .mdx files to be treated as pages
   pageExtensions: ["ts", "tsx", "js", "jsx", "md", "mdx"],
 };

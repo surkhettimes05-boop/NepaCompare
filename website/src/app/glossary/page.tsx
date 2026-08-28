@@ -1,5 +1,5 @@
 export const metadata = {
-  title: 'Insurance Glossary A-Z | NepaCompare',
+  title: 'Insurance Glossary A-Z | Khaacho',
   description: 'Understand complex insurance terms. Our comprehensive A-Z glossary explains deductibles, premiums, IDV, and more for the Nepali market.',
 };
 

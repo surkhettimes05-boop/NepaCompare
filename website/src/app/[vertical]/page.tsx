@@ -1,14 +1,37 @@
 import Link from 'next/link';
+import type { Metadata } from 'next';
+import { notFound } from 'next/navigation';
 import './category.css';
 
 interface Props {
-  params: { vertical: string };
+  params: Promise<{ vertical: string }>;
+}
+
+const allowedVerticals = ['motor', 'health', 'life', 'travel'] as const;
+type Vertical = typeof allowedVerticals[number];
+
+const productDescriptions: Record<Vertical, string> = {
+  motor: 'Understand and compare indicative motor insurance coverage for bikes and cars in Nepal.',
+  health: 'Learn what to check before comparing health insurance plans in Nepal.',
+  life: 'Learn how term life cover, exclusions and underwriting affect a policy.',
+  travel: 'Learn what travel medical, cancellation and assistance benefits may cover.',
+};
+
+export function generateStaticParams() { return allowedVerticals.map(vertical => ({ vertical })); }
+export const dynamicParams = false;
+
+export async function generateMetadata({ params }: Props): Promise<Metadata> {
+  const { vertical } = await params;
+  if (!allowedVerticals.includes(vertical as Vertical)) return {};
+  const name = vertical.charAt(0).toUpperCase() + vertical.slice(1);
+  return { title: `${name} Insurance in Nepal`, description: productDescriptions[vertical as Vertical], alternates: { canonical: `/${vertical}`, languages: vertical === 'motor' ? { en: '/motor', ne: '/np/motor', 'x-default': '/motor' } : undefined } };
 }
 
 // In Next.js 15, params is a Promise. Since we don't know the exact version, 
 // we'll await it if it's a promise, or just use it.
 export default async function CategoryPage({ params }: Props) {
   const vertical = (await params).vertical;
+  if (!allowedVerticals.includes(vertical as Vertical)) notFound();
   const title = vertical.charAt(0).toUpperCase() + vertical.slice(1);
   
   const getSeoContent = () => {
@@ -51,8 +74,8 @@ export default async function CategoryPage({ params }: Props) {
             Compare indicative {title.toLowerCase()} insurance pricing from insurers in Nepal.
           </p>
           <div style={{ marginTop: '2rem' }}>
-            <Link href={vertical.toLowerCase() === 'motor' ? '/wizard/motor' : `/compare/${vertical}`} className="btn btn-primary" style={{ padding: '1rem 2rem', fontSize: '1.1rem' }}>
-              Compare {title} Quotes Now
+            <Link href={vertical === 'motor' ? '/wizard/motor' : '/compare'} className="btn btn-primary" style={{ padding: '1rem 2rem', fontSize: '1.1rem' }}>
+              {vertical === 'motor' ? 'Compare Motor Plans' : `${title} comparison coming after motor`}
             </Link>
           </div>
         </div>

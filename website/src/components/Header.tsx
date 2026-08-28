@@ -6,6 +6,7 @@ import './Header.css';
 
 export default function Header() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
 
   useEffect(() => {
     const token = localStorage.getItem('customer_token');
@@ -25,10 +26,10 @@ export default function Header() {
     <header className="site-header glass-panel">
       <div className="utility-bar">
         <div className="container utility-container">
-          <Link href="/compare" style={{ textDecoration: 'none', color: 'var(--text-color)', fontWeight: 500 }}>Compare</Link>
-          <Link href="/blog" style={{ textDecoration: 'none', color: 'var(--text-color)', fontWeight: 500 }}>Blog</Link>
-          <Link href="/glossary" style={{ textDecoration: 'none', color: 'var(--text-color)', fontWeight: 500 }}>Glossary</Link>
-          <Link href="/dashboard" style={{ textDecoration: 'none', color: 'var(--text-color)', fontWeight: 500 }}>My Locker</Link>
+          <Link href="/compare" className="utility-link">Compare</Link>
+          <Link href="/renew" className="utility-link">Renew</Link>
+          <Link href="/claims" className="utility-link">Claims</Link>
+          <Link href="/dashboard" className="utility-link">My Locker</Link>
         </div>
       </div>
       <div className="container header-container">
@@ -39,20 +40,27 @@ export default function Header() {
           <Link href="/motor">Motor</Link>
           <Link href="/health">Health</Link>
           <Link href="/life">Life</Link>
+          <Link href="/travel">Travel</Link>
           <Link href="/blog">Blog</Link>
           <Link href="/glossary">Glossary</Link>
         </nav>
         <div className="header-actions">
+          <button type="button" className="mobile-menu-button" aria-label={isMenuOpen ? 'Close navigation' : 'Open navigation'} aria-expanded={isMenuOpen} aria-controls="mobile-navigation" onClick={() => setIsMenuOpen(value => !value)}>
+            <span aria-hidden="true">{isMenuOpen ? '×' : '☰'}</span>
+          </button>
           {isLoggedIn ? (
-            <div style={{ display: 'flex', gap: '1rem', alignItems: 'center' }}>
-              <Link href="/dashboard" className="btn" style={{ padding: '0.5rem 1rem', background: 'transparent', border: '1px solid var(--border-color)', color: 'var(--text-primary)' }}>Dashboard</Link>
-              <button onClick={handleLogout} className="btn" style={{ padding: '0.5rem 1rem', background: 'transparent', color: 'var(--accent-red)', cursor: 'pointer' }}>Logout</button>
+            <div style={{ display: 'flex', gap: 'var(--space-3)', alignItems: 'center' }}>
+              <Link href="/dashboard" className="btn btn-secondary btn-sm">Dashboard</Link>
+              <button onClick={handleLogout} className="btn btn-ghost btn-sm">Logout</button>
             </div>
           ) : (
             <Link href="/login" className="btn btn-primary">Sign In</Link>
           )}
         </div>
       </div>
+      <nav id="mobile-navigation" className={`mobile-nav ${isMenuOpen ? 'open' : ''}`} aria-label="Mobile navigation">
+        <Link href="/motor" onClick={() => setIsMenuOpen(false)}>Motor</Link><Link href="/health" onClick={() => setIsMenuOpen(false)}>Health</Link><Link href="/life" onClick={() => setIsMenuOpen(false)}>Life</Link><Link href="/travel" onClick={() => setIsMenuOpen(false)}>Travel</Link><Link href="/blog" onClick={() => setIsMenuOpen(false)}>Blog</Link><Link href="/about" onClick={() => setIsMenuOpen(false)}>About</Link><Link href="/contact" onClick={() => setIsMenuOpen(false)}>Contact</Link>
+      </nav>
     </header>
   );
 }

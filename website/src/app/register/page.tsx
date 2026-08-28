@@ -49,21 +49,22 @@ export default function RegisterPage() {
         
         <form onSubmit={handleRegister}>
           <div className="input-group">
-            <label className="input-label">Full Name</label>
-            <input type="text" className="input-field" value={name} onChange={e => setName(e.target.value)} required />
+            <label className="input-label" htmlFor="register-name">Full Name</label>
+            <input id="register-name" type="text" autoComplete="name" className="input-field" value={name} onChange={e => setName(e.target.value)} required />
           </div>
           <div className="input-group">
-            <label className="input-label">Email Address</label>
-            <input type="email" className="input-field" value={email} onChange={e => setEmail(e.target.value)} required />
+            <label className="input-label" htmlFor="register-email">Email Address</label>
+            <input id="register-email" type="email" autoComplete="email" className="input-field" value={email} onChange={e => setEmail(e.target.value)} required />
           </div>
           <div className="input-group">
-            <label className="input-label">Phone Number</label>
-            <input type="tel" className="input-field" value={phone} onChange={e => setPhone(e.target.value)} required />
+            <label className="input-label" htmlFor="register-phone">Phone Number</label>
+            <input id="register-phone" type="tel" autoComplete="tel" className="input-field" value={phone} onChange={e => setPhone(e.target.value)} required />
           </div>
           <div className="input-group">
-            <label className="input-label">Password</label>
-            <input type="password" className="input-field" value={password} onChange={e => setPassword(e.target.value)} required />
+            <label className="input-label" htmlFor="register-password">Password</label>
+            <input id="register-password" type="password" autoComplete="new-password" minLength={10} className="input-field" value={password} onChange={e => setPassword(e.target.value)} required />
           </div>
+          <label style={{ display: 'flex', gap: '.6rem', alignItems: 'flex-start', color: 'var(--text-muted)', fontSize: '.85rem' }}><input type="checkbox" required style={{ marginTop: '.3rem' }} /> <span>I agree to the <Link href="/terms">Terms</Link> and acknowledge the <Link href="/privacy">Privacy Policy</Link>. Creating an account does not consent to insurer referrals.</span></label>
           <button type="submit" className="btn btn-primary" style={{ width: '100%', marginTop: '1rem' }} disabled={loading}>
             {loading ? 'Creating Account...' : 'Register'}
           </button>

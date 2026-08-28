@@ -16,6 +16,15 @@
   flex-direction: column;
 }
 
+.comparison-badge { position: absolute; top: -12px; right: 12px; background: var(--primary-accent); color: white; padding: 4px 10px; border-radius: 999px; font-size: .68rem; font-weight: 700; }
+.comparison-details { margin: 1rem 0; }
+.comparison-details div { padding: .65rem 0; border-bottom: 1px solid var(--border); }
+.comparison-details dt { color: var(--text-muted); font-size: .78rem; }
+.comparison-details dd { margin: .2rem 0 0; }
+.exclusions { padding: .8rem; border-left: 3px solid var(--secondary-accent); background: rgba(245,166,35,.06); border-radius: 6px; font-size: .85rem; }
+.exclusions ul { padding-left: 1rem; }
+.verification { margin-top: 1rem; font-size: .8rem; color: var(--text-muted); }
+
 .plan-name {
   font-weight: 600;
   margin-bottom: var(--space-md);

@@ -10,6 +10,11 @@ export type BlogPost = {
   description: string;
   date: string;
   author: string;
+  reviewedBy: string;
+  reviewedDate: string;
+  reviewStatus: string;
+  sources: { title: string; url: string }[];
+  language: string;
   content: string;
 };
 
@@ -39,6 +44,11 @@ export function getSortedPostsData(): Omit<BlogPost, 'content'>[] {
       description: matterResult.data.description,
       date: matterResult.data.date,
       author: matterResult.data.author,
+      reviewedBy: matterResult.data.reviewedBy || 'Khaacho Research Desk',
+      reviewedDate: matterResult.data.reviewedDate || matterResult.data.date,
+      reviewStatus: matterResult.data.reviewStatus || 'Editorially reviewed; professional review pending',
+      sources: matterResult.data.sources || [],
+      language: matterResult.data.language || 'en',
     };
   });
   
@@ -71,6 +81,11 @@ export function getPostData(slug: string): BlogPost | null {
     description: matterResult.data.description,
     date: matterResult.data.date,
     author: matterResult.data.author,
+    reviewedBy: matterResult.data.reviewedBy || 'Khaacho Research Desk',
+    reviewedDate: matterResult.data.reviewedDate || matterResult.data.date,
+    reviewStatus: matterResult.data.reviewStatus || 'Editorially reviewed; professional review pending',
+    sources: matterResult.data.sources || [],
+    language: matterResult.data.language || 'en',
     content: matterResult.content,
   };
 }

@@ -1,0 +1,17 @@
+.content-page { padding-top: var(--space-xl); padding-bottom: var(--space-2xl); }
+.content-hero { max-width: 760px; margin-bottom: var(--space-xl); }
+.content-eyebrow { color: var(--primary-accent); font-weight: 700; text-transform: uppercase; letter-spacing: .08em; font-size: .8rem; }
+.content-intro { margin-top: 1.25rem; color: var(--text-muted); font-size: 1.15rem; }
+.content-updated { margin-top: 1rem; font-size: .85rem; color: var(--text-muted); }
+.content-layout { display: grid; grid-template-columns: 220px minmax(0, 1fr); gap: var(--space-xl); align-items: start; }
+.content-nav { position: sticky; top: 130px; display: flex; flex-direction: column; gap: .7rem; padding: 1.25rem; border: 1px solid var(--border); border-radius: var(--radius-lg); background: var(--bg-surface); }
+.content-nav a { color: var(--text-muted); text-decoration: none; }
+.content-nav a:hover { color: var(--text-primary); }
+.content-sections { max-width: 760px; }
+.content-sections section { scroll-margin-top: 140px; padding-bottom: 2.5rem; margin-bottom: 2.5rem; border-bottom: 1px solid var(--border); }
+.content-sections h2 { margin-bottom: 1rem; }
+.content-sections p, .content-sections li { color: var(--text-muted); }
+.content-sections ul, .content-sections ol { padding-left: 1.25rem; margin-top: .75rem; }
+.content-sections li + li { margin-top: .55rem; }
+.content-cta { margin-top: 1rem; }
+@media (max-width: 760px) { .content-layout { grid-template-columns: 1fr; } .content-nav { position: static; } }

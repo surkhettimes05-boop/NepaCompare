@@ -2,7 +2,7 @@ import MotorQuoteWizard from '@/components/MotorQuoteWizard';
 import { Suspense } from 'react';
 
 export const metadata = {
-  title: 'Motor Insurance Quote Wizard | NepaCompare',
+  title: 'Motor Insurance Quote Wizard | Khaacho',
   description: 'Get instant, personalized motor insurance quotes in Nepal in under 2 minutes.',
 };
 

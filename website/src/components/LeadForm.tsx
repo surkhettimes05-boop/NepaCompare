@@ -43,15 +43,11 @@ export default function LeadForm() {
       const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8080';
       
       const token = localStorage.getItem('customer_token');
-      const userStr = localStorage.getItem('customer_user');
-      let userId = undefined;
-      
       const headers: HeadersInit = {
         'Content-Type': 'application/json'
       };
-      if (token && userStr) {
+      if (token) {
         headers['Authorization'] = `Bearer ${token}`;
-        userId = JSON.parse(userStr).id;
       }
 
       const response = await fetch(`${apiUrl}/leads`, {
@@ -65,7 +61,6 @@ export default function LeadForm() {
             phone: formData.phone,
             age: formData.age,
           },
-          userId
         }),
       });
 
@@ -135,9 +130,10 @@ export default function LeadForm() {
             <div className="input-group" style={{ flexDirection: 'row', alignItems: 'center', gap: '0.5rem' }}>
               <input type="checkbox" name="consent" id="consent" checked={formData.consent} onChange={handleChange} required style={{ width: '1.2rem', height: '1.2rem' }} />
               <label htmlFor="consent" className="input-label" style={{ fontSize: '0.8rem' }}>
-                I consent to NepaCompare and relevant insurers contacting me regarding this quote request.
+                I consent to Khaacho contacting me about this request. My details will not be sent to an insurer without a separate notice identifying that insurer.
               </label>
             </div>
+            <p className="text-muted" style={{ fontSize: '.8rem', marginBottom: '1rem' }}>See the <a href="/privacy">Privacy Policy</a>. This request is not an insurance application or binding quote.</p>
             <div style={{ display: 'flex', gap: '1rem', marginTop: '1rem' }}>
               <button type="button" className="btn btn-secondary" style={{ flex: 1 }} onClick={() => setStep(1)} disabled={loading}>
                 Back

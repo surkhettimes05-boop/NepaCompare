@@ -98,7 +98,7 @@ export default function Home() {
                       <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path></svg>
                       Illustrative — actual quotes may vary
                     </div>
-                    <button className="btn btn-primary btn-small">Compare Now</button>
+                    <Link href="/wizard/motor" className="btn btn-primary btn-small">Compare Motor</Link>
                   </div>
                 </div>
 
@@ -122,8 +122,8 @@ export default function Home() {
               <div className="stat-label">Always free to compare</div>
             </div>
             <div className="stat-item">
-              <div className="stat-value">3</div>
-              <div className="stat-label">Insurance verticals covered</div>
+              <div className="stat-value">1</div>
+              <div className="stat-label">Complete comparison journey: Motor</div>
             </div>
             <div className="stat-item">
               <div className="stat-value">Early</div>
@@ -191,10 +191,10 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Why NepaCompare — removed NIA Regulated card */}
+      {/* Why Khaacho — removed NIA Regulated card */}
       <section className="advantage-section">
         <div className="container">
-          <h2 className="heading-2" style={{ textAlign: 'center', marginBottom: '3rem' }}>The NepaCompare Advantage</h2>
+          <h2 className="heading-2" style={{ textAlign: 'center', marginBottom: '3rem' }}>The Khaacho Advantage</h2>
           <div className="advantage-grid">
             <div className="advantage-card">
               <div className="adv-icon">🛡️</div>
@@ -214,7 +214,7 @@ export default function Home() {
             <div className="advantage-card">
               <div className="adv-icon">🚀</div>
               <h3 className="heading-3">Early Access</h3>
-              <p className="text-muted">NepaCompare is in early access. We're actively building our insurer network. Pricing shown is indicative.</p>
+              <p className="text-muted">Khaacho is in early access. We're actively building our insurer network. Pricing shown is indicative.</p>
             </div>
           </div>
         </div>

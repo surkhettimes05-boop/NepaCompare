@@ -1,25 +1,25 @@
 /* Base Layout */
 .home-container {
-  padding-bottom: var(--space-xl);
+  padding-bottom: var(--space-20);
 }
 
-/* 4. Hero Section */
+/* Hero Section */
 .hero-section {
-  padding: 4rem 0 3rem; /* 64px 0 48px */
-  background: radial-gradient(circle at top right, rgba(46, 116, 233, 0.05) 0%, transparent 60%);
+  padding: var(--space-20) 0 var(--space-16);
+  background: radial-gradient(circle at top right, rgba(99, 102, 241, 0.08) 0%, transparent 60%);
 }
 
 .hero-grid {
   display: grid;
   grid-template-columns: 1.1fr 0.9fr;
-  gap: 3rem; /* 48px */
+  gap: var(--space-12);
   align-items: center;
 }
 
 .hero-content-stack {
   display: flex;
   flex-direction: column;
-  gap: 2rem; /* 32px */
+  gap: var(--space-8);
 }
 
 .hero-text {
@@ -27,58 +27,59 @@
 }
 
 .hero-text .heading-1 {
-  margin-bottom: 1rem; /* 16px */
+  margin-bottom: var(--space-4);
   line-height: 1.1;
 }
 
 .hero-subtitle {
-  font-size: 1.125rem;
+  font-size: var(--text-lg);
   line-height: 1.6;
-  max-width: 65ch; /* strict paragraph width */
+  max-width: 65ch;
+  color: var(--text-secondary);
 }
 
 /* Actions */
 .hero-actions {
   display: flex;
-  gap: 1rem; /* 16px */
+  gap: var(--space-4);
   align-items: center;
   flex-wrap: wrap;
 }
 
 .btn-large {
-  min-height: 48px; /* 44px min touch target, 48px looks better */
-  padding: 0 1.5rem; /* 24px */
-  font-size: 1rem;
+  min-height: 48px;
+  padding: 0 var(--space-6);
+  font-size: var(--text-base);
   font-weight: 500;
   border-radius: var(--radius-md);
-  box-shadow: 0 4px 12px rgba(46, 116, 233, 0.15);
+  box-shadow: 0 4px 12px rgba(99, 102, 241, 0.2);
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  transition: all var(--transition-smooth);
 }
 
 .btn-large:hover {
   transform: translateY(-2px);
-  box-shadow: 0 6px 16px rgba(46, 116, 233, 0.25);
+  box-shadow: 0 6px 20px rgba(99, 102, 241, 0.3);
 }
 
 .btn-ghost {
   background: transparent;
-  color: var(--text-primary);
+  color: var(--text-secondary);
   border: 1px solid transparent;
   min-height: 48px;
-  padding: 0 1.5rem;
+  padding: 0 var(--space-6);
   border-radius: var(--radius-md);
   font-weight: 500;
   box-shadow: none;
-  transition: all 0.2s ease;
+  transition: all var(--transition-base);
 }
 
 .btn-ghost:hover {
-  background: rgba(255, 255, 255, 0.05);
+  background: var(--bg-surface);
   color: var(--text-primary);
-  transform: translateY(0);
+  border-color: var(--border-default);
 }
 
 /* Trust Indicators */
@@ -86,23 +87,24 @@
   display: flex;
   align-items: center;
   flex-wrap: wrap;
-  gap: 0.75rem; /* 12px */
-  font-size: 0.8125rem; /* 13px */
+  gap: var(--space-3);
+  font-size: var(--text-xs);
   font-weight: 500;
+  color: var(--text-tertiary);
 }
 
 .trust-item {
   display: flex;
   align-items: center;
-  gap: 0.25rem; /* 4px */
+  gap: var(--space-1);
 }
 
 .trust-item svg {
-  color: var(--primary-accent);
+  color: var(--success);
 }
 
 .trust-dot {
-  color: var(--border);
+  color: var(--border-default);
 }
 
 /* Policy Widget Visual */
@@ -117,19 +119,18 @@
   position: relative;
   width: 100%;
   max-width: 440px;
-  /* Instead of absolute heights, we let content dictate or use a min-height */
   min-height: 320px;
 }
 
 .widget-card {
   position: absolute;
   background: var(--bg-surface);
-  border: 1px solid var(--border);
-  border-radius: var(--radius-lg);
-  padding: 1.5rem; /* 24px */
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-xl);
+  padding: var(--space-6);
   width: 90%;
-  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.4);
-  transition: all 0.3s ease;
+  box-shadow: var(--shadow-xl);
+  transition: all var(--transition-smooth);
 }
 
 .widget-back {
@@ -138,29 +139,28 @@
   z-index: 1;
   transform: scale(0.92) translateY(0);
   transform-origin: top center;
-  opacity: 0.6;
-  border-color: var(--border);
-  /* Use a lighter shadow so it recedes */
-  box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+  opacity: 0.5;
+  border-color: var(--border-default);
+  box-shadow: var(--shadow-md);
 }
 
 .widget-spacer {
-  height: 80px; /* Leaves room so front card covers empty space, not text */
+  height: 80px;
 }
 
 .widget-front {
-  top: 4.5rem; /* 72px offset */
+  top: 4.5rem;
   right: 0;
   z-index: 2;
-  border-color: var(--border);
+  border-color: var(--border-default);
   background: var(--bg-surface-elevated);
-  /* Deep, crisp shadow to separate from back card */
-  box-shadow: 0 24px 48px rgba(0, 0, 0, 0.5), 0 0 0 1px rgba(255,255,255,0.05) inset;
+  box-shadow: var(--shadow-xl), 0 0 0 1px rgba(255,255,255,0.05) inset;
 }
 
 .widget-front:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 28px 56px rgba(0, 0, 0, 0.6), 0 0 0 1px rgba(255,255,255,0.05) inset;
+  transform: translateY(-4px);
+  box-shadow: 0 32px 64px rgba(0, 0, 0, 0.7), 0 0 0 1px rgba(255,255,255,0.05) inset;
+  border-color: var(--border-strong);
 }
 
 /* Widget Micro-UI Elements */
@@ -168,15 +168,15 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 1rem; /* 16px */
+  margin-bottom: var(--space-4);
 }
 
 .live-badge {
   display: flex;
   align-items: center;
-  gap: 0.375rem; /* 6px */
-  font-size: 0.75rem;
-  color: var(--text-muted);
+  gap: var(--space-1);
+  font-size: var(--text-xs);
+  color: var(--text-tertiary);
   font-weight: 500;
 }
 
@@ -195,12 +195,11 @@
 }
 
 .best-value-badge {
-  /* No longer absolute, sits in flow to prevent text intersection */
-  background: var(--secondary-accent);
+  background: var(--warning);
   color: #000;
-  font-size: 0.7rem;
+  font-size: var(--text-xs);
   font-weight: 700;
-  padding: 0.25rem 0.5rem; /* 4px 8px */
+  padding: var(--space-1) var(--space-2);
   border-radius: var(--radius-sm);
   letter-spacing: 0.05em;
   text-transform: uppercase;
@@ -210,25 +209,25 @@
   display: flex;
   justify-content: space-between;
   align-items: flex-start;
-  margin-bottom: 1.5rem; /* 24px */
+  margin-bottom: var(--space-6);
 }
 
 .insurer-info {
   display: flex;
   align-items: center;
-  gap: 0.75rem; /* 12px */
+  gap: var(--space-3);
 }
 
 .insurer-logo-mock {
   width: 32px;
   height: 32px;
-  border-radius: 6px;
+  border-radius: var(--radius-md);
   display: flex;
   align-items: center;
   justify-content: center;
   font-weight: 700;
   font-family: var(--font-display);
-  font-size: 1rem;
+  font-size: var(--text-base);
 }
 
 .logo-neco { background: #E84C3D; color: white; }
@@ -236,13 +235,15 @@
 
 .insurer-name {
   font-weight: 600;
-  font-size: 1rem; /* 16px */
+  font-size: var(--text-base);
   line-height: 1.2;
+  color: var(--text-primary);
 }
 
 .policy-type {
-  font-size: 0.8125rem; /* 13px */
+  font-size: var(--text-xs);
   margin-top: 2px;
+  color: var(--text-tertiary);
 }
 
 .price-block {
@@ -251,35 +252,37 @@
 
 .policy-price {
   font-family: var(--font-display);
-  font-size: 1.25rem; /* 20px */
+  font-size: var(--text-xl);
   font-weight: 600;
   line-height: 1;
+  color: var(--text-primary);
 }
 
 .term {
-  font-size: 0.75rem;
+  font-size: var(--text-xs);
   font-family: var(--font-body);
   font-weight: 400;
   margin-left: 2px;
+  color: var(--text-tertiary);
 }
 
 .widget-details {
-  border-top: 1px solid var(--border);
-  padding-top: 1rem; /* 16px */
-  margin-bottom: 1.5rem; /* 24px */
+  border-top: 1px solid var(--border-default);
+  padding-top: var(--space-4);
+  margin-bottom: var(--space-6);
   display: flex;
   flex-direction: column;
-  gap: 0.5rem; /* 8px */
+  gap: var(--space-2);
 }
 
 .detail-row {
   display: flex;
   justify-content: space-between;
-  font-size: 0.8125rem; /* 13px */
+  font-size: var(--text-xs);
 }
 
 .detail-val {
-  color: var(--text-primary);
+  color: var(--text-secondary);
   font-weight: 500;
 }
 
@@ -287,40 +290,40 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  background: rgba(34, 181, 115, 0.05);
-  border: 1px solid rgba(34, 181, 115, 0.1);
-  padding: 0.75rem; /* 12px */
+  background: var(--success-light);
+  border: 1px solid rgba(16, 185, 129, 0.2);
+  padding: var(--space-3);
   border-radius: var(--radius-md);
-  margin: -0.5rem; /* slightly pull out into padding */
+  margin: calc(var(--space-3) * -1);
 }
 
 .savings-tag {
   display: flex;
   align-items: center;
-  gap: 0.375rem; /* 6px */
+  gap: var(--space-1);
   color: var(--success);
-  font-size: 0.8125rem; /* 13px */
+  font-size: var(--text-xs);
   font-weight: 600;
 }
 
 .btn-small {
   min-height: 32px;
-  padding: 0 1rem;
-  font-size: 0.8125rem;
+  padding: 0 var(--space-4);
+  font-size: var(--text-xs);
   border-radius: var(--radius-sm);
-  background: var(--primary-accent);
-  color: white;
+  background: var(--primary);
+  color: var(--text-primary);
   border: none;
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition: all var(--transition-fast);
 }
 
 .btn-small:hover {
-  background: var(--primary-accent-hover);
+  background: var(--primary-hover);
 }
 
 /* Colors */
-.highlight-blue { color: var(--primary-accent); }
+.highlight-blue { color: var(--primary); }
 .highlight-green { color: var(--success); }
 
 /* Animations for Cards */
@@ -348,54 +351,54 @@
 /* Signature Divider */
 .signature-divider {
   width: 100%;
-  margin-top: 5rem; /* 80px */
+  margin-top: var(--space-20);
   display: flex;
   justify-content: center;
 }
 
-/* 5. Trust Stats Row */
+/* Stats Section */
 .stats-section {
-  padding: 4rem 0; /* 64px */
+  padding: var(--space-16) 0;
   background: var(--bg-surface);
-  border-top: 1px solid var(--border);
-  border-bottom: 1px solid var(--border);
+  border-top: 1px solid var(--border-subtle);
+  border-bottom: 1px solid var(--border-subtle);
 }
 
 .stats-grid {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
-  gap: 1.5rem; /* 24px */
+  gap: var(--space-6);
   text-align: center;
 }
 
 .stat-value {
   font-family: var(--font-display);
-  font-size: 2.5rem; /* 40px */
+  font-size: var(--text-4xl);
   font-weight: 700;
-  color: var(--primary-accent);
-  margin-bottom: 0.5rem; /* 8px */
+  color: var(--primary);
+  margin-bottom: var(--space-2);
 }
 
 .stat-label {
-  color: var(--text-muted);
-  font-size: 0.95rem;
+  color: var(--text-secondary);
+  font-size: var(--text-sm);
   font-weight: 500;
 }
 
-/* 6. Category Grid */
+/* Category Section */
 .category-section {
-  padding: 5rem 0; /* 80px */
+  padding: var(--space-20) 0;
 }
 
 .vertical-selector {
-  max-width: 1000px;
+  max-width: var(--container-xl);
   margin: 0 auto;
 }
 
 .vertical-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-  gap: 1.5rem; /* 24px */
+  gap: var(--space-6);
 }
 
 .vertical-card {
@@ -403,23 +406,24 @@
   flex-direction: column;
   align-items: center;
   text-align: center;
-  padding: 2rem 1.5rem; /* 32px 24px */
+  padding: var(--space-8) var(--space-6);
   background: var(--bg-surface);
-  border: 1px solid var(--border);
-  border-radius: var(--radius-md);
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-lg);
   text-decoration: none;
   color: var(--text-primary);
-  transition: all 0.2s ease;
+  transition: all var(--transition-base);
 }
 
 .vertical-card:hover {
-  transform: translateY(-2px);
+  transform: translateY(-4px);
   background: var(--bg-surface-elevated);
-  border-color: var(--primary-accent);
+  border-color: var(--primary);
+  box-shadow: var(--shadow-lg);
 }
 
 .icon-wrapper {
-  margin-bottom: 1rem; /* 16px */
+  margin-bottom: var(--space-4);
   position: relative;
   display: flex;
   justify-content: center;
@@ -428,17 +432,17 @@
   height: 48px;
 }
 
-/* 8. Advantage Section */
+/* Advantage Section */
 .advantage-section {
-  padding: 5rem 0; /* 80px */
+  padding: var(--space-20) 0;
   background: var(--bg-surface);
-  border-top: 1px solid var(--border);
+  border-top: 1px solid var(--border-subtle);
 }
 
 .advantage-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
-  gap: 3rem; /* 48px */
+  gap: var(--space-12);
 }
 
 .advantage-card {
@@ -447,7 +451,7 @@
 
 .adv-icon {
   font-size: 2.5rem;
-  margin-bottom: 1rem; /* 16px */
+  margin-bottom: var(--space-4);
 }
 
 /* 9. Partners Marquee */
@@ -531,24 +535,24 @@
 /* Responsive Overrides */
 @media (max-width: 992px) {
   .hero-grid {
-    gap: 2rem;
+    gap: var(--space-8);
   }
   
   .stats-grid {
     grid-template-columns: 1fr 1fr;
-    gap: 2rem;
+    gap: var(--space-6);
   }
 }
 
 @media (max-width: 768px) {
   .hero-section {
-    padding: 3rem 0;
+    padding: var(--space-12) 0;
   }
 
   .hero-grid {
     grid-template-columns: 1fr;
     text-align: center;
-    gap: 3rem;
+    gap: var(--space-12);
   }
   
   .hero-text {
@@ -573,12 +577,11 @@
   }
   
   .policy-widget-container {
-    /* Stack cards differently or hide back card on mobile to prevent squishing */
     min-height: 380px;
   }
   
   .widget-back {
-    display: none; /* Hide back card on mobile to prevent clutter */
+    display: none;
   }
   
   .widget-front {
@@ -589,5 +592,14 @@
   
   .stats-grid {
     grid-template-columns: 1fr;
+  }
+  
+  .vertical-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .advantage-grid {
+    grid-template-columns: 1fr;
+    gap: var(--space-8);
   }
 }

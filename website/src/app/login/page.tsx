@@ -39,29 +39,31 @@ export default function LoginPage() {
   };
 
   return (
-    <div style={{ minHeight: '80vh', display: 'flex', flexDirection: 'column', alignItems: 'center', paddingTop: '4rem' }}>
-      <div className="card" style={{ width: '100%', maxWidth: '400px', padding: '2rem' }}>
-        <h1 className="heading-2" style={{ textAlign: 'center', marginBottom: '1.5rem' }}>Login to NepaCompare</h1>
+    <div style={{ minHeight: '80vh', display: 'flex', flexDirection: 'column', alignItems: 'center', paddingTop: 'var(--space-20)' }}>
+      <div className="card" style={{ width: '100%', maxWidth: '400px', padding: 'var(--space-8)' }}>
+        <h1 className="heading-2" style={{ textAlign: 'center', marginBottom: 'var(--space-2)' }}>Login to NepaCompare</h1>
+        <p className="text-muted" style={{ textAlign: 'center', marginBottom: 'var(--space-8)' }}>Access your digital locker and manage your policies</p>
         
-        {error && <div style={{ color: 'var(--accent-red)', marginBottom: '1rem', textAlign: 'center' }}>{error}</div>}
+        {error && <div className="badge badge-error" style={{ marginBottom: 'var(--space-6)', padding: 'var(--space-3)', width: '100%', textAlign: 'center', borderRadius: 'var(--radius-md)' }}>{error}</div>}
         
         <form onSubmit={handleLogin}>
           <div className="input-group">
-            <label className="input-label">Email Address</label>
-            <input type="email" className="input-field" value={email} onChange={e => setEmail(e.target.value)} required />
+            <label className="input-label" htmlFor="login-email">Email Address</label>
+            <input id="login-email" type="email" autoComplete="email" className="input-field" value={email} onChange={e => setEmail(e.target.value)} required placeholder="you@example.com" />
           </div>
           <div className="input-group">
-            <label className="input-label">Password</label>
-            <input type="password" className="input-field" value={password} onChange={e => setPassword(e.target.value)} required />
+            <label className="input-label" htmlFor="login-password">Password</label>
+            <input id="login-password" type="password" autoComplete="current-password" className="input-field" value={password} onChange={e => setPassword(e.target.value)} required placeholder="••••••••" />
           </div>
-          <button type="submit" className="btn btn-primary" style={{ width: '100%', marginTop: '1rem' }} disabled={loading}>
+          <button type="submit" className="btn btn-primary" style={{ width: '100%', marginTop: 'var(--space-4)' }} disabled={loading}>
             {loading ? 'Logging in...' : 'Login'}
           </button>
         </form>
+        <div style={{ textAlign: 'right', marginTop: 'var(--space-4)' }}><Link href="/forgot-password" className="text-secondary" style={{ fontSize: 'var(--text-sm)' }}>Forgot password?</Link></div>
         
-        <div style={{ textAlign: 'center', marginTop: '1.5rem' }}>
-          <span className="text-muted">Don't have an account? </span>
-          <Link href="/register" style={{ color: 'var(--primary-color)', fontWeight: 500 }}>Register</Link>
+        <div style={{ textAlign: 'center', marginTop: 'var(--space-6)', paddingTop: 'var(--space-6)', borderTop: '1px solid var(--border-subtle)' }}>
+          <span className="text-muted" style={{ fontSize: 'var(--text-sm)' }}>Don't have an account? </span>
+          <Link href="/register" style={{ color: 'var(--primary)', fontWeight: 500, fontSize: 'var(--text-sm)' }}>Register</Link>
         </div>
       </div>
     </div>
