@@ -5,35 +5,39 @@
   /* Stripe-inspired Design Tokens */
   
   /* Colors - Backgrounds */
-  --bg-base: #0A0E17;
-  --bg-surface: #111827;
-  --bg-surface-elevated: #1F2937;
-  --bg-surface-hover: #374151;
+  --bg-base: #ffffff;
+  --bg-surface: #f7f9fc;
+  --bg-surface-elevated: #eef3ff;
+  --bg-surface-hover: #e7edff;
   
   /* Colors - Primary */
-  --primary: #6366F1;
-  --primary-hover: #818CF8;
-  --primary-light: rgba(99, 102, 241, 0.1);
-  --primary-glow: rgba(99, 102, 241, 0.25);
+  --primary: #4f46e5;
+  --primary-hover: #3730a3;
+  --primary-light: #eef2ff;
+  --primary-glow: rgba(79, 70, 229, 0.16);
+  --primary-color: var(--primary);
+  --primary-accent: var(--primary);
+  --card-bg: #ffffff;
+  --border-color: var(--border-default);
   
   /* Colors - Semantic */
   --success: #10B981;
-  --success-light: rgba(16, 185, 129, 0.1);
+  --success-light: #ecfdf5;
   --warning: #F59E0B;
   --warning-light: rgba(245, 158, 11, 0.1);
   --error: #EF4444;
   --error-light: rgba(239, 68, 68, 0.1);
   
   /* Colors - Text */
-  --text-primary: #F9FAFB;
-  --text-secondary: #D1D5DB;
-  --text-tertiary: #9CA3AF;
-  --text-muted: #6B7280;
+  --text-primary: #111827;
+  --text-secondary: #475569;
+  --text-tertiary: #64748b;
+  --text-muted: #64748b;
   
   /* Colors - Borders */
-  --border-subtle: rgba(255, 255, 255, 0.06);
-  --border-default: rgba(255, 255, 255, 0.1);
-  --border-strong: rgba(255, 255, 255, 0.15);
+  --border-subtle: #eef0f4;
+  --border-default: #e2e8f0;
+  --border-strong: #cbd5e1;
   --border-focus: var(--primary);
   
   /* Typography */
@@ -74,10 +78,10 @@
   --radius-full: 9999px;
   
   /* Shadows */
-  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.3);
-  --shadow-md: 0 4px 6px rgba(0, 0, 0, 0.4);
-  --shadow-lg: 0 10px 15px rgba(0, 0, 0, 0.5);
-  --shadow-xl: 0 20px 25px rgba(0, 0, 0, 0.6);
+  --shadow-sm: 0 1px 2px rgba(15, 23, 42, 0.05);
+  --shadow-md: 0 8px 20px rgba(15, 23, 42, 0.07);
+  --shadow-lg: 0 18px 40px rgba(15, 23, 42, 0.1);
+  --shadow-xl: 0 24px 60px rgba(15, 23, 42, 0.12);
   --shadow-glow: 0 0 20px var(--primary-glow);
   
   /* Transitions */

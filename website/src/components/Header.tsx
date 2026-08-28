@@ -23,26 +23,15 @@ export default function Header() {
   };
 
   return (
-    <header className="site-header glass-panel">
-      <div className="utility-bar">
-        <div className="container utility-container">
-          <Link href="/compare" className="utility-link">Compare</Link>
-          <Link href="/renew" className="utility-link">Renew</Link>
-          <Link href="/claims" className="utility-link">Claims</Link>
-          <Link href="/dashboard" className="utility-link">My Locker</Link>
-        </div>
-      </div>
+    <header className="site-header">
       <div className="container header-container">
         <Link href="/" className="logo">
           Nepa<span style={{ color: 'var(--primary-accent)' }}>Compare</span>
         </Link>
         <nav className="desktop-nav">
-          <Link href="/motor">Motor</Link>
-          <Link href="/health">Health</Link>
-          <Link href="/life">Life</Link>
-          <Link href="/travel">Travel</Link>
-          <Link href="/blog">Blog</Link>
-          <Link href="/glossary">Glossary</Link>
+          <div className="nav-menu"><span>Insurance <small>⌄</small></span><div className="nav-dropdown"><Link href="/motor">Motor</Link><Link href="/health">Health</Link><Link href="/life">Life</Link></div></div>
+          <div className="nav-menu"><span>Resources <small>⌄</small></span><div className="nav-dropdown"><Link href="/blog">Guides &amp; blog</Link><Link href="/glossary">Glossary</Link></div></div>
+          <Link href="/how-it-works">How it works</Link>
         </nav>
         <div className="header-actions">
           <button type="button" className="mobile-menu-button" aria-label={isMenuOpen ? 'Close navigation' : 'Open navigation'} aria-expanded={isMenuOpen} aria-controls="mobile-navigation" onClick={() => setIsMenuOpen(value => !value)}>
@@ -54,7 +43,7 @@ export default function Header() {
               <button onClick={handleLogout} className="btn btn-ghost btn-sm">Logout</button>
             </div>
           ) : (
-            <Link href="/login" className="btn btn-primary">Sign In</Link>
+            <><Link href="/login" className="btn btn-ghost">Sign in</Link><Link href="/compare" className="btn btn-primary">Compare plans</Link></>
           )}
         </div>
       </div>

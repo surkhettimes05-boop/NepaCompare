@@ -12,17 +12,6 @@ export default function ChatWidget() {
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const pathname = usePathname();
 
-  // Proactive greeting simulation after 3 seconds
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      if (messages.length === 0) {
-        setMessages([{ role: 'bot', text: 'Hi! I am NepaBot, your AI Insurance Advisor. How can I help you today?' }]);
-        setIsOpen(true);
-      }
-    }, 3000);
-    return () => clearTimeout(timer);
-  }, [messages.length]);
-
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   };
@@ -52,7 +41,7 @@ export default function ChatWidget() {
       setTimeout(() => {
         setMessages(prev => [...prev, { 
           role: 'bot', 
-          text: "I understand you might be feeling frustrated. To help me assist you better, could you please rephrase your concern? Alternatively, I can connect you directly with a human Financial Doctor right now." 
+          text: "I want to help. Could you rephrase that question so I can give you useful insurance information?"
         }]);
         setIsTyping(false);
       }, 1000);
@@ -69,12 +58,11 @@ export default function ChatWidget() {
       
       const data = await res.json();
       
-      // Simulate typing token stream effect but very quickly (WebGPU inference speed)
       setIsTyping(false);
-      setMessages(prev => [...prev, { role: 'bot', text: data.response || "Sorry, I encountered an error." }]);
+      setMessages(prev => [...prev, { role: 'bot', text: data.response || "I could not find an answer just now. Please try again." }]);
       
     } catch (err) {
-      setMessages(prev => [...prev, { role: 'bot', text: "Sorry, I am having trouble connecting to the server right now." }]);
+      setMessages(prev => [...prev, { role: 'bot', text: "I am having trouble connecting right now. Please try again in a moment." }]);
       setIsTyping(false);
     }
   };
@@ -111,7 +99,7 @@ export default function ChatWidget() {
             width: '60px',
             height: '60px',
             borderRadius: '50%',
-            backgroundColor: 'var(--primary-color)',
+            backgroundColor: 'var(--primary)',
             color: 'white',
             border: 'none',
             boxShadow: '0 4px 12px rgba(0,0,0,0.15)',
@@ -161,7 +149,7 @@ export default function ChatWidget() {
         }}>
           {/* Header */}
           <div style={{
-            backgroundColor: 'var(--primary-color)',
+            backgroundColor: 'var(--primary)',
             color: 'white',
             padding: '1rem',
             display: 'flex',
@@ -171,11 +159,11 @@ export default function ChatWidget() {
           }}>
             <div>
               <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                <span style={{ fontWeight: 600, fontSize: '1.1rem' }}>NepaBot AI</span>
+                <span style={{ fontWeight: 600, fontSize: '1.1rem' }}>NepaBot</span>
               </div>
               <div style={{ display: 'flex', alignItems: 'center', gap: '0.35rem', marginTop: '0.25rem' }}>
                 <div style={{ width: '8px', height: '8px', borderRadius: '50%', backgroundColor: '#10B981', animation: 'pulse-gpu 2s infinite' }}></div>
-                <span style={{ fontSize: '0.75rem', opacity: 0.9 }}>WebGPU Inference Active ⚡</span>
+                <span style={{ fontSize: '0.75rem', opacity: 0.9 }}>Insurance assistant</span>
               </div>
             </div>
             <button 
@@ -196,11 +184,19 @@ export default function ChatWidget() {
             gap: '1rem',
             backgroundColor: 'rgba(248, 250, 252, 0.5)'
           }}>
+            {messages.length === 0 && !isTyping && (
+              <div style={{ display: 'grid', gap: '0.5rem' }}>
+                <p style={{ color: '#64748b', fontSize: '0.8rem', margin: 0 }}>What can I help you understand?</p>
+                {['Compare motor insurance', 'What does comprehensive cover mean?', 'How do insurance claims work?', 'Help me understand this quote'].map(prompt => (
+                  <button key={prompt} type="button" onClick={() => setInput(prompt)} style={{ padding: '0.65rem 0.75rem', border: '1px solid #e2e8f0', borderRadius: '8px', background: '#fff', color: '#334155', textAlign: 'left', cursor: 'pointer', fontSize: '0.8rem' }}>{prompt}</button>
+                ))}
+              </div>
+            )}
             {messages.map((m, i) => (
               <div key={i} style={{
                 alignSelf: m.role === 'user' ? 'flex-end' : 'flex-start',
                 maxWidth: '85%',
-                backgroundColor: m.role === 'user' ? 'var(--primary-color)' : 'white',
+                backgroundColor: m.role === 'user' ? 'var(--primary)' : 'white',
                 color: m.role === 'user' ? 'white' : '#1e293b',
                 padding: '0.75rem 1rem',
                 borderRadius: m.role === 'user' ? '12px 12px 0 12px' : '12px 12px 12px 0',
@@ -255,7 +251,7 @@ export default function ChatWidget() {
               }}
             />
             <button type="submit" disabled={!input.trim() || isTyping} style={{
-              backgroundColor: 'var(--primary-color)',
+              backgroundColor: 'var(--primary)',
               color: 'white',
               border: 'none',
               borderRadius: '50%',
