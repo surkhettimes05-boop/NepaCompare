@@ -26,7 +26,7 @@ export default function Login() {
         res = await fetch(`${apiUrl}/auth/login`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ phone, password }),
+          body: JSON.stringify({ phoneNumber: phone, password }),
           signal: controller.signal,
         });
       } finally {

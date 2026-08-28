@@ -156,10 +156,14 @@ async function requireAdmin(request: Request, env: Env): Promise<StaffClaims | R
 }
 
 async function staffLogin(request: Request, env: Env) {
-  const body = (await request.json()) as { phone?: string; password?: string };
-  const phone = String(body.phone || "").trim().replace(/\s+/g, "");
+  const body = (await request.json()) as { phone?: string; phoneNumber?: string; password?: string };
+  const phone = String(body.phoneNumber || body.phone || "").trim().replace(/\s+/g, "");
   const password = String(body.password || "");
-  if (!phone || !password) return json(request, { message: "Phone and password are required" }, 400);
+  console.log("Admin login request", { phone, hasPassword: Boolean(password), field: body.phoneNumber ? "phoneNumber" : "phone" });
+  if (!phone || !password) {
+    console.log("Admin login rejected", { phone, reason: "missing_credentials" });
+    return json(request, { message: "Phone and password are required" }, 400);
+  }
 
   try {
     const staff = await withDb(env, async (db) => {
@@ -170,11 +174,21 @@ async function staffLogin(request: Request, env: Env) {
       return result.rows[0];
     });
 
-    if (!staff || !staff.active || staff.role !== "ADMIN" || !staff.password || !(await bcrypt.compare(password, staff.password))) {
+    console.log("Admin staff lookup", { phone, userFound: Boolean(staff), active: Boolean(staff?.active), role: staff?.role || null, hasPasswordHash: Boolean(staff?.password) });
+    if (!staff || !staff.active || staff.role !== "ADMIN" || !staff.password) {
+      console.log("Admin login rejected", { phone, reason: !staff ? "user_not_found" : !staff.active ? "inactive_user" : staff.role !== "ADMIN" ? "non_admin_role" : "missing_password_hash" });
+      return json(request, { message: "Invalid credentials" }, 401);
+    }
+
+    const passwordMatch = await bcrypt.compare(password, staff.password);
+    console.log("Admin password check", { phone, passwordMatch });
+    if (!passwordMatch) {
+      console.log("Admin login rejected", { phone, reason: "invalid_password" });
       return json(request, { message: "Invalid credentials" }, 401);
     }
 
     const accessToken = createJwt({ sub: staff.id, phone: staff.phone, role: staff.role }, env.JWT_SECRET);
+    console.log("Admin JWT created", { phone, jwtCreated: Boolean(accessToken), responseStatus: 200 });
     return json(request, { access_token: accessToken, user: { id: staff.id, name: staff.name, phone: staff.phone, role: staff.role } });
   } catch (error) {
     console.error("Staff login failed:", error);
