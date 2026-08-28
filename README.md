@@ -40,5 +40,6 @@ The internal dashboard for your team to manage leads and partners.
 5. Click **Deploy**.
 
 ## Post-Deployment
-- Log into your production CRM using `9800000000` and `admin_password`.
+- Create a production admin with `ADMIN_PHONE=<phone> ADMIN_PASSWORD=<strong-password> npm run seed:admin` from the `backend` directory. The password is bcrypt-hashed and is never stored in source code.
+- Configure the CRM deployment's `VITE_API_URL` to the deployed NestJS backend URL before signing in.
 - Test submitting a lead on the live Website and verify it appears in the live CRM!
