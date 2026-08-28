@@ -17,7 +17,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 
 export default async function BlogPostPage({ params }: Props) {
   const { slug } = await params; const post = getPostData(slug); if (!post) notFound();
-  const site = 'https://khaacho.com';
+  const site = 'https://www.khaacho.com';
   const schema = { '@context': 'https://schema.org', '@type': 'Article', headline: post.title, description: post.description, datePublished: post.date, dateModified: post.reviewedDate, inLanguage: post.language, mainEntityOfPage: `${site}/blog/${slug}`, author: { '@type': 'Organization', name: post.author, url: `${site}/authors/editorial-team` }, reviewedBy: { '@type': 'Organization', name: post.reviewedBy, url: `${site}/reviewers/research-desk` }, publisher: { '@type': 'Organization', name: 'Khaacho', url: site }, citation: post.sources.map(source => source.url) };
   const breadcrumbSchema = { '@context': 'https://schema.org', '@type': 'BreadcrumbList', itemListElement: [{ '@type': 'ListItem', position: 1, name: 'Home', item: site }, { '@type': 'ListItem', position: 2, name: 'Blog', item: `${site}/blog` }, { '@type': 'ListItem', position: 3, name: post.title, item: `${site}/blog/${slug}` }] };
   return <article className="container" style={{ maxWidth: 860, paddingTop: '4rem', paddingBottom: '5rem' }}><script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify([schema, breadcrumbSchema]) }} />

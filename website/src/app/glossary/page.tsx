@@ -42,7 +42,7 @@ export default function Glossary() {
     "@context": "https://schema.org",
     "@type": "DefinedTermSet",
     "name": "Khaacho Insurance Glossary",
-    "url": "https://khaacho.com/glossary",
+    "url": "https://www.khaacho.com/glossary",
     "hasDefinedTerm": glossaryTerms.map(item => ({ "@type": "DefinedTerm", "name": item.term, "description": item.definition }))
   };
 

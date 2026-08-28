@@ -107,9 +107,9 @@ export default async function CategoryPage({ params }: Props) {
             "@context": "https://schema.org",
             "@type": "WebPage",
             "name": `${title} Insurance in Nepal`,
-            "url": `https://khaacho.com/${vertical}`,
+            "url": `https://www.khaacho.com/${vertical}`,
             "description": productDescriptions[vertical as Vertical],
-            "isPartOf": { "@type": "WebSite", "name": "Khaacho", "url": "https://khaacho.com" }
+            "isPartOf": { "@type": "WebSite", "name": "Khaacho", "url": "https://www.khaacho.com" }
           })
         }}
       />

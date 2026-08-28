@@ -1,6 +1,6 @@
 import type { Metadata } from 'next';
 
-export const SITE_URL = 'https://khaacho.com';
+export const SITE_URL = 'https://www.khaacho.com';
 
 export function absoluteUrl(path: string): string {
   const normalizedPath = path === '/' ? '' : `/${path.replace(/^\/+/, '').replace(/\/+$/, '')}`;
