@@ -46,7 +46,7 @@ export default function RootLayout({
     '@type': 'Organization',
     name: 'Khaacho',
     url: SITE_URL,
-    logo: absoluteUrl('/favicon.ico'),
+    logo: absoluteUrl('/logo.png'),
     description: 'Independent insurance information and comparison platform for Nepal.'
   };
   const websiteSchema = {
