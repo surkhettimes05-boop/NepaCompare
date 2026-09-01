@@ -9,6 +9,7 @@ export function absoluteUrl(path: string): string {
 
 export function pageMetadata(path: string, title: string, description: string, options: Partial<Metadata> = {}): Metadata {
   const url = absoluteUrl(path);
+  const socialImage = { url: absoluteUrl('/opengraph-image'), width: 1200, height: 630, alt: 'Khaacho — independent insurance comparison for Nepal' };
   return {
     ...options,
     title,
@@ -21,12 +22,14 @@ export function pageMetadata(path: string, title: string, description: string, o
       description,
       siteName: 'Khaacho',
       locale: 'en_NP',
+      images: [socialImage],
       ...options.openGraph,
     },
     twitter: {
       card: 'summary_large_image',
       title,
       description,
+      images: [socialImage.url],
       ...options.twitter,
     },
   };

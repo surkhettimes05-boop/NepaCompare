@@ -2,8 +2,8 @@
 title: "Motor Insurance Claim Checklist for Nepal"
 description: "What to do after a motor incident, what documents to preserve and why insurer instructions matter."
 date: "2026-08-03"
-author: "NepaCompare Editorial Team"
-reviewedBy: "NepaCompare Research Desk"
+author: "Khaacho Editorial Team"
+reviewedBy: "Khaacho Research Desk"
 reviewedDate: "2026-08-03"
 reviewStatus: "Editorially reviewed; professional review pending"
 language: "en"
@@ -38,4 +38,4 @@ Official insurer FAQs identify licensing, intoxication, ordinary wear and tear a
 
 ## Escalation
 
-Use the insurer’s grievance process first and retain written records. If unresolved, consult the complaint information published by the Nepal Insurance Authority. NepaCompare does not decide claims.
+Use the insurer’s grievance process first and retain written records. If unresolved, consult the complaint information published by the Nepal Insurance Authority. Khaacho does not decide claims.

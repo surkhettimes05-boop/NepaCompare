@@ -41,7 +41,7 @@ export default function LoginPage() {
   return (
     <div style={{ minHeight: '80vh', display: 'flex', flexDirection: 'column', alignItems: 'center', paddingTop: 'var(--space-20)' }}>
       <div className="card" style={{ width: '100%', maxWidth: '400px', padding: 'var(--space-8)' }}>
-        <h1 className="heading-2" style={{ textAlign: 'center', marginBottom: 'var(--space-2)' }}>Login to NepaCompare</h1>
+        <h1 className="heading-2" style={{ textAlign: 'center', marginBottom: 'var(--space-2)' }}>Login to Khaacho</h1>
         <p className="text-muted" style={{ textAlign: 'center', marginBottom: 'var(--space-8)' }}>Access your digital locker and manage your policies</p>
         
         {error && <div className="badge badge-error" style={{ marginBottom: 'var(--space-6)', padding: 'var(--space-3)', width: '100%', textAlign: 'center', borderRadius: 'var(--radius-md)' }}>{error}</div>}

@@ -8,14 +8,36 @@
   margin: 0 auto var(--space-12);
 }
 
+.category-lead {
+  color: var(--text-secondary);
+  font-size: 1.15rem;
+  line-height: 1.7;
+  margin: var(--space-4) auto var(--space-6);
+}
+
+.availability-note {
+  color: var(--text-tertiary);
+  font-size: var(--text-sm);
+  line-height: 1.6;
+  margin: var(--space-4) auto 0;
+  max-width: 680px;
+}
+
 .category-content {
-  padding: var(--space-8);
+  padding: clamp(1.5rem, 4vw, 3.5rem);
   max-width: 900px;
   margin: 0 auto;
   background: #ffffff;
   border: 1px solid var(--border-default);
   box-shadow: var(--shadow-md);
 }
+
+.category-content section + section,
+.category-content aside { margin-top: var(--space-12); }
+.category-content h2 { margin-bottom: var(--space-4); }
+.category-content h3 { font-size: 1.05rem; margin-bottom: var(--space-2); }
+.category-content p,
+.category-content li { color: var(--text-secondary); line-height: 1.75; }
 
 .benefits-grid {
   display: grid;
@@ -28,4 +50,27 @@
   background: var(--bg-surface);
   border: 1px solid var(--border-default);
   border-radius: var(--radius-md);
+}
+
+.comparison-checklist {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--space-3) var(--space-8);
+  padding-left: 1.25rem;
+}
+
+.question-list { display: grid; gap: var(--space-6); }
+
+.source-panel {
+  background: var(--bg-subtle, #f8fafc);
+  border-left: 4px solid var(--primary-accent);
+  padding: var(--space-6);
+}
+
+.source-panel ul { padding-left: 1.25rem; margin-top: var(--space-3); }
+.source-panel a { color: var(--primary); text-decoration: underline; text-underline-offset: 3px; }
+
+@media (max-width: 640px) {
+  .category-container { padding-top: var(--space-10); }
+  .comparison-checklist { grid-template-columns: 1fr; }
 }

@@ -22,17 +22,20 @@ export const metadata: Metadata = {
     title: 'Compare Insurance in Nepal | Motor, Health & Life',
     description: 'Compare indicative pricing across Motor, Health, and Life insurance in Nepal — free, with no agent pressure.',
     siteName: 'Khaacho',
+    images: [{ url: absoluteUrl('/opengraph-image'), width: 1200, height: 630, alt: 'Khaacho — independent insurance comparison for Nepal' }],
   },
   twitter: {
     card: 'summary_large_image',
     title: 'Compare Insurance in Nepal | Khaacho',
     description: 'Compare sourced, indicative motor insurance information in Nepal.',
+    images: [absoluteUrl('/opengraph-image')],
   },
   verification: {
     google: 'lO9MCJwjXpsRdukdOtj2j1qRqrJZSmyoYe_cnIduYqU',
   },
   alternates: {
     canonical: SITE_URL,
+    languages: { 'en-NP': SITE_URL, 'ne-NP': absoluteUrl('/np'), 'x-default': SITE_URL },
   },
 };
 
@@ -44,17 +47,22 @@ export default function RootLayout({
   const jsonLd = {
     '@context': 'https://schema.org',
     '@type': 'Organization',
+    '@id': `${SITE_URL}#organization`,
     name: 'Khaacho',
+    alternateName: 'NepaCompare',
+    legalName: 'Khaacho Private Limited',
     url: SITE_URL,
-    logo: absoluteUrl('/logo.png'),
+    logo: { '@type': 'ImageObject', url: absoluteUrl('/logo.png') },
     description: 'Independent insurance information and comparison platform for Nepal.'
   };
   const websiteSchema = {
     '@context': 'https://schema.org',
     '@type': 'WebSite',
+    '@id': `${SITE_URL}#website`,
     name: 'Khaacho',
     url: SITE_URL,
-    inLanguage: 'en-NP',
+    inLanguage: ['en-NP', 'ne-NP'],
+    publisher: { '@id': `${SITE_URL}#organization` },
   };
 
   return (

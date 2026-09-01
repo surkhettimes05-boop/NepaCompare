@@ -489,3 +489,9 @@ select.input-field {
 .footer-link:hover {
   color: var(--text-primary);
 }
+
+.footer-link {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+}

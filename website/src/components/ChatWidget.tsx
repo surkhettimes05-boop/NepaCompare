@@ -90,14 +90,16 @@ export default function ChatWidget() {
 
       {!isOpen && (
         <button 
+          type="button"
+          aria-label="Open Khaacho insurance guide"
           onClick={() => setIsOpen(true)}
           className="animate-fade-up"
           style={{
             position: 'fixed',
-            bottom: '1.25rem',
-            right: '1.25rem',
-            width: '48px',
-            height: '48px',
+            bottom: '2rem',
+            right: '2rem',
+            width: '60px',
+            height: '60px',
             borderRadius: '50%',
             backgroundColor: 'var(--primary)',
             color: 'white',
@@ -113,15 +115,15 @@ export default function ChatWidget() {
           onMouseOver={(e) => e.currentTarget.style.transform = 'scale(1.1)'}
           onMouseOut={(e) => e.currentTarget.style.transform = 'scale(1)'}
         >
-          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+          <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
             <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
           </svg>
           <div style={{
             position: 'absolute',
             top: 0,
             right: 0,
-            width: '10px',
-            height: '10px',
+            width: '12px',
+            height: '12px',
             background: '#10B981',
             borderRadius: '50%',
             border: '2px solid white',
@@ -159,7 +161,7 @@ export default function ChatWidget() {
           }}>
             <div>
               <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                <span style={{ fontWeight: 600, fontSize: '1.1rem' }}>NepaBot</span>
+                <span style={{ fontWeight: 600, fontSize: '1.1rem' }}>Khaacho Guide</span>
               </div>
               <div style={{ display: 'flex', alignItems: 'center', gap: '0.35rem', marginTop: '0.25rem' }}>
                 <div style={{ width: '8px', height: '8px', borderRadius: '50%', backgroundColor: '#10B981', animation: 'pulse-gpu 2s infinite' }}></div>
@@ -167,6 +169,8 @@ export default function ChatWidget() {
               </div>
             </div>
             <button 
+              type="button"
+              aria-label="Close chat"
               onClick={() => setIsOpen(false)}
               style={{ background: 'transparent', border: 'none', color: 'white', cursor: 'pointer', fontSize: '1.5rem', lineHeight: 1 }}
             >
@@ -250,7 +254,7 @@ export default function ChatWidget() {
                 fontSize: '0.9rem'
               }}
             />
-            <button type="submit" disabled={!input.trim() || isTyping} style={{
+            <button type="submit" aria-label="Send message" disabled={!input.trim() || isTyping} style={{
               backgroundColor: 'var(--primary)',
               color: 'white',
               border: 'none',

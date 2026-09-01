@@ -2,8 +2,8 @@
 title: "Comprehensive vs Third-Party Motor Insurance in Nepal"
 description: "A source-backed explanation of the two motor insurance coverage types and the questions to ask before choosing."
 date: "2026-08-03"
-author: "NepaCompare Editorial Team"
-reviewedBy: "NepaCompare Research Desk"
+author: "Khaacho Editorial Team"
+reviewedBy: "Khaacho Research Desk"
 reviewedDate: "2026-08-03"
 reviewStatus: "Editorially reviewed; professional review pending"
 language: "en"
@@ -38,4 +38,4 @@ The same official source describes comprehensive insurance as responding to acci
 
 ## How to choose
 
-Do not choose only by premium. Compare the current wording, exclusions, deductible, claims contacts and the insurer’s final written proposal. NepaCompare summaries are not a substitute for the issued policy.
+Do not choose only by premium. Compare the current wording, exclusions, deductible, claims contacts and the insurer’s final written proposal. Khaacho summaries are not a substitute for the issued policy.

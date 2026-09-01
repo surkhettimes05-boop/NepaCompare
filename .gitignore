@@ -4,3 +4,6 @@ dist
 .DS_Store
 .env
 dev.db
+.seo-cache/
+seo-audit-output/
+tmp/

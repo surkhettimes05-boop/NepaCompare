@@ -2,8 +2,8 @@
 title: "No-Claim Discount for Motor Insurance in Nepal"
 description: "What a no-claim discount represents, what evidence may be requested and what to confirm at renewal."
 date: "2026-08-03"
-author: "NepaCompare Editorial Team"
-reviewedBy: "NepaCompare Research Desk"
+author: "Khaacho Editorial Team"
+reviewedBy: "Khaacho Research Desk"
 reviewedDate: "2026-08-03"
 reviewStatus: "Editorially reviewed; professional review pending"
 language: "en"
@@ -26,4 +26,4 @@ Shikhar Insurance’s official FAQ lists a renewal notice from the previous insu
 - What evidence and deadline apply?
 - How does a lapse in cover affect the discount?
 
-Avoid publishing or relying on a fixed percentage unless it is supported by the current insurer proposal or regulator tariff. NepaCompare does not estimate a no-claim discount without a sourced rule.
+Avoid publishing or relying on a fixed percentage unless it is supported by the current insurer proposal or regulator tariff. Khaacho does not estimate a no-claim discount without a sourced rule.

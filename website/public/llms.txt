@@ -1,0 +1,20 @@
+# Khaacho
+
+Khaacho is an independent insurance information and comparison platform for Nepal. It is not an insurer, broker, or licensed intermediary. Motor comparison is in early access; health, life, and travel pages are educational.
+
+## Important pages
+- https://www.khaacho.com/
+- https://www.khaacho.com/motor
+- https://www.khaacho.com/health
+- https://www.khaacho.com/life
+- https://www.khaacho.com/travel
+- https://www.khaacho.com/blog
+- https://www.khaacho.com/editorial-policy
+- https://www.khaacho.com/ranking-policy
+- https://www.khaacho.com/disclaimer
+
+## Editorial policy
+Insurance claims are supported with links to primary sources where available. Product details, pricing, eligibility, policy issuance, and claims decisions must be confirmed with the insurer. Pages show their source review dates and should not replace policy wording or personalised professional advice.
+
+## Languages
+English content uses en-NP. Selected Nepali pages are available below /np.

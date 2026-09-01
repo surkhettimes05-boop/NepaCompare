@@ -2,8 +2,8 @@
 title: "How to Compare Motor Insurers in Nepal"
 description: "A practical comparison method using regulator status, policy wording, claims access and sourced pricing."
 date: "2026-08-03"
-author: "NepaCompare Editorial Team"
-reviewedBy: "NepaCompare Research Desk"
+author: "Khaacho Editorial Team"
+reviewedBy: "Khaacho Research Desk"
 reviewedDate: "2026-08-03"
 reviewStatus: "Editorially reviewed; professional review pending"
 language: "en"
@@ -29,4 +29,4 @@ The Nepal Insurance Authority currently displays 14 non-life insurers. That list
 
 Do not choose using an unsourced “claim settlement ratio,” fabricated star score or cheapest-price badge. A useful comparison shows the source and review date for every material claim.
 
-NepaCompare’s verified insurer directory reproduces the regulator’s current list without implying partnership or endorsement.
+Khaacho’s verified insurer directory reproduces the regulator’s current list without implying partnership or endorsement.

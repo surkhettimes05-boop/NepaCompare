@@ -28,8 +28,8 @@ export default function Header() {
         <button type="button" className="mobile-menu-button" aria-label={isMenuOpen ? 'Close navigation' : 'Open navigation'} aria-expanded={isMenuOpen} aria-controls="mobile-navigation" onClick={() => setIsMenuOpen(value => !value)}>
           <span aria-hidden="true">{isMenuOpen ? '×' : '☰'}</span>
         </button>
-        <Link href="/" className="logo">
-          Nepa<span style={{ color: 'var(--primary-accent)' }}>Compare</span>
+        <Link href="/" className="logo" aria-label="Khaacho home">
+          Khaacho<span style={{ color: 'var(--primary-accent)' }}>.</span>
         </Link>
         <nav className="desktop-nav">
           <div className="nav-menu"><span>Insurance <small>⌄</small></span><div className="nav-dropdown"><Link href="/motor">Motor</Link><Link href="/health">Health</Link><Link href="/life">Life</Link><Link href="/travel">Travel</Link></div></div>
@@ -37,7 +37,7 @@ export default function Header() {
           <Link href="/how-it-works">How it works</Link>
         </nav>
         <div className="header-actions">
-          <Link href="/contact" className="expert-button"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 14v-2a8 8 0 0 1 16 0v2" /><path d="M4 14a2 2 0 0 0 2 2h1v-6H6a2 2 0 0 0-2 2v2ZM20 14a2 2 0 0 1-2 2h-1v-6h1a2 2 0 0 1 2 2v2ZM12 20h3" /></svg><span>Talk to Expert</span></Link>
+          <Link href="/contact" className="expert-button" aria-label="Contact Khaacho support"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 14v-2a8 8 0 0 1 16 0v2" /><path d="M4 14a2 2 0 0 0 2 2h1v-6H6a2 2 0 0 0-2 2v2ZM20 14a2 2 0 0 1-2 2h-1v-6h1a2 2 0 0 1 2 2v2ZM12 20h3" /></svg><span>Contact support</span></Link>
           {isLoggedIn ? (
             <button type="button" className="profile-button" aria-label="Open account menu" onClick={() => setIsMenuOpen(true)}><span aria-hidden="true">N</span></button>
           ) : (

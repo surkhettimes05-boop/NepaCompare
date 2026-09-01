@@ -1,7 +1,7 @@
 import Link from 'next/link';
 import type { Metadata } from 'next';
 
-export const metadata: Metadata = { title: 'Page Not Found', robots: { index: false, follow: true } };
+export const metadata: Metadata = { title: 'Page Not Found', alternates: { canonical: null } };
 
 export default function NotFound() {
   return <div className="container" style={{ minHeight: '60vh', padding: '6rem 1rem', textAlign: 'center' }}>
