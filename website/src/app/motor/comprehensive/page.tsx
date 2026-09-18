@@ -13,7 +13,7 @@ export default function ComprehensiveInsurancePage() {
       title="Comprehensive Insurance in Nepal"
       description="Comprehensive motor insurance may provide broader cover than third-party liability, including damage to the insured vehicle itself under the terms of the policy. It still depends on the insurer’s wording and exclusions."
       updated="18 September 2026"
-      breadcrumbs=[
+      breadcrumbs={[
         { label: 'Home', href: '/' },
         { label: 'Motor insurance', href: '/motor' },
         { label: 'Comprehensive insurance' },

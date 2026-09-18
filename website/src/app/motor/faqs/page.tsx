@@ -13,7 +13,7 @@ export default function VehicleInsuranceFaqPage() {
       title="Vehicle Insurance FAQs in Nepal"
       description="Common questions about motor insurance in Nepal, from policy types and documentation to excess, renewals and the difference between policy wording and product marketing."
       updated="18 September 2026"
-      breadcrumbs=[
+      breadcrumbs={[
         { label: 'Home', href: '/' },
         { label: 'Motor insurance', href: '/motor' },
         { label: 'Vehicle insurance FAQs' },

@@ -13,7 +13,7 @@ export default function ThirdPartyInsurancePage() {
       title="Third-Party Insurance in Nepal"
       description="Third-party insurance protects against legal and financial liability to other people or property caused by your vehicle. It does not usually pay for damage to your own vehicle."
       updated="18 September 2026"
-      breadcrumbs=[
+      breadcrumbs={[
         { label: 'Home', href: '/' },
         { label: 'Motor insurance', href: '/motor' },
         { label: 'Third-party insurance' },

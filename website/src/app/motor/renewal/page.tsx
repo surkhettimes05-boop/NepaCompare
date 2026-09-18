@@ -13,7 +13,7 @@ export default function MotorRenewalPage() {
       title="Insurance Renewal in Nepal"
       description="Understand the key checks before renewing a motor insurance policy in Nepal. Renewal is not automatically about buying the cheapest offer; it is about confirming the right protection and price for your current vehicle and use case."
       updated="18 September 2026"
-      breadcrumbs=[
+      breadcrumbs={[
         { label: 'Home', href: '/' },
         { label: 'Motor insurance', href: '/motor' },
         { label: 'Insurance renewal' },
