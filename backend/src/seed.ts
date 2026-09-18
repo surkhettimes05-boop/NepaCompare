@@ -39,7 +39,8 @@ async function main() {
   
   const shikhar = await prisma.partner.create({
     data: {
-      name: 'Shikhar Insurance',
+      displayName: 'Shikhar Insurance',
+      legalName: 'Shikhar Insurance',
       type: PartnerType.INSURER,
       integrationType: 'MOCK_STANDARD',
       verticals: ['motor', 'health'],
@@ -48,7 +49,8 @@ async function main() {
 
   const nepalLife = await prisma.partner.create({
     data: {
-      name: 'Nepal Life',
+      displayName: 'Nepal Life',
+      legalName: 'Nepal Life',
       type: PartnerType.INSURER,
       integrationType: 'MOCK_LEGACY_REST',
       verticals: ['life'],
@@ -57,7 +59,8 @@ async function main() {
 
   const sagarmatha = await prisma.partner.create({
     data: {
-      name: 'Sagarmatha Health',
+      displayName: 'Sagarmatha Health',
+      legalName: 'Sagarmatha Health',
       type: PartnerType.INSURER,
       integrationType: 'MOCK_LEGACY_REST',
       verticals: ['health'],

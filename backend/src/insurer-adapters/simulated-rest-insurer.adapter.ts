@@ -1,4 +1,4 @@
-import { InsurerAdapter, QuoteRequest, AdapterRawResponse } from './interfaces';
+import { InsurerAdapter, QuoteRequest, AdapterRawResponse, ProviderCapability, QuoteSourceType } from './interfaces';
 
 // Represents a messy, poorly-named JSON response from a legacy REST API
 export interface LegacyRestPayload {
@@ -13,28 +13,41 @@ export interface LegacyRestPayload {
 }
 
 export class SimulatedRestInsurerAdapter implements InsurerAdapter {
+  readonly name: string;
+  readonly quoteSource: QuoteSourceType = 'REAL_TIME';
+
   constructor(
-    private readonly name: string,
+    name: string,
     private readonly basePremium: number,
     private readonly fixedCsr: string,
     private readonly failureRate: number = 0.2 // Higher default failure rate
-  ) {}
+  ) {
+    this.name = name;
+  }
 
-  /**
-   * Internal method simulating the HTTP call to the external legacy REST API.
-   * Returns data in their format, not ours.
-   */
+  getCapabilities(): ProviderCapability[] {
+    return [
+      { capability: 'getProducts', supported: true },
+      { capability: 'validateQuoteRequest', supported: true },
+      { capability: 'getQuote', supported: true },
+      { capability: 'createApplication', supported: false, reason: 'Legacy adapter does not support application creation' },
+      { capability: 'uploadDocument', supported: false, reason: 'Legacy adapter does not support uploadDocument' },
+      { capability: 'initiatePayment', supported: false, reason: 'Legacy adapter does not support payment initiation' },
+      { capability: 'issuePolicy', supported: false, reason: 'Legacy adapter does not support policy issuance' },
+      { capability: 'getPolicy', supported: false, reason: 'Legacy adapter does not support policy retrieval' },
+      { capability: 'renewPolicy', supported: false, reason: 'Legacy adapter does not support renewals' },
+      { capability: 'getClaimStatus', supported: false, reason: 'Legacy adapter does not support claim tracking' },
+    ];
+  }
+
   private async fetchFromLegacyApi(request: QuoteRequest): Promise<LegacyRestPayload[]> {
-    // 1. Simulate high network latency (2000ms - 5000ms)
     const delay = Math.floor(Math.random() * 3000) + 2000;
     await new Promise((resolve) => setTimeout(resolve, delay));
 
-    // 2. Simulate high failure rate
     if (Math.random() < this.failureRate) {
       throw new Error(`[SimulatedRestAdapter Error] ${this.name} legacy API connection reset by peer (503)`);
     }
 
-    // 3. Return their messy shape
     const covString =
       request.vertical === 'life'
         ? 'Life-50L'
@@ -66,15 +79,11 @@ export class SimulatedRestInsurerAdapter implements InsurerAdapter {
     ];
   }
 
-  /**
-   * Transforms the legacy JSON into our strict AdapterRawResponse contract.
-   * This is publicly accessible for unit testing purposes.
-   */
   public transformPayload(payload: LegacyRestPayload): AdapterRawResponse {
     return {
-      insurerName: this.name, // Use adapter's registered name instead of messy Vendor_ID
+      insurerName: this.name,
       planName: `${this.name} ${payload.Prod_Name === 'STD_TIER' ? 'Standard' : 'Premium'}`,
-      basePremiumValue: parseInt(payload.Base_Amt, 10), // Type coercion
+      basePremiumValue: parseInt(payload.Base_Amt, 10),
       baseCoverageSummary: payload.Cov_String,
       claimSettlementRatio: payload.Stats.Settlement_Pct,
       metadata: {
@@ -84,10 +93,7 @@ export class SimulatedRestInsurerAdapter implements InsurerAdapter {
   }
 
   async getQuotes(request: QuoteRequest): Promise<AdapterRawResponse[]> {
-    // 1. Fetch raw messy data
     const rawPayloads = await this.fetchFromLegacyApi(request);
-
-    // 2. Map their schema to our contract
     return rawPayloads.map((payload) => this.transformPayload(payload));
   }
 }

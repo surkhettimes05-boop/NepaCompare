@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../prisma.service';
-import { QuoteRequest } from '../insurer-adapters/interfaces';
+import { QuoteRequest, ProviderCapability, NormalizedQuoteResult, InsurerAdapter } from '../insurer-adapters/interfaces';
 import { MockInsurerAdapter } from '../insurer-adapters/mock-insurer.adapter';
 import { SimulatedRestInsurerAdapter } from '../insurer-adapters/simulated-rest-insurer.adapter';
 import { RatingEngineService } from '../rating-engine/rating-engine.service';
@@ -13,19 +13,12 @@ export class QuotesService {
     private ratingEngine: RatingEngineService
   ) {}
 
-  /**
-   * Deterministically generates a mock base premium based on the partner's ID.
-   */
   private generateDeterministicMockPremium(partnerId: string): number {
     const hash = crypto.createHash('md5').update(partnerId).digest('hex');
     const num = parseInt(hash.substring(0, 4), 16);
-    // Base premium between 5000 and 15000
     return 5000 + (num % 10000);
   }
 
-  /**
-   * Deterministically generates a mock CSR based on the partner's ID.
-   */
   private generateDeterministicMockCsr(partnerId: string): string {
     const hash = crypto.createHash('md5').update(partnerId).digest('hex');
     const num = parseInt(hash.substring(4, 8), 16);
@@ -34,7 +27,19 @@ export class QuotesService {
     return `${base}.${decimal}%`;
   }
 
-  async getQuotes(vertical: string, criteria: any) {
+  private resolveAdapter(partner: any): InsurerAdapter {
+    const partnerName = partner.displayName || partner.legalName || partner.slug || 'Unknown Provider';
+    const basePremium = this.generateDeterministicMockPremium(partner.id);
+    const csr = this.generateDeterministicMockCsr(partner.id);
+
+    if (partner.integrationType === 'MOCK_LEGACY_REST') {
+      return new SimulatedRestInsurerAdapter(partnerName, basePremium, csr, 0);
+    }
+
+    return new MockInsurerAdapter(partnerName, basePremium, csr, 0);
+  }
+
+  async getQuotes(vertical: string, criteria: any): Promise<NormalizedQuoteResult[]> {
     const request: QuoteRequest = {
       vertical,
       applicant: {
@@ -56,7 +61,6 @@ export class QuotesService {
       },
     };
 
-    // 2. Resolve Active Insurers from DB that cover this vertical
     const allActiveInsurers = await this.prisma.partner.findMany({
       where: {
         type: 'INSURER',
@@ -73,57 +77,46 @@ export class QuotesService {
       return [];
     }
 
-    // 3. Dynamically instantiate adapters based on DB config
-    const adapters = activeInsurers.map(partner => {
-      const basePremium = this.generateDeterministicMockPremium(partner.id);
-      const csr = this.generateDeterministicMockCsr(partner.id);
-      
-      if (partner.integrationType === 'MOCK_LEGACY_REST') {
-        // Use 0 failure rate so it doesn't break UI testing, but latency is 2-5s.
-        return new SimulatedRestInsurerAdapter(partner.name, basePremium, csr, 0); 
-      } else {
-        return new MockInsurerAdapter(partner.name, basePremium, csr, 0); 
-      }
-    });
+    const adapters = activeInsurers.map((partner) => ({
+      partner,
+      adapter: this.resolveAdapter(partner),
+    }));
 
-    // 4. Fan-out to all adapters concurrently to get raw quotes
-    const results = await Promise.allSettled(
-      adapters.map((adapter) => adapter.getQuotes(request))
+    const settledResults = await Promise.allSettled(
+      adapters.map(({ adapter }) => adapter.getQuotes(request))
     );
 
-    // 5. Aggregate successful raw responses
-    const allRawQuotes = [];
-    for (const result of results) {
+    const normalizedQuotes: NormalizedQuoteResult[] = [];
+    settledResults.forEach((result, index) => {
+      const { partner, adapter } = adapters[index];
+      const providerCapabilities: ProviderCapability[] = adapter.getCapabilities();
+
       if (result.status === 'fulfilled') {
-        allRawQuotes.push(...result.value);
-      } else {
-        console.error('Adapter failed:', result.reason);
+        const finalQuotes = result.value.map((rawQuote) => this.ratingEngine.process(rawQuote, request));
+
+        const mappedQuotes = finalQuotes.map((quote) => ({
+          id: Buffer.from(`${quote.insurerName}-${quote.planName}`).toString('base64'),
+          provider: partner.displayName || partner.legalName || quote.insurerName,
+          providerCapabilities,
+          quoteSource: adapter.quoteSource,
+          insurer: quote.insurerName,
+          plan: quote.planName,
+          premium: quote.premiumFormatted,
+          premiumValue: quote.premiumValue,
+          coverage: quote.coverageSummary,
+          csr: quote.claimSettlementRatio || 'N/A',
+          exclusions: quote.exclusions,
+          isBestMatch: false,
+        }));
+
+        normalizedQuotes.push(...mappedQuotes);
       }
-    }
-
-    // 6. Process raw quotes through the Rating Engine
-    const finalQuotes = allRawQuotes.map(rawQuote => this.ratingEngine.process(rawQuote, request));
-
-    // 7. Map back to legacy frontend format so we don't break the UI
-    const mappedQuotes = finalQuotes.map((q) => {
-      return {
-        id: Buffer.from(`${q.insurerName}-${q.planName}`).toString('base64'),
-        insurer: q.insurerName,
-        plan: q.planName,
-        premium: q.premiumFormatted,
-        premiumValue: q.premiumValue,
-        coverage: q.coverageSummary,
-        csr: q.claimSettlementRatio,
-        exclusions: q.exclusions,
-      };
     });
 
-    // 8. Sort by premium and flag the cheapest as "Best Match"
-    mappedQuotes.sort((a, b) => a.premiumValue - b.premiumValue);
-    
-    return mappedQuotes.map((q, index) => ({
-      ...q,
-      isBestMatch: index === 0
+    normalizedQuotes.sort((a, b) => a.premiumValue - b.premiumValue);
+    return normalizedQuotes.map((quote, index) => ({
+      ...quote,
+      isBestMatch: index === 0,
     }));
   }
 }

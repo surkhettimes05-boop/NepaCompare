@@ -38,8 +38,8 @@ export class RateTablesService {
   async bulkImport(rows: any[]) {
     const report = { successful: 0, errors: [] as { rowIndex: number; error: string }[] };
     
-    // Fetch all active partners to map by ID or Name
-    const partners = await this.prisma.partner.findMany({ select: { id: true, name: true } });
+    // Fetch all active partners to map by ID or displayName
+    const partners = await this.prisma.partner.findMany({ select: { id: true, displayName: true, legalName: true } });
     
     for (let i = 0; i < rows.length; i++) {
       const row = rows[i];
@@ -55,8 +55,11 @@ export class RateTablesService {
         }
 
         // Validate Partner
-        let matchedPartnerId = row.partnerId;
-        const partnerExists = partners.find(p => p.id === matchedPartnerId || p.name.toLowerCase() === (matchedPartnerId || '').toLowerCase());
+        const matchedPartnerId = row.partnerId;
+        const partnerExists = partners.find((p) => {
+          const candidateNames = [p.displayName, p.legalName].filter(Boolean) as string[];
+          return p.id === matchedPartnerId || candidateNames.some((name) => name.toLowerCase() === (matchedPartnerId || '').toLowerCase());
+        });
         
         if (!partnerExists) {
           throw new Error(`Partner not found for identifier: ${row.partnerId}`);

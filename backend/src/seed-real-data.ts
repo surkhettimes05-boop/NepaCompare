@@ -38,14 +38,16 @@ async function main() {
     await prisma.partner.upsert({
       where: { slug: insurer.slug },
       update: {
-        name: insurer.name,
+        displayName: insurer.name,
+        legalName: insurer.name,
         founded: insurer.founded,
         branches: insurer.branches,
         claimRatio: insurer.claimRatio,
       },
       create: {
         slug: insurer.slug,
-        name: insurer.name,
+        displayName: insurer.name,
+        legalName: insurer.name,
         type: insurer.type,
         founded: insurer.founded,
         branches: insurer.branches,

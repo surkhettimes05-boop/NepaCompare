@@ -11,7 +11,7 @@ export class SeoController {
       where: { type: 'INSURER' },
       select: {
         slug: true,
-        name: true,
+        displayName: true,
         founded: true,
         branches: true,
         claimRatio: true,

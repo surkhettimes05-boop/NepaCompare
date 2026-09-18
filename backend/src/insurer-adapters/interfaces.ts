@@ -1,3 +1,16 @@
+export type QuoteSourceType = 'REAL_TIME' | 'INDICATIVE' | 'MANUAL';
+export type QuoteCapability =
+  | 'getProducts'
+  | 'validateQuoteRequest'
+  | 'getQuote'
+  | 'createApplication'
+  | 'uploadDocument'
+  | 'initiatePayment'
+  | 'issuePolicy'
+  | 'getPolicy'
+  | 'renewPolicy'
+  | 'getClaimStatus';
+
 export interface QuoteRequest {
   vertical: 'motor' | 'health' | 'life' | 'travel' | string;
   applicant: {
@@ -55,9 +68,33 @@ export interface QuoteResponse {
   };
 }
 
+export interface ProviderCapability {
+  capability: QuoteCapability | string;
+  supported: boolean;
+  reason?: string;
+}
+
 export interface InsurerAdapter {
+  readonly name: string;
+  readonly quoteSource: QuoteSourceType;
   /**
    * Fetch quotes from an external insurer based on a normalized request.
    */
   getQuotes(request: QuoteRequest): Promise<AdapterRawResponse[]>;
+  getCapabilities(): ProviderCapability[];
+}
+
+export interface NormalizedQuoteResult {
+  id: string;
+  provider: string;
+  providerCapabilities: ProviderCapability[];
+  quoteSource: QuoteSourceType;
+  insurer: string;
+  plan: string;
+  premium: string;
+  premiumValue: number;
+  coverage: string;
+  csr: string;
+  exclusions: string[];
+  isBestMatch: boolean;
 }

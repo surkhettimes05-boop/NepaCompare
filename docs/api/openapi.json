@@ -1,0 +1,109 @@
+{
+  "openapi": "3.0.3",
+  "info": {
+    "title": "Khaacho API",
+    "description": "REST API documentation for the Khaacho insurance distribution platform.",
+    "version": "1.0.0"
+  },
+  "servers": [
+    { "url": "https://api.khaacho.com", "description": "Production" },
+    { "url": "http://localhost:8080", "description": "Local development" }
+  ],
+  "security": [
+    { "JWT-auth": [] }
+  ],
+  "paths": {
+    "/auth/login": {
+      "post": {
+        "summary": "Staff login",
+        "tags": ["auth"],
+        "security": [],
+        "responses": { "200": { "description": "Successful login" } }
+      }
+    },
+    "/auth/customer-register": {
+      "post": {
+        "summary": "Customer registration",
+        "tags": ["auth"],
+        "security": [],
+        "responses": { "200": { "description": "Registration successful" } }
+      }
+    },
+    "/auth/customer-login": {
+      "post": {
+        "summary": "Customer login",
+        "tags": ["auth"],
+        "security": [],
+        "responses": { "200": { "description": "Successful login" } }
+      }
+    },
+    "/leads": {
+      "get": { "summary": "List leads", "tags": ["leads"] },
+      "post": { "summary": "Create lead", "tags": ["leads"] }
+    },
+    "/quotes": {
+      "get": { "summary": "List quotes", "tags": ["quotes"] }
+    },
+    "/insurers": {
+      "get": { "summary": "List insurers", "tags": ["insurers"] },
+      "post": { "summary": "Create insurer", "tags": ["insurers"] }
+    },
+    "/payments/create": {
+      "post": { "summary": "Create payment", "tags": ["payments"] }
+    },
+    "/policies": {
+      "get": { "summary": "List policies", "tags": ["policies"] }
+    },
+    "/renewals": {
+      "get": { "summary": "List renewals", "tags": ["renewals"] }
+    },
+    "/claims": {
+      "get": { "summary": "List claims", "tags": ["claims"] }
+    },
+    "/commissions": {
+      "get": { "summary": "List commissions", "tags": ["commissions"] }
+    },
+    "/partners": {
+      "get": { "summary": "List partners", "tags": ["partners"] }
+    },
+    "/notifications": {
+      "get": { "summary": "List notifications", "tags": ["notifications"] }
+    },
+    "/analytics/funnel": {
+      "get": { "summary": "Get funnel metrics", "tags": ["analytics"] }
+    },
+    "/audit": {
+      "get": { "summary": "List audit records", "tags": ["audit"] }
+    }
+  },
+  "components": {
+    "securitySchemes": {
+      "JWT-auth": {
+        "type": "http",
+        "scheme": "bearer",
+        "bearerFormat": "JWT"
+      },
+      "Idempotency-Key": {
+        "type": "apiKey",
+        "in": "header",
+        "name": "Idempotency-Key"
+      }
+    },
+    "schemas": {
+      "ErrorPayload": {
+        "type": "object",
+        "properties": {
+          "error": {
+            "type": "object",
+            "properties": {
+              "code": { "type": "string" },
+              "message": { "type": "string" },
+              "requestId": { "type": "string" },
+              "details": { "type": "array", "items": { "type": "object" } }
+            }
+          }
+        }
+      }
+    }
+  }
+}

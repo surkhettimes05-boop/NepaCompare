@@ -1,263 +1,201 @@
-import { useState, useEffect } from 'react';
-import { apiUrl } from '../lib/api';
-import { useParams, useNavigate } from 'react-router-dom';
+import { useMemo } from 'react';
+import { Link, useParams } from 'react-router-dom';
+import { leadSeed, leadStatusOptions, leadPriorityOptions, staffOptions } from '../lib/crmData';
 
-interface Lead {
-  id: string;
-  vertical: string;
-  source: string;
-  status: string;
-  createdAt: string;
-  formData: any;
-  user?: {
-    name: string;
-    phone: string;
-  };
-  partnerId?: string;
-  partner?: any;
-  statusHistory?: any[];
-}
-
-const STATUS_OPTIONS = [
-  'NEW',
-  'QUALIFIED',
-  'DISQUALIFIED',
-  'SENT_TO_PARTNER',
-  'CONVERTED',
-  'LOST',
-  'NO_RESPONSE',
-  'INVOICED',
-  'PAID'
-];
+const currentUserScope = ['KTM', 'BKT'];
 
 export default function LeadDetail() {
-  const { id } = useParams<{ id: string }>();
-  const navigate = useNavigate();
-  const [lead, setLead] = useState<Lead | null>(null);
-  const [loading, setLoading] = useState(true);
-  const [saving, setSaving] = useState(false);
-  const [currentStatus, setCurrentStatus] = useState<string>('');
-
-  const [partners, setPartners] = useState<any[]>([]);
-  const [selectedPartner, setSelectedPartner] = useState<string>('');
-
-  useEffect(() => {
-    const fetchLead = async () => {
-      try {
-        const token = localStorage.getItem('token');
-        const response = await fetch(`${apiUrl}/leads/${id}`, {
-          headers: {
-            'Authorization': `Bearer ${token}`
-          }
-        });
-        
-        if (response.status === 401) {
-          localStorage.removeItem('token');
-          window.location.href = '/login';
-          return;
-        }
-        
-        if (!response.ok) throw new Error('Failed to fetch lead');
-        const data = await response.json();
-        setLead(data);
-        setCurrentStatus(data.status);
-        if (data.partnerId) {
-          setSelectedPartner(data.partnerId);
-        }
-
-        // Fetch partners
-        const partnersRes = await fetch(`${apiUrl}/partners`, {
-          headers: {
-            'Authorization': `Bearer ${token}`
-          }
-        });
-        if (partnersRes.ok) {
-          const partnersData = await partnersRes.json();
-          setPartners(partnersData);
-        }
-      } catch (err) {
-        console.error('Failed to fetch lead details', err);
-      } finally {
-        setLoading(false);
-      }
-    };
-    
-    if (id) {
-      fetchLead();
-    }
-  }, [id]);
-
-  const handleStatusChange = async (e: React.ChangeEvent<HTMLSelectElement>) => {
-    const newStatus = e.target.value;
-    setCurrentStatus(newStatus);
-    setSaving(true);
-    
-    try {
-      const token = localStorage.getItem('token');
-      const response = await fetch(`${apiUrl}/leads/${id}`, {
-        method: 'PATCH',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`
-        },
-        body: JSON.stringify({ status: newStatus })
-      });
-      
-      if (!response.ok) throw new Error('Failed to update status');
-      
-      // Successfully updated
-    } catch (err) {
-      console.error('Failed to save status', err);
-      // Revert status on failure
-      if (lead) setCurrentStatus(lead.status);
-    } finally {
-      setSaving(false);
-    }
-  };
-
-  const handleRoute = async () => {
-    if (!selectedPartner) return;
-    setSaving(true);
-    try {
-      const token = localStorage.getItem('token');
-      const response = await fetch(`${apiUrl}/leads/${id}/route`, {
-        method: 'PATCH',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`
-        },
-        body: JSON.stringify({ partnerId: selectedPartner })
-      });
-      
-      if (!response.ok) throw new Error('Failed to route lead');
-      await response.json();
-      
-      // Re-fetch the full lead to get the updated statusHistory
-      const fullLeadRes = await fetch(`${apiUrl}/leads/${id}`, {
-        headers: {
-          'Authorization': `Bearer ${token}`
-        }
-      });
-      if (fullLeadRes.ok) {
-        const fullLeadData = await fullLeadRes.json();
-        setLead(fullLeadData);
-        setCurrentStatus(fullLeadData.status);
-      }
-    } catch (err) {
-      console.error('Failed to route lead', err);
-      alert('Failed to assign partner.');
-    } finally {
-      setSaving(false);
-    }
-  };
-
-  if (loading) {
-    return <div style={{ padding: '2rem' }}>Loading lead details...</div>;
-  }
+  const { id } = useParams();
+  const lead = useMemo(() => leadSeed.find((item) => item.id === id), [id]);
 
   if (!lead) {
-    return <div style={{ padding: '2rem' }}>Lead not found.</div>;
+    return <div className="card"><h2>Lead not found</h2></div>;
+  }
+
+  const hasAccess = lead.scope.some((area) => currentUserScope.includes(area));
+
+  if (!hasAccess) {
+    return (
+      <div className="card access-card">
+        <h2>Access restricted</h2>
+        <p>This lead sits outside your permitted scope and cannot be viewed.</p>
+        <Link to="/leads" className="btn btn-primary">Back to leads</Link>
+      </div>
+    );
   }
 
   return (
     <div>
-      <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', marginBottom: '1.5rem' }}>
-        <button 
-          onClick={() => navigate('/leads')} 
-          style={{ 
-            background: 'transparent', 
-            border: 'none', 
-            fontSize: '1.25rem', 
-            cursor: 'pointer',
-            padding: '0.5rem'
-          }}
-        >
-          &larr; Back
-        </button>
-        <h1 style={{ fontSize: '1.75rem', fontWeight: 600 }}>Lead Details</h1>
+      <div className="page-header">
+        <div>
+          <p className="eyebrow">Lead detail</p>
+          <h1>{lead.customerName}</h1>
+        </div>
+        <Link to="/leads" className="btn btn-primary">Back to pipeline</Link>
       </div>
-      
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '2rem' }}>
-        
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '2rem' }}>
-          {lead.formData.isUrgent && (
-            <div className="card" style={{ border: '2px solid var(--accent-red)', background: 'rgba(239, 68, 68, 0.05)' }}>
-              <h2 style={{ color: 'var(--accent-red)', fontSize: '1.25rem', display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '0.5rem' }}>
-                🚨 Financial Doctor Action Required
-              </h2>
-              <p style={{ fontWeight: 500 }}>This user abandoned the comparison page without finalizing a quote.</p>
-              <p className="text-muted" style={{ marginTop: '0.5rem' }}>Please call them immediately to assist and save the sale.</p>
-            </div>
-          )}
 
-          {/* Customer Info Card */}
-          <div className="card">
-            <h2 style={{ fontSize: '1.25rem', fontWeight: 600, marginBottom: '1rem', borderBottom: '1px solid var(--border-color)', paddingBottom: '0.5rem' }}>Customer Information</h2>
-          <div style={{ display: 'grid', gridTemplateColumns: '120px 1fr', gap: '1rem', marginBottom: '1rem' }}>
-            <span style={{ color: 'var(--text-muted)' }}>Name:</span>
-            <span style={{ fontWeight: 500 }}>{lead.formData.name || lead.user?.name || 'N/A'}</span>
-            
-            <span style={{ color: 'var(--text-muted)' }}>Phone:</span>
-            <span>{lead.formData.phone || lead.user?.phone || 'N/A'}</span>
-            
-            {lead.formData.age && (
-              <>
-                <span style={{ color: 'var(--text-muted)' }}>Age:</span>
-                <span>{lead.formData.age}</span>
-              </>
-            )}
-            
-            <span style={{ color: 'var(--text-muted)' }}>Source:</span>
-            <span style={{ textTransform: 'capitalize' }}>{lead.source}</span>
+      <div className="grid grid-3">
+        <div className="card">
+          <h3>Lead overview</h3>
+          <ul className="detail-list">
+            <li><span>Lead ID</span><strong>{lead.id}</strong></li>
+            <li><span>Customer ID</span><strong>{lead.customerId}</strong></li>
+            <li><span>Phone</span><strong>{lead.phone}</strong></li>
+            <li><span>Email</span><strong>{lead.email}</strong></li>
+            <li><span>Source</span><strong>{lead.source}</strong></li>
+            <li><span>Product</span><strong>{lead.product}</strong></li>
+          </ul>
+        </div>
+
+        <div className="card">
+          <h3>Assignment & priority</h3>
+          <ul className="detail-list">
+            <li><span>Status</span><strong>{lead.status}</strong></li>
+            <li><span>Priority</span><strong>{lead.priority}</strong></li>
+            <li><span>Assigned to</span><strong>{lead.assignedTo}</strong></li>
+            <li><span>Team</span><strong>{lead.assignedTeam}</strong></li>
+            <li><span>Scope</span><strong>{lead.scope.join(', ')}</strong></li>
+            <li><span>Updated</span><strong>{new Date(lead.updatedAt).toLocaleString()}</strong></li>
+          </ul>
+        </div>
+
+        <div className="card">
+          <h3>Customer profile</h3>
+          <ul className="detail-list">
+            <li><span>Date of birth</span><strong>{lead.customerProfile.dob}</strong></li>
+            <li><span>Location</span><strong>{lead.customerProfile.district}, {lead.customerProfile.province}</strong></li>
+            <li><span>Vehicle</span><strong>{lead.customerProfile.vehicle.make} {lead.customerProfile.vehicle.model}</strong></li>
+            <li><span>Registration</span><strong>{lead.customerProfile.vehicle.registration}</strong></li>
+            <li><span>Insurance need</span><strong>{lead.customerProfile.insuranceNeed}</strong></li>
+          </ul>
+        </div>
+      </div>
+
+      <div className="grid grid-2">
+        <div className="card">
+          <h3>Workflow actions</h3>
+          <div className="filter-bar" style={{ marginBottom: '1rem' }}>
+            <select className="input-field" defaultValue={lead.status}>
+              {leadStatusOptions.map((status) => <option key={status} value={status}>{status}</option>)}
+            </select>
+            <select className="input-field" defaultValue={lead.priority}>
+              {leadPriorityOptions.map((priority) => <option key={priority} value={priority}>{priority}</option>)}
+            </select>
+            <select className="input-field" defaultValue={lead.assignedTo}>
+              {staffOptions.map((staff) => <option key={staff} value={staff}>{staff}</option>)}
+            </select>
           </div>
-          
-          <h3 style={{ fontSize: '1rem', fontWeight: 600, marginTop: '1.5rem', marginBottom: '0.5rem' }}>Raw Form Data</h3>
-          <pre style={{ 
-            background: '#f8fafc', 
-            padding: '1rem', 
-            borderRadius: '8px',
-            fontSize: '0.875rem',
-            overflowX: 'auto'
-          }}>
-            {JSON.stringify(lead.formData, null, 2)}
-          </pre>
-        </div>
+          <div className="grid grid-2">
+            <button className="btn btn-primary">Save status change</button>
+            <button className="btn">Add note</button>
+          </div>
         </div>
 
-        {/* Processing Card */}
-        <div className="card" style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
-          <div>
-            <h2 style={{ fontSize: '1.25rem', fontWeight: 600, marginBottom: '1rem', borderBottom: '1px solid var(--border-color)', paddingBottom: '0.5rem' }}>Processing & Routing</h2>
-            
-            <div style={{ marginBottom: '1.5rem' }}>
-              <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: 500 }}>Vertical</label>
-              <div style={{ padding: '0.75rem', background: '#f1f5f9', borderRadius: '8px', textTransform: 'capitalize', fontWeight: 500 }}>
-                {lead.vertical} Insurance
-              </div>
-            </div>
+        <div className="card">
+          <h3>Notes</h3>
+          <ul className="note-list">
+            {lead.notes.map((note) => <li key={note}>{note}</li>)}
+          </ul>
+        </div>
+      </div>
 
-            <div style={{ marginBottom: '1.5rem' }}>
-              <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: 500 }}>Current Status</label>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
-                <select 
-                  className="input-field" 
-                  value={currentStatus} 
-                  onChange={handleStatusChange}
-                  disabled={saving}
-                  style={{ width: '100%', maxWidth: '300px' }}
-                >
-                  {STATUS_OPTIONS.map(status => (
-                    <option key={status} value={status}>{status.replace(/_/g, ' ')}</option>
-                  ))}
-                </select>
-                {saving && <span style={{ fontSize: '0.875rem', color: 'var(--text-muted)' }}>Saving...</span>}
-              </div>
-            </div>
-            
-            <div>
-              <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: 500 }}>Assign Partner</label>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
-                <select 
+      <div className="grid grid-2">
+        <div className="card">
+          <h3>Activity timeline</h3>
+          <ul className="timeline-list">
+            {lead.activity.map((entry) => (
+              <li key={`${entry.timestamp}-${entry.message}`}>
+                <strong>{entry.type}</strong>
+                <span>{entry.message}</span>
+                <small>{entry.actor} • {new Date(entry.timestamp).toLocaleString()}</small>
+              </li>
+            ))}
+          </ul>
+        </div>
+
+        <div className="card">
+          <h3>Communication history</h3>
+          <ul className="timeline-list">
+            {lead.communicationHistory.map((entry) => (
+              <li key={`${entry.timestamp}-${entry.summary}`}>
+                <strong>{entry.channel}</strong>
+                <span>{entry.summary}</span>
+                <small>{entry.direction} • {new Date(entry.timestamp).toLocaleString()}</small>
+              </li>
+            ))}
+          </ul>
+        </div>
+      </div>
+
+      <div className="grid grid-3">
+        <div className="card">
+          <h3>Quote history</h3>
+          <ul className="timeline-list">
+            {lead.quotes.map((quote) => (
+              <li key={quote.id}>
+                <strong>{quote.id}</strong>
+                <span>{quote.insurer} — {quote.premium}</span>
+                <small>{quote.status} • {quote.createdAt}</small>
+              </li>
+            ))}
+          </ul>
+        </div>
+
+        <div className="card">
+          <h3>Application history</h3>
+          <ul className="timeline-list">
+            {lead.applications.map((application) => (
+              <li key={application.id}>
+                <strong>{application.id}</strong>
+                <span>{application.insurer}</span>
+                <small>{application.status} • {application.createdAt}</small>
+              </li>
+            ))}
+          </ul>
+        </div>
+
+        <div className="card">
+          <h3>Policy history</h3>
+          <ul className="timeline-list">
+            {lead.policies.length ? lead.policies.map((policy) => (
+              <li key={policy.id}>
+                <strong>{policy.number}</strong>
+                <span>{policy.insurer}</span>
+                <small>{policy.status} • {policy.premium}</small>
+              </li>
+            )) : <li><span>No policies issued yet.</span></li>}
+          </ul>
+        </div>
+      </div>
+
+      <div className="grid grid-2">
+        <div className="card">
+          <h3>Audit history</h3>
+          <ul className="timeline-list">
+            {lead.auditTrail.map((entry) => (
+              <li key={`${entry.action}-${entry.timestamp}`}>
+                <strong>{entry.action}</strong>
+                <span>{entry.detail}</span>
+                <small>{entry.actor} • {new Date(entry.timestamp).toLocaleString()}</small>
+              </li>
+            ))}
+          </ul>
+        </div>
+
+        <div className="card">
+          <h3>Customer sensitive actions</h3>
+          <ul className="detail-list">
+            <li><span>Profile access</span><strong>Audited</strong></li>
+            <li><span>Lead change</span><strong>Audited</strong></li>
+            <li><span>Document upload</span><strong>Audited</strong></li>
+            <li><span>Policy issuance</span><strong>Audited</strong></li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  );
+}
+
                   className="input-field" 
                   value={selectedPartner}
                   onChange={(e) => setSelectedPartner(e.target.value)}

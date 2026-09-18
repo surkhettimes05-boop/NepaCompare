@@ -2,8 +2,8 @@ import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards, Req } fro
 import { LeadsService } from './leads.service';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 import { RolesGuard } from '../auth/roles.guard';
-import { Roles } from '../auth/roles.decorator';
-import { Role } from '@prisma/client';
+import { RequirePermissions, Roles } from '../auth/roles.decorator';
+import { Permission, Role } from '@prisma/client';
 import { CreateLeadDto } from './dto/create-lead.dto';
 import { UpdateLeadDto } from './dto/update-lead.dto';
 
@@ -20,28 +20,32 @@ export class LeadsController {
   }
 
   @UseGuards(JwtAuthGuard, RolesGuard)
-  @Roles(Role.AGENT, Role.ADMIN)
+  @Roles(Role.SALES, Role.OPERATIONS, Role.ADMIN, Role.SUPER_ADMIN)
+  @RequirePermissions(Permission.LEADS_VIEW)
   @Get()
   findAll() {
     return this.leadsService.findAll();
   }
 
   @UseGuards(JwtAuthGuard, RolesGuard)
-  @Roles(Role.AGENT, Role.ADMIN)
+  @Roles(Role.SALES, Role.OPERATIONS, Role.ADMIN, Role.SUPER_ADMIN)
+  @RequirePermissions(Permission.LEADS_VIEW)
   @Get(':id')
   findOne(@Param('id') id: string) {
     return this.leadsService.findOne(id);
   }
 
   @UseGuards(JwtAuthGuard, RolesGuard)
-  @Roles(Role.AGENT, Role.ADMIN)
+  @Roles(Role.SALES, Role.OPERATIONS, Role.ADMIN, Role.SUPER_ADMIN)
+  @RequirePermissions(Permission.LEADS_CREATE)
   @Patch(':id')
   update(@Param('id') id: string, @Body() updateLeadDto: UpdateLeadDto) {
     return this.leadsService.update(id, updateLeadDto);
   }
 
   @UseGuards(JwtAuthGuard, RolesGuard)
-  @Roles(Role.AGENT, Role.ADMIN)
+  @Roles(Role.SALES, Role.OPERATIONS, Role.ADMIN, Role.SUPER_ADMIN)
+  @RequirePermissions(Permission.LEADS_ASSIGN)
   @Patch(':id/route')
   routeLead(
     @Param('id') id: string,
@@ -54,7 +58,8 @@ export class LeadsController {
   }
 
   @UseGuards(JwtAuthGuard, RolesGuard)
-  @Roles(Role.AGENT, Role.ADMIN)
+  @Roles(Role.SALES, Role.OPERATIONS, Role.ADMIN, Role.SUPER_ADMIN)
+  @RequirePermissions(Permission.LEADS_CREATE)
   @Delete(':id')
   remove(@Param('id') id: string) {
     return this.leadsService.remove(id);

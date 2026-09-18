@@ -24,7 +24,7 @@ export class ChatService {
       const contextStr = `
 Current Market Data (Do not hallucinate outside of this):
 Top Bikes: ${bikes.map(b => `${b.brand} ${b.name} (${b.cc}cc) - Base Premium: NPR ${b.basePremium}`).join(', ')}
-Top Insurers: ${insurers.map(i => `${i.name} (Claim Ratio: ${i.claimRatio}%, Branches: ${i.branches})`).join(', ')}
+Top Insurers: ${insurers.map(i => `${i.displayName || i.legalName || i.slug} (Claim Ratio: ${i.claimRatio}%, Branches: ${i.branches})`).join(', ')}
 `;
 
       const systemPrompt = `You are NepaBot, the official AI insurance advisor for NepaCompare (Nepal's leading insurance aggregator).

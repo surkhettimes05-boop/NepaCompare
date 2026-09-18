@@ -10,96 +10,615 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+enum Role {
+  SUPER_ADMIN
+  ADMIN
+  OPERATIONS
+  SALES
+  CUSTOMER_SUPPORT
+  FINANCE
+  PARTNER
+  CUSTOMER
+}
+
+enum Permission {
+  LEADS_VIEW
+  LEADS_CREATE
+  LEADS_ASSIGN
+  QUOTES_VIEW
+  QUOTES_CREATE
+  APPLICATIONS_VIEW
+  APPLICATIONS_UPDATE
+  DOCUMENTS_VIEW
+  DOCUMENTS_UPLOAD
+  PAYMENTS_VIEW
+  POLICIES_VIEW
+  POLICIES_ISSUE
+  COMMISSIONS_VIEW
+  COMMISSIONS_RECONCILE
+  INSURERS_MANAGE
+  PRODUCTS_MANAGE
+  USERS_MANAGE
+  AUDIT_VIEW
+}
+
+enum UserStatus {
+  ACTIVE
+  INACTIVE
+  PENDING_VERIFICATION
+  BLOCKED
+  DELETED
+}
+
+enum CustomerPreferredCommunication {
+  SMS
+  EMAIL
+  PHONE
+  WHATSAPP
+}
+
+enum LeadPriority {
+  LOW
+  NORMAL
+  HIGH
+  URGENT
+}
+
+enum InsuranceProductType {
+  MOTOR
+  TRAVEL
+  HEALTH
+  LIFE
+  PROPERTY
+  SME
+  OTHER
+}
+
+enum InsuranceProductStatus {
+  DRAFT
+  ACTIVE
+  INACTIVE
+  ARCHIVED
+}
+
+enum InsurerStatus {
+  PROSPECT
+  ONBOARDING
+  ACTIVE
+  PAUSED
+  SUSPENDED
+  OFFBOARDING
+  OFFBOARDED
+}
+
+enum IntegrationStatus {
+  NOT_CONNECTED
+  MANUAL
+  SANDBOX
+  CONNECTED
+  ERROR
+  DISABLED
+}
+
+enum CoverageType {
+  LIABILITY
+  OWN_DAMAGE
+  MEDICAL
+  PERSONAL_ACCIDENT
+  THIRD_PARTY
+  ADD_ON
+  OTHER
+}
+
+enum QuoteRequestStatus {
+  DRAFT
+  PENDING
+  QUOTED
+  EXPIRED
+  CANCELLED
+}
+
+enum QuoteSourceType {
+  REAL_TIME
+  INDICATIVE
+  MANUAL
+}
+
+enum QuoteStatus {
+  DRAFT
+  PENDING
+  VALID
+  ACCEPTED
+  EXPIRED
+  REJECTED
+  CANCELLED
+}
+
+enum ApplicationLifecycleStatus {
+  DRAFT
+  SUBMITTED
+  UNDER_REVIEW
+  DOCUMENTS_PENDING
+  KYC_PENDING
+  READY_FOR_PAYMENT
+  PAYMENT_PENDING
+  SUBMITTED_TO_INSURER
+  APPROVED
+  REJECTED
+  CANCELLED
+  ISSUED
+}
+
+enum DocumentType {
+  VEHICLE_REGISTRATION
+  PREVIOUS_POLICY
+  IDENTITY_DOCUMENT
+  PHOTOGRAPH
+  OWNERSHIP_DOCUMENT
+  OTHER_PROVIDER_REQUIRED_DOCUMENT
+  OTHER
+}
+
+model DocumentTypeConfig {
+  id          String   @id @default(uuid())
+  code        String   @unique
+  name        String
+  description String?
+  required    Boolean  @default(false)
+  active      Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@index([active, required])
+}
+
+enum VerificationStatus {
+  PENDING
+  VERIFIED
+  REJECTED
+  FAILED
+  EXPIRED
+}
+
+enum KycVerificationMethod {
+  MANUAL
+  PROVIDER
+}
+
+enum KycVerificationStatus {
+  PENDING
+  VERIFIED
+  FAILED
+}
+
+enum PaymentStatus {
+  CREATED
+  PENDING
+  SUCCESS
+  FAILED
+  EXPIRED
+  REFUNDED
+  PARTIALLY_REFUNDED
+}
+
+enum PolicyIssuanceStatus {
+  PAYMENT_SUCCESS
+  APPLICATION_READY
+  SUBMIT_TO_INSURER
+  INSURER_PROCESSING
+  POLICY_ISSUED
+  POLICY_DOCUMENT_AVAILABLE
+}
+
+enum RenewalStatus {
+  UPCOMING
+  CONTACT_PENDING
+  CONTACTED
+  QUOTE_REQUESTED
+  QUOTE_RECEIVED
+  CUSTOMER_DECIDING
+  RENEWED
+  LOST
+  EXPIRED
+  CANCELLED
+}
+
+enum ClaimStatus {
+  REPORTED
+  DOCUMENTS_PENDING
+  SUBMITTED_TO_INSURER
+  UNDER_REVIEW
+  SURVEY_PENDING
+  SURVEY_COMPLETED
+  APPROVED
+  REJECTED
+  SETTLED
+  CLOSED
+  DISPUTED
+}
+
+enum CommissionStatus {
+  PENDING
+  CALCULATED
+  APPROVED
+  PAID
+  RECONCILED
+  DISPUTED
+}
+
+enum NotificationChannel {
+  SMS
+  EMAIL
+  WHATSAPP
+  IN_APP
+}
+
+enum NotificationStatus {
+  QUEUED
+  SENT
+  RETRYING
+  FAILED
+  DELIVERED
+  CLICKED
+}
+
+enum NotificationDeliveryStatus {
+  QUEUED
+  SENT
+  DELIVERED
+  FAILED
+  REJECTED
+  UNDELIVERABLE
+}
+
+enum NotificationEventType {
+  LEAD_CREATED
+  QUOTE_READY
+  APPLICATION_CREATED
+  DOCUMENT_REQUIRED
+  DOCUMENT_APPROVED
+  DOCUMENT_REJECTED
+  PAYMENT_PENDING
+  PAYMENT_SUCCESS
+  POLICY_ISSUED
+  CLAIM_CREATED
+  CLAIM_UPDATED
+  RENEWAL_UPCOMING
+  RENEWAL_DUE
+  RENEWAL_OVERDUE
+}
+
+enum PartnerStatus {
+  PROSPECT
+  ONBOARDING
+  ACTIVE
+  PAUSED
+  SUSPENDED
+  OFFBOARDED
+}
+
+enum PartnerLeadStatus {
+  ATTRIBUTED
+  ACCEPTED
+  DECLINED
+  CONVERTED
+}
+
 model User {
-  id         String   @id @default(uuid())
-  phone      String   @unique
-  name       String?
-  email      String?  @unique
-  password   String?
-  createdAt  DateTime @default(now())
-  
-  leads      Lead[]
-  reviews    Review[]
-  policies   Policy[]
+  id            String       @id @default(uuid())
+  partnerId     String?
+  role          Role         @default(CUSTOMER)
+  email         String?      @unique
+  phone         String?      @unique
+  status        UserStatus   @default(ACTIVE)
+  password      String?
+  name          String?
+  createdAt     DateTime     @default(now())
+  updatedAt     DateTime     @updatedAt
+  deletedAt     DateTime?
+
+  partner       Partner?     @relation(fields: [partnerId], references: [id])
+  customer      Customer?
+  leads         Lead[]
+  reviews       Review[]
   creditProfile CreditProfile?
   financialApps FinancialApplication[]
   appointments  Appointment[]
   supportTickets SupportTicket[]
+  documents     Document[] @relation("UploadedDocuments")
+  auditLogs     AuditLog[]
+  notifications Notification[]
+  quoteRequests QuoteRequest[]
+  sessions      Session[]
+}
+
+model Customer {
+  id                          String                         @id @default(uuid())
+  userId                      String                         @unique
+  firstName                   String?
+  lastName                    String?
+  dateOfBirth                 DateTime?
+  gender                      String?
+  preferredCommunication      CustomerPreferredCommunication? @default(SMS)
+  consentMarketing            Boolean                        @default(false)
+  consentDataProcessing       Boolean                        @default(false)
+  consentClaimsNotifications  Boolean                        @default(false)
+  addressLine1                String?
+  addressLine2                String?
+  city                       String?
+  district                   String?
+  province                   String?
+  postalCode                 String?
+  country                    String                         @default("NP")
+  createdAt                  DateTime                       @default(now())
+  updatedAt                  DateTime                       @updatedAt
+  deletedAt                  DateTime?
+
+  user                       User                           @relation(fields: [userId], references: [id])
+  leads                      Lead[]
+  quoteRequests              QuoteRequest[]
+  applications               Application[]
+  documents                  Document[]
+  kycs                       Kyc[]
+  policies                   Policy[]
+  claims                     Claim[]
+  notifications              Notification[]
+  notificationPreferences   NotificationPreference[]
 }
 
 model Staff {
-  id         String   @id @default(uuid())
-  name       String
-  phone      String   @unique
-  password   String?
-  role       Role     @default(AGENT)
-  active     Boolean  @default(true)
-  
+  id            String     @id @default(uuid())
+  name          String
+  phone         String     @unique
+  password      String?
+  role          Role       @default(OPERATIONS)
+  active        Boolean    @default(true)
+  createdAt     DateTime   @default(now())
+  updatedAt     DateTime   @updatedAt
+  deletedAt     DateTime?
+
   assignedLeads Lead[]
   statusUpdates LeadStatusHistory[]
+  renewals      Renewal[]
+  sessions      Session[]
 }
 
-enum Role {
-  CUSTOMER
-  AGENT
-  ADMIN
+model Session {
+  id          String    @id @default(uuid())
+  userId      String?
+  staffId     String?
+  tokenHash   String
+  userAgent   String?
+  ipAddress   String?
+  status      SessionStatus @default(ACTIVE)
+  expiresAt   DateTime
+  lastSeenAt  DateTime?
+  revokedAt   DateTime?
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  user        User?     @relation(fields: [userId], references: [id])
+  staff       Staff?    @relation(fields: [staffId], references: [id])
+
+  @@index([userId, status])
+  @@index([staffId, status])
+  @@index([expiresAt])
+}
+
+enum SessionStatus {
+  ACTIVE
+  REVOKED
+  EXPIRED
+}
+
+model RolePermission {
+  id         String     @id @default(uuid())
+  role       Role
+  permission Permission
+  createdAt  DateTime   @default(now())
+
+  @@unique([role, permission])
+  @@index([role, permission])
 }
 
 model Partner {
-  id              String          @id @default(uuid())
-  slug            String          @unique @default(uuid()) // Added for SEO
-  name            String
-  type            PartnerType
-  integrationType IntegrationType @default(MOCK_STANDARD)
-  contactName     String?
-  contactPhone    String?
-  verticals       Json?           // Array of verticals they cover
-  regions         Json?           // Array of regions they cover
-  agreedCpl       Float?
-  active          Boolean         @default(true)
-  
-  // Real Data fields
-  founded         Int?
-  branches        Int?
-  claimRatio      Float?
-  
-  leads           Lead[]
-  rateTables      RateTable[]
-  routingRules    RoutingRule[]
-  invoices        Invoice[]
-  reviews         Review[]
-  financialProducts FinancialProduct[]
+  id                        String          @id @default(uuid())
+  slug                      String          @unique @default(uuid())
+  referralCode              String          @unique @default(uuid())
+  legalName                 String?
+  displayName               String
+  type                      PartnerType
+  businessType              String?
+  status                    PartnerStatus   @default(PROSPECT)
+  integrationType           IntegrationType @default(MOCK_STANDARD)
+  contactName               String?
+  contactPhone              String?
+  contactEmail              String?
+  website                   String?
+  businessRegistrationNumber String?
+  addressLine1              String?
+  addressLine2              String?
+  city                      String?
+  district                  String?
+  province                  String?
+  country                   String          @default("NP")
+  verticals                 Json?
+  regions                   Json?
+  agreedCpl                 Decimal?        @db.Decimal(5, 4)
+  active                    Boolean         @default(true)
+  founded                   Int?
+  branches                  Int?
+  claimRatio                Decimal?        @db.Decimal(5, 2)
+  createdAt                 DateTime        @default(now())
+  updatedAt                 DateTime        @updatedAt
+  deletedAt                 DateTime?
+
+  leads                     Lead[]
+  users                     User[]
+  rateTables                RateTable[]
+  routingRules              RoutingRule[]
+  invoices                  Invoice[]
+  reviews                   Review[]
+  financialProducts         FinancialProduct[]
+  insurers                  Insurer[]
+  partnerLeads              PartnerLead[]
+  commissions               Commission[]
+  quotes                    Quote[]
+  applications              Application[]
+  policies                 Policy[]
 }
 
 enum PartnerType {
   INSURER
+  VEHICLE_DEALER
+  GARAGE
+  TRAVEL_AGENCY
+  CORPORATE
   AGENT
+  REFERRAL_PARTNER
   BROKER
+  OTHER
 }
 
 enum IntegrationType {
   MOCK_STANDARD
   MOCK_LEGACY_REST
+  REST
+  SOAP
+  MANUAL
+}
+
+model Insurer {
+  id                     String               @id @default(uuid())
+  partnerId              String?
+  legalName              String
+  displayName            String
+  status                 InsurerStatus        @default(PROSPECT)
+  regulatoryBody         String?
+  regulatoryLicenseNumber String?
+  contactName            String?
+  contactPhone           String?
+  contactEmail           String?
+  integrationStatus      IntegrationStatus    @default(NOT_CONNECTED)
+  supportedProducts      Json?
+  supportedQuoteSources  Json?
+  providerCapabilities   Json?
+  adapterConfig          Json?
+  operationalContacts    Json?
+  productAvailability    Json?
+  effectiveFrom          DateTime?
+  effectiveTo            DateTime?
+  onboardingNotes        String?
+  createdAt              DateTime             @default(now())
+  updatedAt              DateTime             @updatedAt
+  deletedAt              DateTime?
+
+  partner                Partner?             @relation(fields: [partnerId], references: [id])
+  insuranceProducts      InsuranceProduct[]
+  quotes                 Quote[]
+  applications           Application[]
+  policies               Policy[]
+  commissions            Commission[]
+}
+
+model InsuranceProduct {
+  id                    String                 @id @default(uuid())
+  insurerId             String
+  productType           InsuranceProductType
+  name                  String
+  code                  String
+  description           String?
+  status                InsuranceProductStatus @default(ACTIVE)
+  active                Boolean                @default(true)
+  effectiveFrom         DateTime?
+  effectiveTo           DateTime?
+  supportedQuoteSources Json?
+  capabilities          Json?
+  coverageMetadata      Json?
+  exclusionsMetadata    Json?
+  configuration         Json?
+  createdAt             DateTime               @default(now())
+  updatedAt             DateTime               @updatedAt
+  deletedAt             DateTime?
+
+  insurer               Insurer                @relation(fields: [insurerId], references: [id])
+  coverages             Coverage[]
+  addOns                InsuranceAddOn[]
+  quotes                Quote[]
+  policies              Policy[]
+  quoteRequests         QuoteRequest[]
+
+  @@unique([insurerId, code])
+  @@index([insurerId, status])
+  @@index([productType, status])
+}
+
+model Coverage {
+  id                    String         @id @default(uuid())
+  insuranceProductId    String
+  name                  String
+  description           String?
+  type                  CoverageType
+  limitAmount           Decimal?       @db.Decimal(18, 2)
+  limitUnit             String?
+  exclusionsMetadata    Json?
+  isMandatory           Boolean        @default(false)
+  createdAt             DateTime       @default(now())
+  updatedAt             DateTime       @updatedAt
+  deletedAt             DateTime?
+
+  insuranceProduct      InsuranceProduct @relation(fields: [insuranceProductId], references: [id])
+
+  @@index([insuranceProductId, type])
+}
+
+model InsuranceAddOn {
+  id                    String            @id @default(uuid())
+  insuranceProductId    String
+  name                  String
+  code                  String
+  description           String?
+  active                Boolean           @default(true)
+  premiumAdjustment     Decimal?          @db.Decimal(18, 2)
+  coverageMetadata      Json?
+  exclusionsMetadata    Json?
+  createdAt             DateTime          @default(now())
+  updatedAt             DateTime          @updatedAt
+  deletedAt             DateTime?
+
+  insuranceProduct      InsuranceProduct  @relation(fields: [insuranceProductId], references: [id])
+
+  @@unique([insuranceProductId, code])
+  @@index([insuranceProductId, active])
 }
 
 model Lead {
-  id              String   @id @default(uuid())
+  id              String       @id @default(uuid())
   userId          String?
+  customerId      String?
   vertical        String
-  source          String   // web or app
+  productType     InsuranceProductType?
+  source          String
   formData        Json
-  consentTs       DateTime @default(now())
-  status          LeadStatus @default(NEW)
+  consentTs       DateTime     @default(now())
+  status          LeadStatus   @default(NEW)
   assignedStaffId String?
   partnerId       String?
-  createdAt       DateTime @default(now())
-  updatedAt       DateTime @updatedAt
-  
-  user            User?    @relation(fields: [userId], references: [id])
-  staff           Staff?   @relation(fields: [assignedStaffId], references: [id])
-  partner         Partner? @relation(fields: [partnerId], references: [id])
-  
+  priority        LeadPriority  @default(NORMAL)
+  createdAt       DateTime     @default(now())
+  updatedAt       DateTime     @updatedAt
+  deletedAt       DateTime?
+
+  user            User?        @relation(fields: [userId], references: [id])
+  customer        Customer?    @relation(fields: [customerId], references: [id])
+  staff           Staff?       @relation(fields: [assignedStaffId], references: [id])
+  partner         Partner?     @relation(fields: [partnerId], references: [id])
   statusHistory   LeadStatusHistory[]
+  partnerLeads    PartnerLead[]
+
+  @@index([customerId, status])
+  @@index([status, createdAt])
+  @@index([productType, status])
 }
 
 enum LeadStatus {
@@ -121,9 +640,502 @@ model LeadStatusHistory {
   newStatus  LeadStatus
   changedById String?
   changedAt  DateTime @default(now())
-  
+
   lead       Lead     @relation(fields: [leadId], references: [id])
   changedBy  Staff?   @relation(fields: [changedById], references: [id])
+}
+
+model QuoteRequest {
+  id                         String                @id @default(uuid())
+  customerId                 String?
+  userId                     String?
+  productType                InsuranceProductType?
+  inputData                  Json
+  status                     QuoteRequestStatus    @default(DRAFT)
+  source                     QuoteSourceType       @default(INDICATIVE)
+  requestedProviderScope     Json?
+  createdAt                  DateTime              @default(now())
+  updatedAt                  DateTime              @updatedAt
+  deletedAt                  DateTime?
+
+  customer                   Customer?             @relation(fields: [customerId], references: [id])
+  user                       User?                 @relation(fields: [userId], references: [id])
+  quotes                     Quote[]
+  insuranceProducts          InsuranceProduct[]
+
+  @@index([customerId, status])
+  @@index([productType, status])
+}
+
+model Quote {
+  id                   String             @id @default(uuid())
+  quoteRequestId       String
+  partnerId            String?
+  insurerId            String
+  insuranceProductId   String?
+  externalReference    String?
+  sourceType           QuoteSourceType    @default(INDICATIVE)
+  premium              Decimal            @db.Decimal(18, 2)
+  fees                 Decimal            @default(0) @db.Decimal(18, 2)
+  taxes                Decimal            @default(0) @db.Decimal(18, 2)
+  total                Decimal            @db.Decimal(18, 2)
+  currency             String             @default("NPR")
+  validityPeriodDays   Int?
+  validUntil           DateTime?
+  status               QuoteStatus        @default(VALID)
+  rawResponseReference String?
+  rawResponse          Json?
+  normalizedResponse   Json?
+  createdAt            DateTime           @default(now())
+  updatedAt            DateTime           @updatedAt
+  deletedAt            DateTime?
+
+  quoteRequest         QuoteRequest       @relation(fields: [quoteRequestId], references: [id])
+  partner              Partner?           @relation(fields: [partnerId], references: [id])
+  insurer              Insurer            @relation(fields: [insurerId], references: [id])
+  product              InsuranceProduct?  @relation(fields: [insuranceProductId], references: [id])
+  quoteOptions         QuoteOption[]
+  applications         Application[]
+
+  @@index([quoteRequestId, status])
+  @@index([partnerId, status])
+  @@index([insurerId, status])
+  @@index([status, validUntil])
+}
+
+model QuoteOption {
+  id                 String      @id @default(uuid())
+  quoteId            String
+  label              String?
+  premium            Decimal     @db.Decimal(18, 2)
+  fees               Decimal     @default(0) @db.Decimal(18, 2)
+  taxes              Decimal     @default(0) @db.Decimal(18, 2)
+  total              Decimal     @db.Decimal(18, 2)
+  currency           String      @default("NPR")
+  deductibleAmount   Decimal?    @db.Decimal(18, 2)
+  sumInsuredAmount   Decimal?    @db.Decimal(18, 2)
+  coverageSummary    String?
+  features           Json?
+  sortOrder          Int         @default(0)
+  isRecommended      Boolean     @default(false)
+  createdAt          DateTime    @default(now())
+  updatedAt          DateTime    @updatedAt
+
+  quote              Quote       @relation(fields: [quoteId], references: [id])
+
+  @@index([quoteId, sortOrder])
+}
+
+model Application {
+  id                  String                  @id @default(uuid())
+  customerId          String
+  partnerId           String?
+  quoteId             String?
+  insurerId           String?
+  status              ApplicationLifecycleStatus @default(DRAFT)
+  applicationReference String?                @unique
+  createdAt           DateTime                @default(now())
+  updatedAt           DateTime                @updatedAt
+  deletedAt           DateTime?
+
+  customer            Customer                @relation(fields: [customerId], references: [id])
+  partner             Partner?                @relation(fields: [partnerId], references: [id])
+  quote               Quote?                  @relation(fields: [quoteId], references: [id])
+  insurer             Insurer?                @relation(fields: [insurerId], references: [id])
+  documents           Document[]             @relation("ApplicationDocuments")
+  payments            Payment[]
+  policies            Policy[]
+
+  @@index([customerId, status])
+  @@index([partnerId, status])
+  @@index([status, createdAt])
+}
+
+model Document {
+  id                    String             @id @default(uuid())
+  customerId            String?
+  applicationId         String?
+  policyId              String?
+  uploadedById          String?
+  documentType          DocumentType
+  storageReference      String
+  mimeType              String?
+  fileSizeBytes         Int?
+  checksum              String?
+  storageProvider       String?            @default("OBJECT_STORAGE")
+  verificationStatus    VerificationStatus @default(PENDING)
+  rejectionReason       String?
+  verifiedAt            DateTime?
+  rejectedAt            DateTime?
+  replacementOfDocumentId String?
+  uploadedByRole        String?
+  metadata              Json?
+  createdAt             DateTime           @default(now())
+  updatedAt             DateTime           @updatedAt
+  deletedAt             DateTime?
+
+  customer              Customer?          @relation(fields: [customerId], references: [id])
+  application           Application?       @relation("ApplicationDocuments", fields: [applicationId], references: [id])
+  policy                Policy?            @relation("PolicyDocuments", fields: [policyId], references: [id])
+  uploadedBy            User?              @relation("UploadedDocuments", fields: [uploadedById], references: [id])
+
+  @@index([customerId, documentType])
+  @@index([applicationId, verificationStatus])
+  @@index([policyId, verificationStatus])
+}
+
+model Kyc {
+  id                  String                  @id @default(uuid())
+  customerId          String
+  verificationStatus  KycVerificationStatus   @default(PENDING)
+  verificationMethod  KycVerificationMethod   @default(MANUAL)
+  providerName        String?
+  metadata            Json?
+  createdAt           DateTime                @default(now())
+  updatedAt           DateTime                @updatedAt
+  deletedAt           DateTime?
+
+  customer            Customer                @relation(fields: [customerId], references: [id])
+
+  @@index([customerId, verificationStatus])
+}
+
+model Payment {
+  id               String        @id @default(uuid())
+  applicationId    String
+  amount           Decimal       @db.Decimal(18, 2)
+  currency         String        @default("NPR")
+  provider         String
+  paymentReference String        @unique
+  externalReference String?
+  status           PaymentStatus @default(CREATED)
+  idempotencyKey   String?       @unique
+  verificationToken String?
+  verifiedAt       DateTime?
+  expiresAt        DateTime?
+  webhookSignature String?
+  metadata         Json?
+  createdAt        DateTime      @default(now())
+  updatedAt        DateTime      @updatedAt
+  deletedAt        DateTime?
+
+  application      Application   @relation(fields: [applicationId], references: [id])
+  webhookEvents    PaymentWebhookEvent[]
+
+  @@index([applicationId, status])
+  @@index([externalReference])
+}
+
+model PaymentWebhookEvent {
+  id               String    @id @default(uuid())
+  paymentId        String?
+  provider         String
+  eventId          String
+  eventType        String
+  payload          Json
+  receivedAt       DateTime  @default(now())
+  processedAt      DateTime?
+  signatureHash    String?
+  createdAt        DateTime  @default(now())
+
+  payment          Payment?  @relation(fields: [paymentId], references: [id])
+
+  @@unique([provider, eventId])
+  @@index([paymentId, receivedAt])
+}
+
+model Policy {
+  id                       String                @id @default(uuid())
+  customerId               String
+  partnerId                String?
+  insurerId                String?
+  productId                String?
+  applicationId            String?
+  policyNumber             String?               @unique
+  issuanceStatus           PolicyIssuanceStatus  @default(APPLICATION_READY)
+  insurerPolicyReference    String?
+  startDate                DateTime?
+  expiryDate               DateTime?
+  premium                  Decimal               @db.Decimal(18, 2)
+  status                   PolicyStatus          @default(ACTIVE)
+  policyDocumentUrl        String?
+  createdAt                DateTime              @default(now())
+  updatedAt                DateTime              @updatedAt
+  deletedAt                DateTime?
+
+  customer                 Customer              @relation(fields: [customerId], references: [id])
+  partner                  Partner?              @relation(fields: [partnerId], references: [id])
+  insurer                  Insurer?              @relation(fields: [insurerId], references: [id])
+  product                  InsuranceProduct?     @relation(fields: [productId], references: [id])
+  application              Application?          @relation(fields: [applicationId], references: [id])
+  documents                Document[]            @relation("PolicyDocuments")
+  renewals                 Renewal[]
+  claims                   Claim[]
+  commissions              Commission[]
+
+  @@index([customerId, status])
+  @@index([partnerId, status])
+  @@index([insurerId, status])
+}
+
+enum PolicyStatus {
+  ACTIVE
+  EXPIRING_SOON
+  EXPIRED
+  RENEWED
+}
+
+model RenewalReminderRule {
+  id          String   @id @default(uuid())
+  name        String
+  daysBefore  Int
+  active      Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@unique([name, daysBefore])
+  @@index([active, daysBefore])
+}
+
+model Renewal {
+  id                    String        @id @default(uuid())
+  policyId              String
+  renewalDate           DateTime
+  status                RenewalStatus @default(UPCOMING)
+  reminderSchedule      Json?
+  reminderCount         Int           @default(0)
+  contactAttempts       Int           @default(0)
+  lastReminderAt        DateTime?
+  nextReminderAt        DateTime?
+  quotePremium          Decimal?      @db.Decimal(18, 2)
+  renewalPremium        Decimal?      @db.Decimal(18, 2)
+  renewalCommission     Decimal?      @db.Decimal(18, 2)
+  assignedStaffId       String?
+  customerNotifiedAt    DateTime?
+  createdAt             DateTime      @default(now())
+  updatedAt             DateTime      @updatedAt
+  deletedAt             DateTime?
+
+  policy                Policy        @relation(fields: [policyId], references: [id])
+  assignedStaff         Staff?        @relation(fields: [assignedStaffId], references: [id])
+  notifications        RenewalNotification[]
+  jobs                 RenewalJob[]
+
+  @@index([policyId, status])
+  @@index([renewalDate, status])
+  @@index([nextReminderAt, status])
+}
+
+model RenewalNotification {
+  id                String   @id @default(uuid())
+  renewalId         String
+  channel           String
+  provider          String?
+  providerMessageId String?
+  status            String   @default("QUEUED")
+  delivered         Boolean  @default(false)
+  deliveredAt       DateTime?
+  payload           Json?
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+
+  renewal           Renewal  @relation(fields: [renewalId], references: [id])
+
+  @@index([renewalId, channel])
+}
+
+model RenewalJob {
+  id               String    @id @default(uuid())
+  renewalId        String
+  jobType          String
+  scheduleKey      String?
+  status           String    @default("PENDING")
+  attemptCount     Int       @default(0)
+  maxAttempts      Int       @default(5)
+  nextRunAt        DateTime?
+  completedAt      DateTime?
+  lastError        String?
+  idempotencyKey   String    @unique
+  createdAt        DateTime  @default(now())
+  updatedAt        DateTime  @updatedAt
+
+  renewal          Renewal   @relation(fields: [renewalId], references: [id])
+
+  @@index([renewalId, status, nextRunAt])
+}
+
+model Claim {
+  id                String         @id @default(uuid())
+  policyId          String
+  customerId        String
+  claimReference    String?        @unique
+  incidentDate      DateTime?
+  status            ClaimStatus    @default(REPORTED)
+  description       String?        @db.Text
+  insurerReference  String?
+  metadata          Json?
+  createdAt         DateTime       @default(now())
+  updatedAt         DateTime       @updatedAt
+  deletedAt         DateTime?
+
+  policy            Policy         @relation(fields: [policyId], references: [id])
+  customer          Customer       @relation(fields: [customerId], references: [id])
+  notes             ClaimNote[]
+  communications    ClaimCommunication[]
+
+  @@index([policyId, status])
+  @@index([customerId, status])
+}
+
+model ClaimNote {
+  id        String   @id @default(uuid())
+  claimId   String
+  authorId  String
+  message   String   @db.Text
+  createdAt DateTime @default(now())
+
+  claim     Claim    @relation(fields: [claimId], references: [id])
+
+  @@index([claimId, createdAt])
+}
+
+model ClaimCommunication {
+  id               String   @id @default(uuid())
+  claimId          String
+  channel          String
+  direction        String
+  note             String?  @db.Text
+  insurerReference String?
+  createdAt        DateTime @default(now())
+
+  claim            Claim    @relation(fields: [claimId], references: [id])
+
+  @@index([claimId, createdAt])
+}
+
+model Commission {
+  id                  String          @id @default(uuid())
+  policyId            String
+  insurerId           String?
+  partnerId           String?
+  grossPremium        Decimal         @db.Decimal(18, 2)
+  commissionRate      Decimal         @db.Decimal(5, 4)
+  commissionAmount    Decimal         @db.Decimal(18, 2)
+  status              CommissionStatus @default(PENDING)
+  reconciliationData  Json?
+  createdAt           DateTime        @default(now())
+  updatedAt           DateTime        @updatedAt
+  deletedAt           DateTime?
+
+  policy              Policy          @relation(fields: [policyId], references: [id])
+  insurer             Insurer?        @relation(fields: [insurerId], references: [id])
+  partner             Partner?        @relation(fields: [partnerId], references: [id])
+
+  @@index([policyId, status])
+  @@index([insurerId, status])
+}
+
+model PartnerLead {
+  id                String          @id @default(uuid())
+  partnerId         String
+  leadId            String
+  attributionData   Json?
+  commissionInfo    Json?
+  status            PartnerLeadStatus @default(ATTRIBUTED)
+  createdAt         DateTime        @default(now())
+  updatedAt         DateTime        @updatedAt
+  deletedAt         DateTime?
+
+  partner           Partner         @relation(fields: [partnerId], references: [id])
+  lead              Lead            @relation(fields: [leadId], references: [id])
+
+  @@unique([partnerId, leadId])
+  @@index([partnerId, status])
+}
+
+model AnalyticsEvent {
+  id          String   @id @default(uuid())
+  eventType   String
+  source      String?
+  productType String?
+  insurerId   String?
+  partnerId   String?
+  salesStaffId String?
+  customerId  String?
+  metadata    Json?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@index([eventType, createdAt])
+  @@index([productType, eventType])
+  @@index([partnerId, eventType])
+  @@index([insurerId, eventType])
+  @@index([salesStaffId, eventType])
+  @@index([source, eventType])
+}
+
+model NotificationPreference {
+  id          String            @id @default(uuid())
+  customerId  String
+  channel     NotificationChannel
+  enabled     Boolean           @default(true)
+  createdAt   DateTime          @default(now())
+  updatedAt   DateTime          @updatedAt
+
+  customer    Customer          @relation(fields: [customerId], references: [id])
+
+  @@unique([customerId, channel])
+  @@index([customerId, enabled])
+}
+
+model Notification {
+  id                String                   @id @default(uuid())
+  customerId        String?
+  userId            String?
+  eventType         NotificationEventType
+  channel           NotificationChannel
+  template          String
+  recipient         String
+  provider          String?
+  providerReference String?
+  status            NotificationStatus       @default(QUEUED)
+  deliveryStatus    NotificationDeliveryStatus @default(QUEUED)
+  payload           Json?
+  attemptCount      Int                      @default(0)
+  maxAttempts       Int                      @default(3)
+  nextAttemptAt     DateTime?
+  lastError         String?
+  sentAt            DateTime?
+  deliveredAt       DateTime?
+  failedAt          DateTime?
+  createdAt         DateTime                 @default(now())
+  updatedAt         DateTime                 @updatedAt
+  deletedAt         DateTime?
+
+  customer          Customer?                @relation(fields: [customerId], references: [id])
+  user              User?                    @relation(fields: [userId], references: [id])
+
+  @@unique([eventType, recipient, template, customerId, userId])
+  @@index([customerId, status])
+  @@index([channel, status, nextAttemptAt])
+}
+
+model AuditLog {
+  id             String    @id @default(uuid())
+  actorId        String?
+  action         String
+  entityType     String
+  entityId       String
+  before         Json?
+  after          Json?
+  ipAddress      String?
+  userAgent      String?
+  createdAt      DateTime  @default(now())
+
+  actor          User?     @relation(fields: [actorId], references: [id])
+
+  @@index([entityType, entityId])
+  @@index([actorId, createdAt])
 }
 
 model RateTable {
@@ -131,11 +1143,11 @@ model RateTable {
   vertical   String
   partnerId  String
   planName   String
-  criteria   Json     // e.g. age band, sum assured band
+  criteria   Json
   premiumMin Float
   premiumMax Float
   updatedAt  DateTime @updatedAt
-  
+
   partner    Partner  @relation(fields: [partnerId], references: [id])
 }
 
@@ -145,20 +1157,20 @@ model RoutingRule {
   region     String
   partnerId  String
   priority   Int      @default(1)
-  
+
   partner    Partner  @relation(fields: [partnerId], references: [id])
 }
 
 model Invoice {
-  id          String   @id @default(uuid())
+  id          String        @id @default(uuid())
   partnerId   String
   periodStart DateTime
   periodEnd   DateTime
   leadCount   Int
-  amount      Float
+  amount      Decimal       @db.Decimal(18, 2)
   status      InvoiceStatus @default(DRAFT)
-  
-  partner     Partner  @relation(fields: [partnerId], references: [id])
+
+  partner     Partner       @relation(fields: [partnerId], references: [id])
 }
 
 enum InvoiceStatus {
@@ -178,44 +1190,21 @@ model ContentPage {
 }
 
 model Review {
-  id         String   @id @default(uuid())
+  id         String       @id @default(uuid())
   partnerId  String
   userId     String
   rating     Int
-  body       String   @db.Text
+  body       String       @db.Text
   status     ReviewStatus @default(PENDING)
-  
-  partner    Partner  @relation(fields: [partnerId], references: [id])
-  user       User     @relation(fields: [userId], references: [id])
+
+  partner    Partner      @relation(fields: [partnerId], references: [id])
+  user       User         @relation(fields: [userId], references: [id])
 }
 
 enum ReviewStatus {
   PENDING
   APPROVED
   REJECTED
-}
-
-model Policy {
-  id        String       @id @default(uuid())
-  userId    String
-  insurer   String
-  planName  String
-  vertical  String
-  premium   Float
-  startDate DateTime
-  endDate   DateTime
-  status    PolicyStatus @default(ACTIVE)
-  createdAt DateTime     @default(now())
-  updatedAt DateTime     @updatedAt
-
-  user      User         @relation(fields: [userId], references: [id])
-}
-
-enum PolicyStatus {
-  ACTIVE
-  EXPIRING_SOON
-  EXPIRED
-  RENEWED
 }
 
 // ============================================
@@ -226,10 +1215,10 @@ model CreditProfile {
   id          String   @id @default(uuid())
   userId      String   @unique
   score       Int
-  provider    String   // e.g., 'Equifax', 'CIBIL'
+  provider    String
   lastUpdated DateTime @default(now())
   createdAt   DateTime @default(now())
-  
+
   user        User     @relation(fields: [userId], references: [id])
 }
 
@@ -240,11 +1229,11 @@ model FinancialProduct {
   type           FinancialProductType
   minCreditScore Int
   interestRate   Float?
-  features       Json?    // e.g., ["No annual fee", "5% cashback"]
+  features       Json?
   active         Boolean  @default(true)
   createdAt      DateTime @default(now())
   updatedAt      DateTime @updatedAt
-  
+
   partner        Partner  @relation(fields: [partnerId], references: [id])
   applications   FinancialApplication[]
 }
@@ -256,15 +1245,15 @@ enum FinancialProductType {
 }
 
 model FinancialApplication {
-  id           String   @id @default(uuid())
+  id           String            @id @default(uuid())
   userId       String
   productId    String
   status       ApplicationStatus @default(PENDING)
-  appliedAt    DateTime @default(now())
-  updatedAt    DateTime @updatedAt
-  
-  user         User     @relation(fields: [userId], references: [id])
-  product      FinancialProduct @relation(fields: [productId], references: [id])
+  appliedAt    DateTime          @default(now())
+  updatedAt    DateTime          @updatedAt
+
+  user         User              @relation(fields: [userId], references: [id])
+  product      FinancialProduct  @relation(fields: [productId], references: [id])
 }
 
 enum ApplicationStatus {
@@ -278,16 +1267,16 @@ enum ApplicationStatus {
 // ============================================
 
 model Appointment {
-  id           String   @id @default(uuid())
+  id           String            @id @default(uuid())
   userId       String
   type         AppointmentType
   providerName String
   date         DateTime
   status       AppointmentStatus @default(SCHEDULED)
-  createdAt    DateTime @default(now())
-  updatedAt    DateTime @updatedAt
+  createdAt    DateTime          @default(now())
+  updatedAt    DateTime          @updatedAt
 
-  user         User     @relation(fields: [userId], references: [id])
+  user         User              @relation(fields: [userId], references: [id])
 }
 
 enum AppointmentType {
@@ -306,15 +1295,15 @@ enum AppointmentStatus {
 // ============================================
 
 model SupportTicket {
-  id          String   @id @default(uuid())
+  id          String       @id @default(uuid())
   userId      String
   subject     String
-  description String   @db.Text
+  description String       @db.Text
   status      TicketStatus @default(OPEN)
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime     @updatedAt
 
-  user        User     @relation(fields: [userId], references: [id])
+  user        User         @relation(fields: [userId], references: [id])
 }
 
 enum TicketStatus {
@@ -340,16 +1329,16 @@ model City {
 }
 
 model VehicleModel {
-  id          String   @id @default(uuid())
-  slug        String   @unique
+  id          String       @id @default(uuid())
+  slug        String       @unique
   brand       String
   brandSlug   String
   name        String
   cc          Int
   basePremium Float?
-  type        VehicleType @default(TWO_WHEELER)
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  type        VehicleType  @default(TWO_WHEELER)
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime     @updatedAt
 }
 
 enum VehicleType {

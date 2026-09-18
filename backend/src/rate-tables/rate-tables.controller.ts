@@ -9,7 +9,7 @@ import { Role } from '@prisma/client';
 
 @Controller('rate-tables')
 @UseGuards(JwtAuthGuard, RolesGuard)
-@Roles(Role.AGENT, Role.ADMIN)
+@Roles(Role.OPERATIONS, Role.ADMIN, Role.SUPER_ADMIN)
 export class RateTablesController {
   constructor(private readonly rateTablesService: RateTablesService) {}
 

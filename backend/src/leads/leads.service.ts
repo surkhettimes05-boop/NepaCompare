@@ -8,15 +8,57 @@ export class LeadsService {
 
   constructor(private prisma: PrismaService) {}
 
+  private getLeadPhone(formData: any): string | null {
+    if (!formData || typeof formData !== 'object') {
+      return null;
+    }
+
+    const phoneCandidate = [
+      formData.phone,
+      formData.mobile,
+      formData.phoneNumber,
+      formData.contactPhone,
+    ].find((value) => typeof value === 'string' && value.trim().length > 0);
+
+    return phoneCandidate ? phoneCandidate.trim() : null;
+  }
+
   async create(createLeadDto: CreateLeadDto, userId?: string) {
-    return this.prisma.lead.create({
+    const phone = this.getLeadPhone(createLeadDto.formData);
+
+    if (phone) {
+      const duplicate = await this.prisma.lead.findFirst({
+        where: {
+          vertical: createLeadDto.vertical,
+          formData: {
+            path: ['phone'],
+            equals: phone,
+          },
+        },
+      });
+
+      if (duplicate) {
+        return {
+          duplicate: true,
+          id: duplicate.id,
+          message: 'A lead already exists for this customer and product.',
+        };
+      }
+    }
+
+    const created = await this.prisma.lead.create({
       data: {
         vertical: createLeadDto.vertical,
         source: createLeadDto.source,
-        formData: createLeadDto.formData,
+        formData: {
+          ...createLeadDto.formData,
+          phone,
+        },
         userId,
       },
     });
+
+    return { duplicate: false, ...created };
   }
 
   findAll() {
@@ -86,8 +128,27 @@ export class LeadsService {
       throw new Error('Lead not found or unauthorized');
     }
 
+    const customerId = lead.customerId || (await this.prisma.customer.findFirst({ where: { userId } }))?.id;
+    if (!customerId) {
+      throw new Error('Customer profile is required before conversion');
+    }
+
+    const duplicatePolicy = await this.prisma.policy.findFirst({
+      where: {
+        customerId,
+        status: { in: ['ACTIVE', 'EXPIRING_SOON'] },
+      },
+    });
+
+    if (duplicatePolicy && duplicatePolicy.applicationId === lead.id) {
+      throw new Error('A policy for this customer and vertical already exists');
+    }
+
+    if (duplicatePolicy) {
+      throw new Error('A policy for this customer and vertical already exists');
+    }
+
     return this.prisma.$transaction(async (tx) => {
-      // 1. Mark lead as converted
       const updatedLead = await tx.lead.update({
         where: { id },
         data: { status: 'CONVERTED' }
@@ -101,22 +162,19 @@ export class LeadsService {
         }
       });
 
-      // 2. Generate the policy
-      const formData: any = lead.formData;
       const policy = await tx.policy.create({
         data: {
-          userId,
-          insurer: 'Partner Insurer', // Mock since we don't store selected insurer in lead yet
-          planName: `${lead.vertical} Policy`,
-          vertical: lead.vertical,
-          premium: 15000, // Mock premium for now
+          customerId,
+          partnerId: lead.partnerId || undefined,
+          premium: 15000,
           startDate: new Date(),
-          endDate: new Date(new Date().setFullYear(new Date().getFullYear() + 1)),
-          status: 'ACTIVE'
+          expiryDate: new Date(new Date().setFullYear(new Date().getFullYear() + 1)),
+          status: 'ACTIVE',
+          applicationId: lead.id,
         }
       });
 
-      return policy;
+      return { ...policy, lead: updatedLead };
     });
   }
 }

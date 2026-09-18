@@ -1,19 +1,37 @@
-import { InsurerAdapter, QuoteRequest, AdapterRawResponse } from './interfaces';
+import { InsurerAdapter, QuoteRequest, AdapterRawResponse, ProviderCapability, QuoteSourceType } from './interfaces';
 
 export class MockInsurerAdapter implements InsurerAdapter {
+  readonly name: string;
+  readonly quoteSource: QuoteSourceType = 'REAL_TIME';
+
   constructor(
-    private readonly name: string,
+    name: string,
     private readonly basePremium: number,
     private readonly fixedCsr: string,
     private readonly failureRate: number = 0
-  ) {}
+  ) {
+    this.name = name;
+  }
+
+  getCapabilities(): ProviderCapability[] {
+    return [
+      { capability: 'getProducts', supported: true },
+      { capability: 'validateQuoteRequest', supported: true },
+      { capability: 'getQuote', supported: true },
+      { capability: 'createApplication', supported: false, reason: 'Not available in mock provider' },
+      { capability: 'uploadDocument', supported: false, reason: 'Not available in mock provider' },
+      { capability: 'initiatePayment', supported: false, reason: 'Not available in mock provider' },
+      { capability: 'issuePolicy', supported: false, reason: 'Not available in mock provider' },
+      { capability: 'getPolicy', supported: false, reason: 'Not available in mock provider' },
+      { capability: 'renewPolicy', supported: false, reason: 'Not available in mock provider' },
+      { capability: 'getClaimStatus', supported: false, reason: 'Not available in mock provider' },
+    ];
+  }
 
   async getQuotes(request: QuoteRequest): Promise<AdapterRawResponse[]> {
-    // 1. Simulate network delay (400ms - 1200ms)
     const delay = Math.floor(Math.random() * 800) + 400;
     await new Promise((resolve) => setTimeout(resolve, delay));
 
-    // 2. Simulate occasional external failure
     if (Math.random() < this.failureRate) {
       throw new Error(`[Adapter Error] ${this.name} API timed out or responded with 500`);
     }

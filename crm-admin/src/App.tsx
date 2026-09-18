@@ -3,6 +3,8 @@ import Sidebar from './components/Sidebar';
 import Dashboard from './pages/Dashboard';
 import LeadsInbox from './pages/LeadsInbox';
 import LeadDetail from './pages/LeadDetail';
+import CustomersPage from './pages/CustomersPage';
+import CustomerProfile from './pages/CustomerProfile';
 import Partners from './pages/Partners';
 import RateTables from './pages/RateTables';
 import Renewals from './pages/Renewals';
@@ -36,6 +38,8 @@ function App() {
                   <Route path="/" element={<Dashboard />} />
                   <Route path="/leads" element={<LeadsInbox />} />
                   <Route path="/leads/:id" element={<LeadDetail />} />
+                  <Route path="/customers" element={<CustomersPage />} />
+                  <Route path="/customers/:id" element={<CustomerProfile />} />
                   <Route path="/partners" element={<Partners />} />
                   <Route path="/rate-tables" element={<RateTables />} />
                   <Route path="/renewals" element={<Renewals />} />

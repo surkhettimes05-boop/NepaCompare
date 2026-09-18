@@ -1,132 +1,176 @@
-import { useState, useEffect } from 'react';
-import { apiUrl } from '../lib/api';
+import { useMemo, useState } from 'react';
+import { Link } from 'react-router-dom';
+import { leadSeed, leadStatusOptions, leadPriorityOptions, staffOptions } from '../lib/crmData';
 
-// For the MVP we will mock the type and data if the backend is not running
-interface Lead {
-  id: string;
-  vertical: string;
-  source: string;
-  createdAt: string;
-  status?: string;
-  formData: { name: string; phone: string; age?: string; isUrgent?: boolean };
-}
+const currentUserScope = ['KTM', 'BKT'];
+
+const pageSize = 4;
 
 export default function LeadsInbox() {
-  const [leads, setLeads] = useState<Lead[]>([]);
-  const [loading, setLoading] = useState(true);
+  const [search, setSearch] = useState('');
+  const [statusFilter, setStatusFilter] = useState('ALL');
+  const [priorityFilter, setPriorityFilter] = useState('ALL');
+  const [assignedFilter, setAssignedFilter] = useState('ALL');
+  const [sortField, setSortField] = useState<'createdAt' | 'priority' | 'status'>('createdAt');
+  const [sortDirection, setSortDirection] = useState<'asc' | 'desc'>('desc');
+  const [currentPage, setCurrentPage] = useState(1);
 
-  useEffect(() => {
-    const fetchLeads = async () => {
-      try {
-        const token = localStorage.getItem('token');
-        const response = await fetch(`${apiUrl}/leads`, {
-          headers: {
-            'Authorization': `Bearer ${token}`
-          }
-        });
-        if (response.status === 401) {
-          localStorage.removeItem('token');
-          window.location.href = '/login';
-          return;
-        }
-        if (!response.ok) throw new Error('Failed to fetch');
-        const data = await response.json();
-        setLeads(data);
-      } catch (err) {
-        console.error('Failed to fetch leads', err);
-      } finally {
-        setLoading(false);
+  const visibleLeads = useMemo(() => {
+    const filtered = leadSeed.filter((lead) => {
+      const matchesScope = lead.scope.some((area) => currentUserScope.includes(area));
+      const matchesSearch = !search || [lead.customerName, lead.phone, lead.email, lead.id, lead.product].some((field) => field.toLowerCase().includes(search.toLowerCase()));
+      const matchesStatus = statusFilter === 'ALL' || lead.status === statusFilter;
+      const matchesPriority = priorityFilter === 'ALL' || lead.priority === priorityFilter;
+      const matchesAssigned = assignedFilter === 'ALL' || lead.assignedTo === assignedFilter;
+
+      return matchesScope && matchesSearch && matchesStatus && matchesPriority && matchesAssigned;
+    });
+
+    const sorted = [...filtered].sort((a, b) => {
+      const direction = sortDirection === 'asc' ? 1 : -1;
+
+      if (sortField === 'priority') {
+        const score = { LOW: 1, NORMAL: 2, HIGH: 3, URGENT: 4 } as const;
+        return (score[a.priority] - score[b.priority]) * direction;
       }
-    };
-    
-    fetchLeads();
-  }, []);
 
-  const exportToCSV = () => {
-    if (leads.length === 0) return;
-    
-    // Define headers
-    const headers = ['ID', 'Date', 'Name', 'Phone', 'Vertical', 'Status', 'Urgent'];
-    
-    // Map leads to CSV rows
-    const rows = leads.map(lead => [
-      lead.id,
-      new Date(lead.createdAt).toISOString(),
-      `"${lead.formData.name || ''}"`,
-      `"${lead.formData.phone || ''}"`,
-      lead.vertical,
-      lead.status || 'NEW',
-      lead.formData.isUrgent ? 'YES' : 'NO'
-    ]);
-    
-    // Combine headers and rows
-    const csvContent = [headers.join(','), ...rows.map(r => r.join(','))].join('\n');
-    
-    // Create Blob and trigger download
-    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+      if (sortField === 'status') {
+        return String(a.status).localeCompare(String(b.status)) * direction;
+      }
+
+      return (new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime()) * direction;
+    });
+
+    return sorted;
+  }, [search, statusFilter, priorityFilter, assignedFilter, sortDirection, sortField]);
+
+  const totalPages = Math.max(1, Math.ceil(visibleLeads.length / pageSize));
+  const paginatedLeads = visibleLeads.slice((currentPage - 1) * pageSize, currentPage * pageSize);
+
+  const handleSort = (field: 'createdAt' | 'priority' | 'status') => {
+    if (sortField === field) {
+      setSortDirection((prev) => (prev === 'asc' ? 'desc' : 'asc'));
+      return;
+    }
+
+    setSortField(field);
+    setSortDirection(field === 'priority' ? 'desc' : 'desc');
+  };
+
+  const exportCsv = () => {
+    const rows = [
+      ['Lead ID', 'Customer', 'Phone', 'Product', 'Status', 'Priority', 'Assigned To', 'Created'],
+      ...visibleLeads.map((lead) => [lead.id, lead.customerName, lead.phone, lead.product, lead.status, lead.priority, lead.assignedTo, new Date(lead.createdAt).toLocaleDateString()]),
+    ];
+
+    const csv = rows.map((row) => row.map((cell) => `"${String(cell).replace(/"/g, '""')}"`).join(',')).join('\n');
+    const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
     const url = URL.createObjectURL(blob);
-    const link = document.createElement('a');
-    link.setAttribute('href', url);
-    link.setAttribute('download', `leads_export_${new Date().toISOString().split('T')[0]}.csv`);
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
+    const anchor = document.createElement('a');
+    anchor.href = url;
+    anchor.download = 'khaacho-leads.csv';
+    anchor.click();
+    URL.revokeObjectURL(url);
   };
 
   return (
     <div>
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.5rem' }}>
-        <h1 style={{ fontSize: '1.75rem', fontWeight: 600 }}>Leads Inbox</h1>
-        <button className="btn btn-primary" onClick={exportToCSV} disabled={leads.length === 0 || loading}>
-          Export CSV
-        </button>
+      <div className="page-header">
+        <div>
+          <p className="eyebrow">Sales</p>
+          <h1>Lead pipeline</h1>
+        </div>
+        <button className="btn btn-primary" onClick={exportCsv}>Export CSV</button>
       </div>
-      
-      <div className="card table-container">
-        {loading ? (
-          <p>Loading leads...</p>
-        ) : (
+
+      <div className="card">
+        <div className="filter-bar">
+          <input
+            className="input-field search-box"
+            value={search}
+            placeholder="Search by name, phone, email, lead id, product"
+            onChange={(event) => {
+              setSearch(event.target.value);
+              setCurrentPage(1);
+            }}
+          />
+
+          <select className="input-field" value={statusFilter} onChange={(event) => { setStatusFilter(event.target.value); setCurrentPage(1); }}>
+            <option value="ALL">All statuses</option>
+            {leadStatusOptions.map((status) => (
+              <option key={status} value={status}>{status}</option>
+            ))}
+          </select>
+
+          <select className="input-field" value={priorityFilter} onChange={(event) => { setPriorityFilter(event.target.value); setCurrentPage(1); }}>
+            <option value="ALL">All priorities</option>
+            {leadPriorityOptions.map((priority) => (
+              <option key={priority} value={priority}>{priority}</option>
+            ))}
+          </select>
+
+          <select className="input-field" value={assignedFilter} onChange={(event) => { setAssignedFilter(event.target.value); setCurrentPage(1); }}>
+            <option value="ALL">All assignments</option>
+            {staffOptions.map((staff) => (
+              <option key={staff} value={staff}>{staff}</option>
+            ))}
+          </select>
+        </div>
+
+        <div className="table-container">
           <table className="data-table">
             <thead>
               <tr>
-                <th>Date</th>
-                <th>Name</th>
-                <th>Phone</th>
-                <th>Vertical</th>
-                <th>Status</th>
-                <th>Actions</th>
+                <th>Lead</th>
+                <th onClick={() => handleSort('status')} style={{ cursor: 'pointer' }}>Status</th>
+                <th onClick={() => handleSort('priority')} style={{ cursor: 'pointer' }}>Priority</th>
+                <th>Assigned</th>
+                <th>Product</th>
+                <th onClick={() => handleSort('createdAt')} style={{ cursor: 'pointer' }}>Created</th>
+                <th>Action</th>
               </tr>
             </thead>
             <tbody>
-              {leads.map(lead => (
-                <tr key={lead.id} style={{ backgroundColor: lead.formData.isUrgent ? 'rgba(239, 68, 68, 0.05)' : 'transparent' }}>
+              {paginatedLeads.map((lead) => (
+                <tr key={lead.id}>
                   <td>
-                    {new Date(lead.createdAt).toLocaleDateString()}
-                    {lead.formData.isUrgent && <div style={{ color: 'var(--accent-red)', fontSize: '0.75rem', fontWeight: 600, marginTop: '4px', animation: 'pulse 2s infinite' }}>🚨 URGENT DROP-OFF</div>}
+                    <div style={{ fontWeight: 700 }}>{lead.customerName}</div>
+                    <div style={{ color: 'var(--text-muted)', fontSize: '0.8rem' }}>{lead.id} • {lead.phone}</div>
                   </td>
-                  <td style={{ fontWeight: 500 }}>{lead.formData.name || 'N/A'}</td>
-                  <td>{lead.formData.phone || 'N/A'}</td>
-                  <td style={{ textTransform: 'capitalize' }}>{lead.vertical}</td>
-                  <td><span className={`badge ${lead.formData.isUrgent ? 'badge-lost' : 'badge-new'}`}>{lead.status || 'NEW'}</span></td>
                   <td>
-                    <button 
-                      className="btn" 
-                      style={{ border: lead.formData.isUrgent ? '1px solid var(--accent-red)' : '1px solid var(--border-color)', background: 'transparent' }}
-                      onClick={() => window.location.href = `/leads/${lead.id}`}
-                    >
-                      View / Route
-                    </button>
+                    <span className="pipeline-status">
+                      <span className="status-dot" style={{ background: lead.status === 'POLICY_ISSUED' ? '#10b981' : lead.status === 'LOST' || lead.status === 'CANCELLED' ? '#ef4444' : '#f59e0b' }} />
+                      {lead.status}
+                    </span>
+                  </td>
+                  <td>
+                    <span className={`badge ${lead.priority === 'URGENT' ? 'badge-closed' : lead.priority === 'HIGH' ? 'badge-pending' : 'badge-new'}`}>{lead.priority}</span>
+                  </td>
+                  <td>{lead.assignedTo}<br /><small style={{ color: 'var(--text-muted)' }}>{lead.assignedTeam}</small></td>
+                  <td>{lead.product}</td>
+                  <td>{new Date(lead.createdAt).toLocaleDateString()}</td>
+                  <td>
+                    <Link to={`/leads/${lead.id}`} className="btn btn-primary small-btn">Open</Link>
                   </td>
                 </tr>
               ))}
-              {leads.length === 0 && (
+
+              {paginatedLeads.length === 0 && (
                 <tr>
-                  <td colSpan={6} style={{ textAlign: 'center', padding: '2rem' }}>No leads found.</td>
+                  <td colSpan={7} style={{ textAlign: 'center', padding: '2rem' }}>No leads match the current filters.</td>
                 </tr>
               )}
             </tbody>
           </table>
-        )}
+        </div>
+
+        <div className="pagination">
+          <span>Showing {paginatedLeads.length} of {visibleLeads.length} leads</span>
+          <div className="pagination-controls">
+            <button className="btn" disabled={currentPage === 1} onClick={() => setCurrentPage((page) => Math.max(page - 1, 1))}>Previous</button>
+            <button className="btn" disabled={currentPage >= totalPages} onClick={() => setCurrentPage((page) => Math.min(page + 1, totalPages))}>Next</button>
+          </div>
+        </div>
       </div>
     </div>
   );
